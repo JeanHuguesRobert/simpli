@@ -8,8 +8,8 @@
 // 27/03/2010, JHR, Initial v001
 // 09/05/2010, JHR, Back to work, refactor into classes
 // 24/08/2010, JHR, Ditto, on AWS, after 2 months stall
-// 03/11/2010, JHR, Ditto, after 10 days holliday stall
-// 12/11/2010, JHR, refactoring, cleaning, etc
+// 03/11/2010, JHR, Ditto, after 10 days holiday stall
+// 12/11/2010, JHR, refactoring, cleaning, etc.
 // 14/11/2010, JHR, fb@, v 0.04
 // 17/11/2010, JHR, sectionize
 // 22/11/2010, JHR, class User
@@ -26,6 +26,8 @@
 // 16/03/2011, JHR, v 0.15, Disposable codes
 // 28/04/2011, JHR, v 0.16, sha1 secret keys for "Connect with SimpliWiki"
 // 11/12/2011, JHR, Baidus spider bot detection
+// 09/02/2014, JHR, v 0.19, small updates, remove broken twitter/fb/linkedIn
+// 03/06/2014, JHR, v 0.20, upgrade to latest nodejs & ubuntu, major login change
 //
 // section: vanitylicense.txt, export
 // License : VanityLicence
@@ -77,7 +79,7 @@
 //
 // *Q* Why NodeJS?
 // I wanted to build something that could eventually scale to millions of
-// wikis. NodeJS is reasonnably fast.
+// wikis. NodeJS is reasonably fast.
 //
 // ----
 //
@@ -89,18 +91,20 @@
 //    ...that the http server invokes to manage http requests
 //
 //  Each session is associated to a user, either a guest or
-//  a "member". Some members have mentorship rights (ie wiki admin).
+//  a "member". Some members have mentor-ship rights (ie wiki admin).
 //
 // Wikis are cheap and created on fly when visited.
 //
-// ToDo: tests, functionnal, see http://sodajs.com/
+// ToDo: tests, functional, see http://sodajs.com/
 
-
+// ToDo: use strict, currently tend to breaks because of undeclared local vars
+//"use strict";
+ 
 // -----------------
 // section: debug.js
 //   Because debugging is the most important activity, alas
 // 
-// Misc, debug stuff, primitive, that's my De&&bug darling, ultrafast because
+// Misc, debug stuff, primitive, that's my De&&bug darling, ultra fast because
 // the trace message is not evaluated when not used.
 //
 // There are (at least) 3 types of logging activities.
@@ -111,75 +115,95 @@
 // These different activities, performed by people with different skills, require
 // different tools.
 
+
 // I use a weirdly named "De" global variable.
 // Then I can do De&&bug( ...) or De&&mand( ...)
-var De = true 
+var De = false; 
 
 // NDe is always false. It makes it easy to turn off a trace, just add N before De.
 // This is for trace message that you add while debugging a piece of code and then
-// don't leave there once the code works reasonnably well.
+// don't leave there once the code works reasonably well.
 // Note: it is often a good idea to leave trace messages, complex code is fragile,
 // what was hard to debug may be hard to debug again if something changes.
-var NDe  = false  // Constant, MUST be false
+var NDe = false;  // Constant, MUST be false
 
-bugScript = function bug(){
-// Client side version
-  if( !window.console )return
-  if( !console.log    )return
-  var list = []
-  for( var item in arguments ){
-    item = arguments[item]
-    item = item ? item.toString() : "null"
-    list.push( item)
+// Hack to get sync traces in all cases, including weird IDEs on Windows
+if( false && De ){
+  var fs = require('fs');
+  var fake_write = process.stdout.write;
+  process.stdout.write = function() {
+    for( var ii = 0 ; ii < arguments.length ; ii++ ){
+      fs.appendFileSync( "nodejs.out", arguments[ ii ] );
+    }
+    return fake_write.apply( this, arguments );
   }
-  if( list.length > 1 ){
-    console.log( list.join( " "))
-  }else{
-    console.log( arguments[0])
+  process.stderr.write = function () {
+    for( var ii = 0 ; ii < arguments.length ; ii++ ){
+      fs.appendFileSync( "nodejs.out", arguments[ ii ] );
+    }
+    return fake_write.apply( this, arguments );
   }
 }
+
+
+var bugScript = function bug(){
+// Client side version
+  if( !window.console )return;
+  if( !console.log    )return;
+  var list = [];
+  for( var item in arguments ){
+    item = arguments[ item ];
+    item = item ? item.toString() : "null"
+    list.push( item );
+  }
+  if( list.length > 1 ){
+    console.log( list.join( " ") );
+  }else{
+    console.log( arguments[0] );
+  }
+};
 
 // Tracks last referenced object is xxx_de&&bug style expressions
 // See section debuggable.js
 var TraceDomainTarget = null
 
-bug = function bug(){
+var bug = function bug(){
 // Usage: De&&bug(...) and NDe&&bug(...)
 // Server side version
-  var list = []
-  var with_sid = false
+  var list = [];
+  var with_sid = false;
   for( var item in arguments ){
-    if( item == 0 && arguments[item] === (global.Sw && Sw.currentSession) ){
-      with_sid = true
+    if( item === 0 && arguments[ item ] === ( global.Sw && Sw.currentSession ) ){
+      with_sid = true;
     }
-    item = arguments[item]
-    item = item ? item.toString() : "null"
-    list.push( item)
+    item = arguments[ item ];
+    item = item ? item.toString() : "null";
+    list.push( item );
   }
   // Get name of caller function
-  var caller
+  var caller;
   try{
-    $_buggy_$ // Raises an exception, intentional
+    $_buggy_$; // Raises an exception, intentional
   }catch( err ){
-    caller = err.stack.split( "\n")[2]
-    .replace( / \(.*/, "")
-    .replace( "   at ", "")
-    .replace( "Function.", "")
-    .replace( /\/.*/, "")
-    .replace( "<anonymous>", "?")
-    .replace( / /g, "")
+    caller = err.stack.split( "\n" )[2]
+    .replace( / \(.*/, "" )
+    .replace( "   at ", "" )
+    .replace( "Function.", "" )
+    .replace( /\/.*/, "" )
+    .replace( "<anonymous>", "?" )
+    .replace( / /g, "" );
     // I don't think this is useful but that was an attempt to get a
-    // meaningfull name in some cases where first attempt fails for reasons
+    // meaningful name in some cases where first attempt fails for reasons
     // I need to investigate. ToDo: investigate...
     if( caller == "?" ){
       // ToDo: DRY
-      caller = err.stack.split( "\n")[3]
-      .replace( / \(.*/, "")
-      .replace( "   at ", "")
-      .replace( "Function.", "")
-      .replace( /\/.*/, "")
-      .replace( "<anonymous>", "?")
-      .replace( / /g, "")
+      caller = err.stack.split( "\n" )[3]
+      .replace( / \(.*/, "" )
+      .replace( "   at ", "" )
+      .replace( "Function.", "" )
+      .replace( /\/.*/, "" )
+      .replace( "<anonymous>", "?" )
+      .replace( / /g, "" );
     }
   }
   // Handle this.xxx_de&&bug() type of traces.
@@ -187,46 +211,46 @@ bug = function bug(){
   // how I can know what object the trace is about.
   // This is not perfect, but it works ok because there are no threads in NodeJs.
   if( TraceDomainTarget ){
-    // If TraceDomainTarget is was by some xxx_de getter, show "O:xxx"
+    // If TraceDomainTarget was set by some xxx_de getter, show "O:xxx"
     if( TraceDomainTarget !== global
     &&  TraceDomainTarget !== Sw.currentSession
     ){
       // I add it "upfront"
       try{
-        list.unshift( "O:" + TraceDomainTarget)
+        list.unshift( "O:" + TraceDomainTarget );
       }catch( err ){
         // Deals with case where .toString() bombs on target object         
-        list.unshift( "O:???")
+        list.unshift( "O:???");
       }
     }
     // Add "F:xxx" if caller function's name was found
     if( caller ){
-      list.unshift( "F:" + caller)
+      list.unshift( "F:" + caller );
     }
     // Add "D:" to describe what "domain" the trace is about
-    var domain
+    var domain;
     if( domain = TraceDomainTarget.pullDomain() ){
-      list.unshift( "D:", domain)
+      list.unshift( "D:", domain );
     }
     // "Consume" the target
-    TraceDomainTarget = null
+    TraceDomainTarget = null;
 
   // Handle De&&bug() type of traces, where no target object is described
   }else{
     if( caller ){
-      list.unshift( "F:" + caller)
+      list.unshift( "F:" + caller );
     }
   }
 
   // Pretty print somehow
-  var msg = list.join( ", ")
+  var msg = list.join( ", " );
   if( global.Sw && Sw.currentSession && !with_sid ){
-    var s = Sw.currentSession
+    var s = Sw.currentSession;
     if( s.loginName ){
       msg = "S" + (s.isBot ? "b" : s.isGuest() ? "g" : s.canMentor ? "!" : "")
-      + ":" + s.id + ", " + msg
+      + ":" + s.id + ", " + msg;
     }else{
-      msg = "S:" + s.id + ", " + msg
+      msg = "S:" + s.id + ", " + msg;
     }
   }
   msg = msg
@@ -234,10 +258,10 @@ bug = function bug(){
   .replace( /, , /g, ", ")
   .replace( / , /g,  ", ")
   .replace( /: /g,   ":")
-  .replace( /:, /g,  ":")
+  .replace( /:, /g,  ":");
 
   // ToDo: log to a file
-  require( "sys").puts( msg)
+  console.log( msg );
 
   // Log into buffer displayed in HTML
   if( global.Sw && Sw.currentSession ){
@@ -248,11 +272,13 @@ bug = function bug(){
   }
 }
 
+var trace = function(){ console.log.apply( console, arguments ); };
+
 function ndebug(){
-// Very global method to disable all traces. This can be usefull when testing
+// Very global method to disable all traces. This can be useful when testing
 // the code's "speed".
-  De&&bug( "Turn off debugging traces")
-  De = false
+  De&&bug( "Turn off debugging traces" );
+  De = false;
 }
 
 function debug(){
@@ -261,8 +287,8 @@ function debug(){
 // disabled. It works only if traces were initially enabled and momentary
 // disabled using ndebug()
   if( !De ){
-    De = true
-    bug( "Turn on debugging traces")
+    De = true;
+    bug( "Turn on debugging traces" );
   }
 }
 
@@ -273,35 +299,36 @@ function mand( bool, msg ){
 // This is like the classical assert() macro
 // Usage: de&&mand( some_assert_clause )
   if( !bool ){
-    bug( "BUG: Assert failure ", require( "sys").inspect( arguments.callee))
+    bug( "BUG: Assert failure " );
     if( msg ){
-      bug( "Assert msg:", msg)
+      bug( "Assert msg:", msg );
     }
     // Turn maximal debugging until process dies, nothing to lose
     if( global.assert_de ){
-      De = true
-      var item
+      De = true;
+      var item;
       for( item in TraceDomains ){
-        traceDomain( item)
+        traceDomain( item );
       }
-      throw new Error( "Assert failure")
+      throw new Error( "Assert failure" );
     }else{
       try{ 
-         $_buggy_assert_$ // Intentionally raised exception 
+         $_buggy_assert_$; // Intentionally raised exception 
       }catch( err ){
-        err.stack.split( "\n").map( function( line ){
-          bug( "Stack:", line)
+        err.stack.split( "\n" ).map( function( line ){
+          bug( "Stack:", line )
         })
-        throw err
+        throw err;
       }
     }
   }
 }
 
+
 function mand_eq( a, b, msg ){
-  if( a == b )return
-  msg = (msg ? "(" + msg + ")" : "") + " != '" + a + "' and '" + b + "'"
-  mand( false, msg)
+  if( a == b )return;
+  msg = ( msg ? "(" + msg + ")" : "" ) + " != '" + a + "' and '" + b + "'";
+  mand( false, msg );
 }
 
 // Even more assert style stuff, for things that bite me
@@ -314,16 +341,16 @@ function once( cb ){
 // a function after calling some other code with a callback style continuation.
 // In such cases, strange bugs happen where code seems to be called from
 // nowhere, once() helps catch such bugs.
-  if( !De )return cb
-  var entered
+  if( !De )return cb;
+  var entered;
   return function once_cb(){ 
     if( entered ){
-      De&&bug( "Reentering callback:", cb.name)
+      De&&bug( "Reentering callback:", cb.name );
       // cb.apply( this, arguments)
-      throw new Error( "reentered callback:" + cb.name) 
+      throw new Error( "reentered callback:" + cb.name ); 
     }
-    entered = true 
-    return cb.apply( this, arguments) 
+    entered = true;
+    return cb.apply( this, arguments ); 
   } 
 }
 
@@ -443,6 +470,7 @@ function Section( container, content, directive, stats ){
     this.root.countLines += lc
   }else{
     this.sections = []
+    directive = directive.replace( "C:", "" ).replace( /\\/g, "/");
     Section.parseDirective( directive, this)
     var signature = this.filename + ", " + this.directives.join( ", ")
     this.signature = signature
@@ -453,7 +481,7 @@ function Section( container, content, directive, stats ){
     ){
       Section.warning( "duplicate section " + this.signature)
     }
-    // Section.puts( "Info: new section " + this.signature)
+    // trace( "Info: new section " + this.signature)
     Section.all[signature] = this
     this.previous = Section.all[this.filename]
     Section.all[this.filename] = this
@@ -489,9 +517,9 @@ function Section( container, content, directive, stats ){
     container.sections.push( this)
   }
 }
-Section.prototype = Section
+var SectionProto = Section.prototype = {};
 
-Section.toString = function(){
+SectionProto.toString = function(){
   if( this.isLeaf )return this.container.toString() + ":" + this.line
   return this.filename
 }
@@ -557,17 +585,17 @@ Section.ize = function( file, dump, options ){
   return section
 }
 
-Section.sys = require( 'sys')
+//Section.sys = require( 'sys')
 Section.fs  = require( 'fs')
 
 Section.puts = function( msg ){
-  if( Section.silentFlag )return
-  Section.sys.puts( "sectionize.js, " + msg)
+  if( Section.silentFlag )return;
+  trace( "sectionize.js, " + msg)
 }
 
 Section.debug = function( msg ){
   if( !Section.debugFlag )return
-  Section.puts( "Debug: " + msg)
+  Section.puts( "Debug: " + msg )
 }
 
 Section.info = function( msg ){
@@ -584,9 +612,10 @@ Section.error = function( msg ){
 }
 
 Section.fatal = function( msg, err ){
-  Section.puts( "Fatal: " + msg)
+console.trace( err )
+  Section.puts( "Fatal: " + msg )
   if( !err )throw "sectionize error: " + msg
-  Section.puts( "Exception: " + err)
+  Section.puts( "Exception: " + err )
   if( err.stack ){ Section.puts( "Stack: " + err.stack) }
   throw err
 }
@@ -620,7 +649,7 @@ Section.buildMarkers = function( markers ){
   if( markers.end.substr( 0, 1) != '\n' ){
     markers.end = '\n' + markers.end
   }
-  Section.info( "markers: " + Section.sys.inspect( markers))
+  Section.info( "markers: " + Sys.inspect( markers))
   return markers
 }
 
@@ -666,7 +695,7 @@ Section.parseDirective = function( directive, obj ){
   return obj
 }
 
-Section.parse = function( markers, text ){
+SectionProto.parse = function( markers, text ){
   if( this.wasParsed )return this
   if( this.isLeaf ){
     Section.fatal( "Must not parse leaf in " + this.container.filename)
@@ -674,31 +703,31 @@ Section.parse = function( markers, text ){
   text || (text = this.filebody)
   markers = Section.buildMarkers( markers)
   var mem1 = process.memoryUsage()
-  Section.debug( "mem1: " + Section.sys.inspect( mem1))
+  Section.debug( "mem1: " + Sys.inspect( mem1))
   this.parseRest( markers, text)
   try{ Section.debug( "dump\n" + this.collectContent( markers, {}, "dump"))
   }catch( err ){ Section.fatal( "collect", err) }
   var mem2 = process.memoryUsage()
-  Section.debug( "mem1: " + Section.sys.inspect( mem1))
-  Section.debug( "mem2: " + Section.sys.inspect( mem2))
+  Section.debug( "mem1: " + Sys.inspect( mem1))
+  Section.debug( "mem2: " + Sys.inspect( mem2))
   Section.debug( "rebuild")
   var rebuilt_content = this.collectContent( markers, {})
   if( rebuilt_content != text ){
     Section.fatal( "buggy software"
       + ", length " + rebuilt_content.length
-      + " versus expected "   + text.length
+      + " versus expected "   + (text && text.length)
     )
   }else{
     Section.info( "successful parsing of " + this.filename )
   }
   var mem3 = process.memoryUsage()
-  Section.debug( "mem1: " + Section.sys.inspect( mem1))
-  Section.debug( "mem2: " + Section.sys.inspect( mem2))
-  Section.debug( "mem3: " + Section.sys.inspect( mem3))
+  Section.debug( "mem1: " + Sys.inspect( mem1))
+  Section.debug( "mem2: " + Sys.inspect( mem2))
+  Section.debug( "mem3: " + Sys.inspect( mem3))
   return this
 }
 
-Section.visit = function( visitor, seen ){
+SectionProto.visit = function( visitor, seen ){
   if( this.isLeaf )return visitor( 'leaf', this)
   seen || (seen = {})
   if( seen[this.filename] ){
@@ -713,7 +742,7 @@ Section.visit = function( visitor, seen ){
   return this
 }
 
-Section.collect = function( collector, visitor ){
+SectionProto.collect = function( collector, visitor ){
   var stack = []
   var buf = []
   return this.visit( function( klass, section ){
@@ -731,14 +760,14 @@ Section.collect = function( collector, visitor ){
   })
 }
 
-Section.build = function( lean ){
+SectionProto.build = function( lean ){
   return this.collect(
     function( leaf ){ return leaf.content },
     function( container, content ){ container.content = lean ? "" : content }
   )
 }
 
-Section.update = function( collector, updator ){
+SectionProto.update = function( collector, updator ){
   return this.collect(
     collector,
     function( section, content ){
@@ -757,7 +786,7 @@ Section.update = function( collector, updator ){
   )
 }
 
-Section.export = function(){
+SectionProto.export = function(){
   this.build()
   return this.update(
     function( section ){ return section.content },
@@ -771,7 +800,7 @@ Section.export = function(){
   )
 }
 
-Section.lean = function(){
+SectionProto.lean = function(){
   this.build( true)
   return this.collect(
     function( section ){ return section.content },
@@ -781,7 +810,7 @@ Section.lean = function(){
   )
 }
 
-Section.write = function( target, content ){
+SectionProto.write = function( target, content ){
   target  || (target = this.filename)
   content || (content = this.content)
   // Never empty a file
@@ -792,8 +821,8 @@ Section.write = function( target, content ){
   this.stats.mtime = (new Date()).toISOString()
 }
 
-Section.dump = function(){
-  var buf = []
+SectionProto.dump = function(){
+  buf = []
   function push( msg ){ buf.push( msg) }
   this.visit( function( klass, section ){
     switch( klass ){
@@ -811,7 +840,7 @@ Section.dump = function(){
   return buf.join( '')
 }
 
-Section.collectContent = function( markers, seen, dump ){
+SectionProto.collectContent = function( markers, seen, dump ){
   Section.debug( "collect " + this)
   if( this.wasParsed && !dump )return this.content
   if( !dump ){ this.wasParsed = true }
@@ -899,7 +928,7 @@ Section.collectContent = function( markers, seen, dump ){
   Section.fatal( "bad dump format, " + dump)
 }
 
-Section.parseRest = function( markers, text ){
+SectionProto.parseRest = function( markers, text ){
 // Parse arbitrary additional text
   if( !text )return this
   // Look for begin and end markers in text
@@ -931,7 +960,7 @@ Section.parseRest = function( markers, text ){
   return this
 }
 
-Section.parseBegin = function( markers, text ){
+SectionProto.parseBegin = function( markers, text ){
 // Parse section definition
   // text starts with \n// section: ...
   var ii = text.substr( 1).indexOf( '\n') + 1
@@ -954,7 +983,7 @@ Section.parseBegin = function( markers, text ){
   }
 }
 
-Section.parseEnd = function( markers, text ){
+SectionProto.parseEnd = function( markers, text ){
   // text starts with \n// section: end
   var ii = text.substr( 1).indexOf( '\n') + 1
   var directive = ii ? text.substr( 0, ii) : text
@@ -986,7 +1015,7 @@ Section.parseEnd = function( markers, text ){
   return this.container.parseRest( markers, text)
 }
 
-Section.dependencies = function( list ){
+SectionProto.dependencies = function( list ){
 // Returns new (or increased) list with sections This section depends on.
 // This basically all but the "export" sections and sub sections.
 // Returns {all:list_sections, recent:section, by_name:hash_sections_by_filename)
@@ -1005,23 +1034,23 @@ Section.dependencies = function( list ){
   return list
 }
 
-Section.isLean = function( seen ){
+SectionProto.isLean = function( seen ){
 }
 
-Section.mtime = function(){
+SectionProto.mtime = function(){
 // time of the last modification among sections and subsections this section
 // depends on.
   var recent = this.dependencies().recent
   return recent ? recent.ownTime() : ""
 }
 
-Section.ownTime = function(){
+SectionProto.ownTime = function(){
   if( this.isLeaf   )return this.container.ownTime()
   if( this.previous )return this.previous.ownTime()
   return this.stats.mtime
 }
 
-Section.source = function(){
+SectionProto.source = function(){
   if( this.isLeaf )return this.container.source()
   return this.filename
 }
@@ -1049,7 +1078,7 @@ function $include( file, prepand, postpand ){
   }catch( err ){}
   // Silent ignore if file not found
   if( !ffile ){
-    Section.sys.puts( "$include: no " + file)
+    trace( "$include: no " + file)
     return
   }
   try{
@@ -1057,7 +1086,7 @@ function $include( file, prepand, postpand ){
     prepand  && (data = prepand + data)
     postpand && (data = data    + postpand)
     $include.result = undefined
-    // Section.sys.puts( "$include() eval of:" + data)
+    // trace( "$include() eval of:" + data)
     try{
       eval( data) // I wish I could get better error reporting
     }catch( err ){
@@ -1066,7 +1095,7 @@ function $include( file, prepand, postpand ){
     }
     return $include.result
   }catch( err ){
-    Section.sys.puts( "$include: " + file)
+    trace( "$include: " + file)
     if( true || rethrow ) throw err
   }
 }
@@ -1086,7 +1115,7 @@ function $include_json( file ){
 // Some global constants
 var SW = {
   // Needed at startup
-  version:  "0.15",
+  version:  "0.19",
   name:     "SimpliJs",		// Name of the root wiki
   debug:    true,		// Debug mode means lots of traces
   test:     false,		// Test mode
@@ -1122,7 +1151,7 @@ var SW = {
     "#[a-z_0-9]{3,30}",
   // Twitter name
   wikiwordTwitterPattern:
-    "@[a-z_]{3,30}",
+    "@[a-z_0-9]{3,30}",
   // Facebook username  
   wikiwordFacebookPattern:
     "[a-z][a-z_0-9.-]{4,62}@",
@@ -1197,9 +1226,6 @@ SW.wikiwordPattern = "("
   + "|" + SW.wikiword4CodePattern
   + "|" + SW.wikiwordHashTagPattern
   + "|" + SW.wikiwordTwitterPattern
-  + "|" + SW.wikiwordFacebookPattern
-  + "|" + SW.wikiwordFacebookGroupPattern
-  + "|" + SW.wikiwordLinkedInPattern
   + "|" + SW.wikiwordEmailPattern
   + "|" + SW.wikiwordFreeLinkPattern
   + ")"
@@ -1211,8 +1237,6 @@ SW.wikiwordPattern = "("
 SW.wikiwordIdPattern = ""
   + "("
   +       SW.wikiwordTwitterPattern
-  + "|" + SW.wikiwordFacebookPattern
-  + "|" + SW.wikiwordLinkedInPattern
   + "|" + SW.wikiwordEmailPattern
   + ")"
 
@@ -1243,12 +1267,6 @@ SW.wikiwordHashTag
   = new RegExp( "^" + SW.wikiwordHashTagPattern       + "$")
 SW.wikiwordTwitter
   = new RegExp( "^" + SW.wikiwordTwitterPattern       + "$")
-SW.wikiwordFacebook
-  = new RegExp( "^" + SW.wikiwordFacebookPattern      + "$")
-SW.wikiwordFacebookGroup
-  = new RegExp( "^" + SW.wikiwordFacebookGroupPattern + "$")
-SW.wikiwordLinkedIn
-  = new RegExp( "^" + SW.wikiwordLinkedInPattern      + "$")
 SW.wikiwordEmail
   = new RegExp( "^" + SW.wikiwordEmailPattern         + "$")
 SW.wikiwordFreeLink
@@ -1262,7 +1280,7 @@ if( De ){
     De&&mand( false, "Failed WikiWord smoke test")
   }
   // Some more tests, because things gets tricky some times
-  function test_wikiwords(){
+  var test_wikiwords = function(){
     function test( a, neg ){
       if( !De )return
       !neg && mand(  SW.wikiword.test( a), "false negative " + a)
@@ -1342,29 +1360,30 @@ SW.config =
   adminIps:       "",	// Mentors from these addresses are admins
   debugCode:      "",	// Remote debugging
   fbLike:         true,	// If true, Like button on some pages
-  meeboBar:       "",   // Meebo bar name, "" if none, ToDo: retest
   fetch :         "",   // space separated pages to prefetch at init
 }
 // section: end config.json
 
 // Local hooks makes it possible to change (ie hack) things on a local install
 // This is where one want to define secret constants, ids, etc...
-$include( "hooks.js")
+// ToDo: JHR 2014, issue with search path
+$include( "/home/jhrobert/SimpliWiki/virteal/hooks.js")
+SW.debug = true;
 if( SW.name != "SimpliJs" ){
-  Section.sys.puts( "Congratulations, SimpliJs is now " + SW.name)
+  trace( "Congratulations, SimpliJs is now " + SW.name)
   if( SW.dir ){
-    Section.sys.puts( "wiki's directory: " + SW.dir)
+    trace( "wiki's directory: " + SW.dir)
   }else{
-    Section.sys.puts( "wiki is expected to be in current directory")
-    Section.sys.puts( "See the doc about 'hooks', SW.dir in 'hooks.js'")
+    trace( "wiki is expected to be in current directory")
+    trace( "See the doc about 'hooks', SW.dir in 'hooks.js'")
   }
   if( SW.port == "1234" ){
-    Section.sys.puts( "default 1234 port")
-    Section.sys.puts( "see the doc about 'hooks', SW.port in 'hooks.js'")
+    trace( "default 1234 port")
+    trace( "see the doc about 'hooks', SW.port in 'hooks.js'")
   }
 }else{
-  Section.sys.puts( "Humm... you could customize the application's name")
-  Section.sys.puts( "See the doc about 'hooks', SW.name in 'hooks.js'")
+  trace( "Humm... you could customize the application's name")
+  trace( "See the doc about 'hooks', SW.name in 'hooks.js'")
 }
 
 // Let's compute "derived" constants
@@ -1476,11 +1495,10 @@ var Gzip = null // ToDo: install node-compress require( 'compress').Gzip
 ;(function(){
   var argv = process.argv
   var file = argv[1] // ToDo: should use __filename?
-  // If a path was specified, auto-add it to require()'s paths
-  // However this can't be done due to a nodejs change, hence...
-  var ii = false // file.lastIndexOf( '/')
+  var ii = file.lastIndexOf( '/')
   if( ii ){
-    require.paths.unshift( file.substr( 0, ii - 1))
+    // ToDo: JHR migration 2014 require.paths.unshift( file.substr( 0, ii - 1))
+    console.log( "JHR 2014 ******************** should have unshift() of " + file.substr( 0, ii -1 ) );
   }
   var hargv = {}
   argv.forEach( function( v ){ hargv[v] = v })
@@ -1488,17 +1506,14 @@ var Gzip = null // ToDo: install node-compress require( 'compress').Gzip
   De = SW.debug
   if( argv.ndebug ){ SW.debug = false }
   if( argv.debug  ){ SW.debug = true }
-  if( SW.debug ){ Section.sys.puts( "DEBUG MODE") }
+  SW.debug = true; // ToDo: JHR 2014
+  if( SW.debug ){ trace( "DEBUG MODE") }
   if( argv.localhost ){ SW.domain = 'localhost' }
   if( argv.test ){
-    Section.sys.puts( "TEST MODE")
+    trace( "TEST MODE")
     SW.port++
     SW.test  = true
     SW.debug = true
-  }
-  // Cloud9 needs a special port
-  if( argv.cloud9 ){
-    SW.port = process.env.PORT
   }
   De = SW.debug
   try{
@@ -1512,7 +1527,7 @@ var Gzip = null // ToDo: install node-compress require( 'compress').Gzip
   // Exit 0 if displaying version instead of running
   // This is also usefull to check syntax before trying to run
   if( argv.version ){
-    Section.sys.puts( "Version: " + SW.name + " " + SW.version)
+    trace( "Version: " + SW.name + " " + SW.version)
     process.exit( 0)
   }
 })()
@@ -1859,7 +1874,7 @@ function MakeDebuggable( target, class_label, msg ){
     return
   }
   // Inject methods from global Debuggable object
-  for( item in Debuggable ){
+  for( var item in Debuggable ){
     msg&&De&&bug( msg, "make debuggable, adding method:", item)
     target[item] = Debuggable[item]
   }
@@ -1901,12 +1916,12 @@ DeclareTraceDomain( "test",    "deep")
 DeclareTraceDomain( "assert",  "deep")	// exit on assert failure?
 DeclareTraceDomain( "deep",    "deep")  // traces for hard bugs
 DeclareTraceDomain( "cookie",  true)
-DeclareTraceDomain( "store",   false)
+DeclareTraceDomain( "store",   true)
 DeclareTraceDomain( "http",    true)
 DeclareTraceDomain( "static",  "deep")	// Static files
 DeclareTraceDomain( "yaml",    false)
 DeclareTraceDomain( "context", false)
-DeclareTraceDomain( "config",  false)
+DeclareTraceDomain( "config",  true)
 DeclareTraceDomain( "f3Code",  false)
 DeclareTraceDomain( "bot",     false)
 DeclareTraceDomain( "misc",    false)
@@ -1923,7 +1938,7 @@ DeclareTraceDomain( "mail",    "deep")
 DeclareTraceDomain( "queue",   "deep")
 DeclareTraceDomain( "acl",     false)
 DeclareTraceDomain( "wiki",    "deep")
-DeclareTraceDomain( "init",    false)
+DeclareTraceDomain( "init",    "deep")
 DeclareTraceDomain( "session", "deep")
 DeclareTraceDomain( "login",   false)
 DeclareTraceDomain( "user",    "deep")
@@ -2102,16 +2117,16 @@ function PageStore( wiki, dir, is_transient ){
     this.allPages = (is_transient === true) ? {} : is_transient
   }
 }
-PageStore.prototype = PageStore
+var PageStoreProto = PageStore.prototype = {};
 MakeDebuggable( PageStore, "PageStore")
 
-PageStore.assertIsPageStore = function(){ return true }
+PageStoreProto.assertIsPageStore = function(){ return true }
 
-PageStore.toString = function(){
+PageStoreProto.toString = function(){
   return "<Store " + this.wiki.fullname() + ">"
 }
 
-PageStore.getPath = function( name ){
+PageStoreProto.getPath = function( name ){
   // Encode weird names to get a decent file name
   if( name.includes( "[") ){
     name = encodeURIComponent( name)
@@ -2121,7 +2136,7 @@ PageStore.getPath = function( name ){
 }
 
 
-PageStore.getUrl = function( name ){
+PageStoreProto.getUrl = function( name ){
   if( SW.dir == "wiki" ){
     // "wiki" is generic, assume it means ".", remove it, including /
     return "file:" + this.getPath( name).substr( SW.dir.length + 1)
@@ -2131,7 +2146,7 @@ PageStore.getUrl = function( name ){
 }
 
 
-PageStore.get = function( name, cb ){
+PageStoreProto.get = function( name, cb ){
 // Get page from store, async. calls cb( err, body)
   var pathname = this.getPath( name)
   var that     = this
@@ -2149,8 +2164,8 @@ PageStore.get = function( name, cb ){
     // Note: also at fs level with http://www.subcloud.com
     // SimpleDB
     // https://github.com/rjrodger/simpledb
-    that.store_de&&bug( "fromStore:", pathname)
-    that.fs.readFile(
+    this.store_de&&bug( "fromStore:", pathname)
+    this.fs.readFile(
       pathname,
       "utf8",
       function( err, data){
@@ -2181,7 +2196,7 @@ PageStore.get = function( name, cb ){
   return this
 }
 
-PageStore.withDir = function( check_only, cb ){
+PageStoreProto.withDir = function( check_only, cb ){
   var that = this
   // Create parent directory first
   // This is a ugly hack because it depends on the actual implementation
@@ -2202,7 +2217,7 @@ PageStore.withDir = function( check_only, cb ){
   // however, if it does not exits, the .get() will fail anyway
   // Check/Create directory if not done successfully already
   if( this.mayNeedMkdir && !check_only ){
-    Fs.mkdir( this.dir, 0755, function( err ){
+    Fs.mkdir( this.dir, parseInt( "755", 8 ), function( err ){
       // If creation ok
       if( !err ){
         that.store_de&&bug( "newWikiDirectory:", that.dir)
@@ -2212,7 +2227,7 @@ PageStore.withDir = function( check_only, cb ){
         return cb.call( that, 0)
       }
       // If already exists
-      if( err && err.errno == 17 ){
+      if( err && err.errno === 47 ){
         that.store_de&&bug( "existingWikiDirectory:", that.dir)
         that.mayNeedMkdir     = false
         that.reallyNeedsMkdir = false
@@ -2229,7 +2244,7 @@ PageStore.withDir = function( check_only, cb ){
   }
 }
 
-PageStore.put = function( name, data, cb ){
+PageStoreProto.put = function( name, data, cb ){
 // Put page in store, async. Calls cb( err)
   // ToDo: Update on external source, S3, CouchDB...
   var that = this
@@ -2240,9 +2255,9 @@ PageStore.put = function( name, data, cb ){
     if( err ){
       return cb.call( that, err)
     }
-    that.store_de&&bug( "toStore:", pathname)
-    that.deep_store_de&&bug( "Write, data:", data.substr( 0, 30))
-    that.fs.writeFile(
+    this.store_de&&bug( "toStore:", pathname)
+    this.deep_store_de&&bug( "Write, data:", data.substr( 0, 30))
+    this.fs.writeFile(
       pathname,
       data,
       once( function page_store_put_cb( err ){
@@ -2279,7 +2294,7 @@ PageStore.put = function( name, data, cb ){
   return this
 }
 
-PageStore.open = function( cb ){
+PageStoreProto.open = function( cb ){
 // Not used yet
   if( this.allPages == {} ){
     var that = this
@@ -2300,7 +2315,7 @@ PageStore.open = function( cb ){
   return this
 }
 
-PageStore.flush = function( cb ){
+PageStoreProto.flush = function( cb ){
   if( this.allPages ){
     // Save test pages
     Fs.writeFile(
@@ -2314,7 +2329,7 @@ PageStore.flush = function( cb ){
   return this
 }
 
-PageStore.close = function( cb ){
+PageStoreProto.close = function( cb ){
   this.flush( cb)
   return this
 }
@@ -2445,7 +2460,7 @@ function Wiki( parent, name, options ){
 
   // Some tests, because things gets tricky some times
   if( !parent ){
-    function test( a, neg ){
+    var test = function( a, neg ){
       if( !De )return
       !neg && mand(  SW.wikiword.test( a), "false negative " + a)
       neg  && mand( !SW.wikiword.test( a), "false positive " + a)
@@ -2463,8 +2478,8 @@ function Wiki( parent, name, options ){
         }
       }
     }
-    function ok( a ){ test( a)       }
-    function ko( a ){ test( a, true) }
+    var ok = function( a ){ test( a)       }
+    var ko = function( a ){ test( a, true) }
     ok( "WikiWord")
     ok( "WiWi[jhr]")
     ok( "W_W_2")
@@ -2472,7 +2487,7 @@ function Wiki( parent, name, options ){
     ko( "@Jhr")
     ko( "@jhr.")
     ok( "@jhr@again")
-    ok( "j-h.robert@")
+    ko( "j-h.robert@")
     ko( "jhR@")
     ok( "#topic")
     ko( "#Topic")
@@ -2489,7 +2504,7 @@ function Wiki( parent, name, options ){
     ok( "User[free]")
     ok( "[free]Guest")
     ko( "[free/link]")
-    ok( "linkedIn")
+    ko( "linkedIn")
     ko( "shrtIn")
     ko( "badLinkIn")
   }
@@ -2546,7 +2561,7 @@ function Wiki( parent, name, options ){
     // I patch the name for the rare cases where it is displayed
     this.protoGuest.loginName = SW.name
     this.protoGuest.isBot     = true
-    this.protoGuest.logout( "proto")
+    this.protoGuest.logout( "proto" )
   // Else reuse Root's proto guest session
   }else{
     // Note: "anonymous" rest requests from sw_api requires a per wiki proto
@@ -2564,17 +2579,17 @@ function Wiki( parent, name, options ){
   // I store some of these pages *inside* PrivateContext
   // These "virtual" pages are small or frequently accessed pages
 
-  var aboutwiki = this.lookupPage( "AboutWiki")
+  var aboutwiki = this.lookupPage( "AboutWiki" )
   this.aboutwikiPage = aboutwiki
 
-  var context   = this.lookupPage( "PrivateContext")
+  var context   = this.lookupPage( "PrivateContext" )
   this.contextPage = context
 
-  var homepage  = this.lookupPage( "HomePage")
+  var homepage  = this.lookupPage( "HomePage" )
   homepage.containerPage = context
 
   var onload = Sw.copyArray( SW.onload)
-  this.init_de&&bug( "Preload:", onload.join( '+'))
+  this.init_de&&bug( "Preload:", onload.join( '+') )
 
   var loaded = {}
 
@@ -2639,43 +2654,43 @@ function Wiki( parent, name, options ){
 }
 
 // Turn function into a constructor of Wiki objects.
-Wiki.prototype = Wiki	// new Wiki() => new_object.__proto__ === Wiki
+var WikiProto = Wiki.prototype = {};
 // Note: If I wished Wiki to be a sub class of say AbstractWiki I
 // would do: Wiki.prototype = new AbstractWiki()
-MakeDebuggable( Wiki, "Wiki")
+MakeDebuggable( WikiProto, "Wiki")
 
 Wiki.assertIsWiki = function(){}
 
-Wiki.toString = function(){
+WikiProto.toString = function(){
 // Helps debugging
 // Note: I don't use Wiki.prototype.toString = xxx because every Wiki
 // object is setup to have the Wiki function/object as prototype
   return "<W:" + (this.fullname() ? " " + this.fullname() : "") + ">"
 }
 
-Wiki.isInitializing = function(){
+WikiProto.isInitializing = function(){
 // When a wiki is created, it is not immediately available, it goes
 // thru an initializing phase (some important pages are preloaded)
   return this.initializing
 }
-Wiki.declareIdempotentPredicate( "isInitializing")
+WikiProto.declareIdempotentPredicate( "isInitializing")
 
-Wiki.isResetting = function(){
+WikiProto.isResetting = function(){
 // Inactive wikis are removed from memory
 // Note: shutting down, closing, going down...
   return this.resetInProgress
 }
-Wiki.declareIdempotentPredicate( "isResetting")
+WikiProto.declareIdempotentPredicate( "isResetting")
 
-Wiki.getState = function(){
+WikiProto.getState = function(){
 // "initializing" => "operational" => "resetting"
   if( this.isInitializing() )return "intializing"
   if( this.isResetting()    )return "resetting"
   return "operational"
 }
-Wiki.declareIdempotentGetter( "getState")
+WikiProto.declareIdempotentGetter( "getState")
 
-Wiki.reset = function( force ){
+WikiProto.reset = function( force ){
 // Inactive wikis are removed from memory after a while.
 // ToDo: Shell script to auto restart
   De&&bug( "Reset ", this)
@@ -2722,7 +2737,7 @@ Wiki.timeoutAutoreset = function( wiki ){
   setTimeout( Wiki.timeoutAutoreset, SW.resetDelay, wiki)
 }
 
-Wiki.lookupWiki = function( pathname, cb, depth ){
+WikiProto.lookupWiki = function( pathname, cb, depth ){
 // Look for a sub/clone wiki using a aaabcc/cccddd/.. pathname
 // Create it if needed.
 // Note: new wiki is not immediately available, see isInitializing()
@@ -2788,7 +2803,7 @@ Wiki.lookupWiki = function( pathname, cb, depth ){
   return wiki
 }
 
-Wiki.lookupPage = function( pagename, default_name ){
+WikiProto.lookupPage = function( pagename, default_name ){
 // Returns the unique Page object that references said page.
 // That does not mean that the page exists on store, just that it is referenced.
 // Note: if no name is provided, a random one is generated.
@@ -2796,19 +2811,19 @@ Wiki.lookupPage = function( pagename, default_name ){
   return Page.lookup( this, pagename, default_name)
 }
 
-Wiki.setTestPage = function( name ){
+WikiProto.setTestPage = function( name ){
   this.testPages[name] = true
 }
 
-Wiki.isTestPage = function( name ){
+WikiProto.isTestPage = function( name ){
   return this.testPages[name]
 }
 
-Wiki.consumeTestPage = function( name ){
+WikiProto.consumeTestPage = function( name ){
   delete this.testPages[name]
 }
 
-Wiki.processConfig = function( config_page ){
+WikiProto.processConfig = function( config_page ){
 // Change config based on data (& proto data) of some config page.
 // Each wiki has an "AboutWiki" page that is processed this way.
 // Ignores draft changes, use non draft version only.
@@ -2838,7 +2853,7 @@ Wiki.processConfig = function( config_page ){
   )
 }
 
-Wiki.setOptions = function( base, options, about, page, session ){
+WikiProto.setOptions = function( base, options, about, page, session ){
 // ! alters the base hash using options.
 // This is how I set up a wiki's config.
 // There are some possible side effect on the "AboutWiki" page,
@@ -2968,14 +2983,6 @@ Wiki.setOptions = function( base, options, about, page, session ){
       // ToDo: more sanitization?
       val = Wiki.htmlize( val)
 
-    }else if( option == "meeboBar" ){
-      as_str()
-      val = Wiki.htmlize( val)
-      // ToDo: more sanitization ?
-
-    }else if( option == "oneTrueFan" ){
-      as_bool()
-
     }else if( option == "fbLike" ){
       as_bool()
 
@@ -3067,7 +3074,7 @@ Wiki.setOptions = function( base, options, about, page, session ){
   return base
 }
 
-Wiki.addPrefetch = function( session, page ){
+WikiProto.addPrefetch = function( session, page ){
   var list = (this.aboutwikiPage.get( "fetch") || "").split( /\s+/)
   if( list.indexOf( page.name) < 0 ){
     if( SW.wikiword.test( page.name) ){
@@ -3079,7 +3086,7 @@ Wiki.addPrefetch = function( session, page ){
   session.setData( this.aboutwikiPage, "fetch", list.join( " "))
 }
 
-Wiki.removePretch = function( session, page ){
+WikiProto.removePretch = function( session, page ){
   var list = (this.aboutwikiPage.get( "fetch") || "").split( /\s+/)
   if( list.indexOf( page.name) >= 0 ){
     var list2 = []
@@ -3107,7 +3114,7 @@ Wiki.sanitizeTitle = function( title ){
   return title.replace( /['"\n/\\]/g, "")
 }
 
-Wiki.getTitle = function( session ){
+WikiProto.getTitle = function( session ){
 // Returns the user defined wiki's title, if any.
 // For "user" wikis, returns (localized) "Yours", ignoring title
   session || (session = this.protoGuest)
@@ -3115,22 +3122,22 @@ Wiki.getTitle = function( session ){
   var title = Wiki.sanitizeTitle( this.config.title)
   return title || (this.isUserWiki() ? session.i18n( "Yours") : "")
 }
-Wiki.declareIdempotentGetter( "getTitle")
+WikiProto.declareIdempotentGetter( "getTitle")
 
-Wiki.getLabel = function( session, full ){
+WikiProto.getLabel = function( session, full ){
 // Returns either the wiki's title or its name or fullname, for displaying
   return this.getTitle( session)
   || (full ? this.fullname().replace( /\/$/, "") : this.name)
 }
-Wiki.declareIdempotentGetter( "getLabel")
+WikiProto.declareIdempotentGetter( "getLabel")
 
-Wiki.getRoot = function(){
+WikiProto.getRoot = function(){
 // Return the root wiki, other wikis are clone children
   return this.parentWiki ? this.parentWiki.getRoot() : this
 }
-Wiki.declareIdempotentGetter( "getRoot")
+WikiProto.declareIdempotentGetter( "getRoot")
 
-Wiki.getAllPages = function(){
+WikiProto.getAllPages = function(){
   var list = []
   for( var item in this.allPages ){
     list.push( this.allPages[item])
@@ -3138,23 +3145,23 @@ Wiki.getAllPages = function(){
   return list
 }
 
-Wiki.isRoot = function(){
+WikiProto.isRoot = function(){
 // True if not a child wiki (ie, has no parent)
 // There is only one such wiki, aka TheRootWiki
   return !this.parentWiki
 }
-Wiki.declareIdempotentPredicate( "isRoot")
+WikiProto.declareIdempotentPredicate( "isRoot")
 
-Wiki.isTopLevel = function(){
+WikiProto.isTopLevel = function(){
 // Child wikis of the Root wiki are top level wikis
 // "user" is a special top level wiki that containt "User" wikis, ie
 // the wiki associated to the unique oid of local users.
   return !!(this.parentWiki && this.parentWiki.isRoot())
 }
-Wiki.declareIdempotentPredicate( "isTopLevel")
+WikiProto.declareIdempotentPredicate( "isTopLevel")
 
 // In the jungle, XSS is an issue, but not for lions
-Wiki.isJungle = function(){
+WikiProto.isJungle = function(){
   if( this.isRoot()           )return false
   if( this.isTopLevel() && this.name == "simplijs" )return false
   if( this.config.isNotJungle )return false
@@ -3162,7 +3169,7 @@ Wiki.isJungle = function(){
   return this.name == "jungle" || (this.parentWiki && this.parentWiki.isJungle())
 }
 
-Wiki.isUserWiki = function(){
+WikiProto.isUserWiki = function(){
 // Each user has her "own" wiki, named using a random 3 code oid.
 // that wiki is located under the /user/ path
 // User wikis are there just to track the wikis that the user
@@ -3172,10 +3179,10 @@ Wiki.isUserWiki = function(){
   && this.parentWiki.isTopLevel()
   && (this.parentWiki.name == "user"))
 }
-Wiki.declareIdempotentPredicate( "isUserWiki")
+WikiProto.declareIdempotentPredicate( "isUserWiki")
 
-Wiki.trackUserLabel = function( service_id, user_label ){
-// Remembers the "user label" for a twitter or facebook id.
+WikiProto.trackUserLabel = function( service_id, user_label ){
+// Remembers the "user label" for a twitter  id.
 // That user label is usually the "full name".
 // Note: the service id shall include the @ sign, ie "@jhr"
   user_label = Wiki.sanitizeName( user_label)
@@ -3185,8 +3192,8 @@ Wiki.trackUserLabel = function( service_id, user_label ){
   }
 }
 
-Wiki.findUserLabel = function( service_id ){
-// Returns the "user label" associated to some twitter or facebook id or name.
+WikiProto.findUserLabel = function( service_id ){
+// Returns the "user label" associated to some twitter id or name.
 // Note: service_id shall include @ sign, ie "@jhr"
   var found = this.allUserLabelsById[service_id]
   if( found )return found
@@ -3200,33 +3207,33 @@ Wiki.findUserLabel = function( service_id ){
   return found
 }
 
-Wiki.getAllUserLabels = function(){
+WikiProto.getAllUserLabels = function(){
 // Return the array of {id:xx,label:zz} of known id/label pairs
   return this.allUserLabels
 }
 
-Wiki.isPremium = function(){
+WikiProto.isPremium = function(){
   return this.config.premium
 }
 
-Wiki.fullname = function( root, no_terminator ){
+WikiProto.fullname = function( root, no_terminator ){
 // Returns fullname, including all parents, "/" terminated.
 // Root wiki's fullname is always "" unless "root" parameter says otherwise
 // ToDo: should root's fullname be "/" ?
   if( this.isRoot() )return (root || "")
   return this.parentWiki.fullname() + this.name + (no_terminator ? "" : "/")
 }
-Wiki.declareIdempotentGetter( "fullname")
+WikiProto.declareIdempotentGetter( "fullname")
 
-Wiki.shortname = function(){
+WikiProto.shortname = function(){
 // Returns "" or wiki's name if wiki is not a top level wiki
   return this.parentWiki && !this.parentWiki.isRoot()
   ? this.name
   : ""
 }
-Wiki.declareIdempotentGetter( "shortname")
+WikiProto.declareIdempotentGetter( "shortname")
 
-Wiki.clone = function( wikiname ){
+WikiProto.clone = function( wikiname ){
 // Create a child wiki
   var clone = new Wiki( this, wikiname)
   this.init_de&&bug( "Register clone ", wikiname)
@@ -3234,7 +3241,7 @@ Wiki.clone = function( wikiname ){
   return clone
 }
 
-Wiki.deregisterClone = function( clone ){
+WikiProto.deregisterClone = function( clone ){
 // Called by .reset() on clone, removes clone from list of clone
   if( this.allClones[clone.name] != clone ){
     this.bug_de&&bug( "Already re initialized?")
@@ -3247,7 +3254,7 @@ Wiki.deregisterClone = function( clone ){
 Sw.log = Fs.createWriteStream( "error.txt", {flags:"a"})
 Sw.log.write( "\n\nRestart\n")
 
-Wiki.error = function(){
+WikiProto.error = function(){
 // ToDo: Log error on wiki
 // ToDo: this code is untested and incomplete
   this.countErrors++
@@ -3271,18 +3278,18 @@ Wiki.error = function(){
       this.allErrors.unshift( {timestamp: Sw.timeNow, msg: list})
     }
     // Append to file error.txt in current directory
-    Sw.log.write( Sw.dateNow.toISOString() + " " + list)
+    Sw.log.write( Sw.dateNow.toISOString() + " " + list + "\n" );
     // ToDo: use some "logging" service, like loggly for example
     // See https://github.com/nodejitsu/node-loggly
   }
 }
 
-Wiki.warning = function(){
+WikiProto.warning = function(){
 // ToDo: Log warnings
   this.error.apply( this, arguments)
 }
 
-Wiki.signalChildError = function( child_wiki ){
+WikiProto.signalChildError = function( child_wiki ){
   this.countErrors++
   if( !this.allSignaledWikis ){
     this.allSignaledWikis = {}
@@ -3290,7 +3297,7 @@ Wiki.signalChildError = function( child_wiki ){
   this.allSignaledWikis[child_wiki] = child_wiki
 }
 
-Wiki.clearChildError = function( child_wiki ){
+WikiProto.clearChildError = function( child_wiki ){
   if( !this.allSignaledWikis )return
   delete this.allSignaledWikis[child_wiki]
 }
@@ -3298,20 +3305,20 @@ Wiki.clearChildError = function( child_wiki ){
 Wiki.getAllSignaledWikis = function(){
   if( !this.allSignaledWikis )return []
   var a = []
-  for( var item in this.allSignaledWikis ){
+  for( item in this.allSignaledWikis ){
     a.push( item)
   }
   return a
 }
-Wiki.declareIdempotentGetter( "getAllSignaledWikis")
+WikiProto.declareIdempotentGetter( "getAllSignaledWikis")
 
-Wiki.errorQueueLength = function(){
+WikiProto.errorQueueLength = function(){
   if( !this.allErrors )return 0
   return this.allErrors.length
 }
-Wiki.declareIdempotentGetter( "errorQueueLength")
+WikiProto.declareIdempotentGetter( "errorQueueLength")
 
-Wiki.pullError = function(){
+WikiProto.pullError = function(){
 // ToDo: get/remove older error message
   if( !this.allErrors )return null
   var err = this.allErrors.shift()
@@ -3323,13 +3330,13 @@ Wiki.pullError = function(){
   return err
 }
 
-Wiki.timeoutProcessHttpRequest = function( wiki, req ){
+WikiProto.timeoutProcessHttpRequest = function( wiki, req ){
 // Helper to invoke .processHttpRequest using setTimeout()
 // This is usefull for queued requests against a wiki that is resetting
   return wiki.processHttpRequest( req)
 }
 
-Wiki.processHttpRequest = function( req ){
+WikiProto.processHttpRequest = function( req ){
 // This method is called by the HTTP server when it handles a request.
 // Returns false if path is not about a wiki.
 // Returns "index.html" when cannot comeback.
@@ -3507,7 +3514,7 @@ Wiki.processHttpRequest = function( req ){
   }
 }
 
-Wiki.processOembedRequest = function( path, query, req ){
+WikiProto.processOembedRequest = function( path, query, req ){
 // As per http://www.oembed.com/
 // URL scheme: http://*.simpliwiki.com/*
 // API endpoint: http://simpliwiki.com/oembed/
@@ -3598,7 +3605,7 @@ Wiki.processOembedRequest = function( path, query, req ){
         data = callback + "(" + data + ")"
       }
     }else{
-      var buf = [
+      buf = [
         '<?xml version="1.0" encoding="utf-8" standalone="yes"?>',
         '<oembed>'
       ]
@@ -3618,12 +3625,12 @@ Wiki.processOembedRequest = function( path, query, req ){
   return true
 }
 
-Wiki.processRestRequest = function( path, query, req ){
+WikiProto.processRestRequest = function( path, query, req ){
 // We got here from processHttpRequest because path starts with /rest/
   return false
 }
 
-Wiki.invokeClosure = function( closure, req ){
+WikiProto.invokeClosure = function( closure, req ){
   if( !closure ){
     this.bug_de&&bug( "R:", req.deId, "closure:none yet", "url:", req.url)
     return
@@ -3644,27 +3651,27 @@ Wiki.invokeClosure = function( closure, req ){
 }
   
 
-Wiki.isClosed = function(){
+WikiProto.isClosed = function(){
 // Closed wikis require membership to access "normal" pages
 // "User" wikis are always closed
   return !this.config.open || this.isUserWiki()
 }
-Wiki.declareIdempotentPredicate( "isClosed")
+WikiProto.declareIdempotentPredicate( "isClosed")
 
-Wiki.isOpen = function(){
+WikiProto.isOpen = function(){
 // Open wikis allow guest access to "normal" pages
   return !this.isClosed()
 }
-Wiki.declareIdempotentPredicate( "isOpen")
+WikiProto.declareIdempotentPredicate( "isOpen")
 
-Wiki.isVeryOpen = function(){
+WikiProto.isVeryOpen = function(){
 // Very open wikis let members auto register, no prior mentor is needed
   return this.isOpen() && this.config.veryOpen
 }
-Wiki.declareIdempotentPredicate( "isVeryOpen")
+WikiProto.declareIdempotentPredicate( "isVeryOpen")
 
 
-Wiki.isVeryOpenByDefault = function(){
+WikiProto.isVeryOpenByDefault = function(){
 // Tells if openess of This wiki was never changed.
 // The "AboutWiki" page of the root wiki SHOULD reference "PrivateWiki"
 // regarding it's prototype. Child wikis inherit that setting and that's
@@ -3678,10 +3685,10 @@ Wiki.isVeryOpenByDefault = function(){
   }
   return false
 }
-Wiki.declareIdempotentPredicate( "isVeryOpenByDefault")
+WikiProto.declareIdempotentPredicate( "isVeryOpenByDefault")
 
 
-Wiki.logUser = function( session ){
+WikiProto.logUser = function( session ){
 // Called whenever a user logs in.
 // This is where the "code" cookie is associated with a session.
 
@@ -3733,7 +3740,7 @@ Wiki.logUser = function( session ){
   //session.trackUser()
 }
 
-Wiki.logAuthenticUser = function( session ){
+WikiProto.logAuthenticUser = function( session ){
 // This method gets called when a User object is bound to the session.
 // This happens in Session.userFoundEvent() due to some previous call
 // to Session.trackUser().
@@ -3760,7 +3767,7 @@ Wiki.logAuthenticUser = function( session ){
 }
 
 
-Wiki.logGuestVisitor = function( name ){
+WikiProto.logGuestVisitor = function( name ){
   var list = this.recentGuestVisitors
   var found = false
   var ii
@@ -3786,7 +3793,7 @@ Wiki.logGuestVisitor = function( name ){
   this.touch()
 }
 
-Wiki.lookupUser = function( session ){
+WikiProto.lookupUser = function( session ){
 // Given a session, try to retrieve it's User object
 // Side effect: memorize it
   
@@ -3815,8 +3822,6 @@ Wiki.lookupUser = function( session ){
   user = (
      check( "Wiki",     session.wikiId)
   || check( "Twitter",  session.twitterName)
-  || check( "Facebook", session.facebookName)
-  || check( "LinkedIn", session.linkedindName)
   || (this.dropbox && this.dropbox.token 
     && check( "Dropbox", this.dropbox.token))
   )
@@ -3834,17 +3839,17 @@ Wiki.lookupUser = function( session ){
 }
 
 
-Wiki.logout = function( session ){
+WikiProto.logout = function( session ){
 // Called whenever a user is logged out
   session.wiki_de&&bug( "logout, W:", this)
 }
 
-Wiki.isKnownUser = function( name ){
+WikiProto.isKnownUser = function( name ){
 // Returns true if user previously logged in
   return this.allLoginNames[name]
 }
 
-Wiki.getSession = function( name ){
+WikiProto.getSession = function( name ){
 // Get session associated to user's login name
   return this.allSessionsByName[name]
 }
@@ -3894,7 +3899,7 @@ Wiki.encodePath = function( list ){
   for( var ii in list ){
     buf.push( Wiki.encode( list[ii]))
   }
-  var result = buf.join( "/")
+  var result = proto + buf.join( "/")
   return result
 }
 
@@ -3911,7 +3916,7 @@ Wiki.decodePath = function( path ){
   return buf
 }
 
-Wiki.codeCookieName = function( prefix ){
+WikiProto.codeCookieName = function( prefix ){
 // Build name of code cookie, depends on wiki's fullname
 // ToDo: signed cookies, https://github.com/jed/cookie-node
   // Encode _ into __ et / into _
@@ -3922,13 +3927,13 @@ Wiki.codeCookieName = function( prefix ){
     this.fullname().replace( /_/g, "__").replace( /\//g, "_")
   )
 }
-Wiki.declareIdempotentGetter( "codeCookieName")
+WikiProto.declareIdempotentGetter( "codeCookieName")
 
 
 // ---------------------
 // section: wikilogin.js
 
-Wiki.lookupSession = function( path, query, req ){
+WikiProto.lookupSession = function( path, query, req ){
 // This function is called by processHttpRequest() when
 // a potentially "new" user visits a page (ie, no valid cid closure in query).
 // It returns a closure if it manage to retrieve one or if a brand new Session
@@ -4263,7 +4268,7 @@ Wiki.lookupSession = function( path, query, req ){
 
 // section: end wikilogin.js
 
-Wiki.registerClosure = function( f ){
+WikiProto.registerClosure = function( f ){
 // Remember a closure, and its session. Returns a printable unique id.
   var id
   // ToDo: Try a random id and check if it's user is still there,
@@ -4275,13 +4280,13 @@ Wiki.registerClosure = function( f ){
   return id
 }
 
-Wiki.deregisterClosure = function( f ){
+WikiProto.deregisterClosure = function( f ){
   var id = parseInt( f.id, 10) - this.getRoot().idSalt
   // ToDo: should I "delete" instead?
   this.getRoot().allClosures[id] = null
 }
 
-Wiki.getClosure = function( closure_id, gone_is_ok ){
+WikiProto.getClosure = function( closure_id, gone_is_ok ){
   NDe&&bug( "?Wiki closure " + closure_id )
   if( !closure_id ){ return null }
   closure_id = parseInt( closure_id, 10) - this.getRoot().idSalt
@@ -4301,7 +4306,7 @@ Wiki.getClosure = function( closure_id, gone_is_ok ){
 }
 
 
-Wiki.getRestClosure = function(){
+WikiProto.getRestClosure = function(){
 // When some "anonymous" rest request is received, it is forwarded to a fake
 // guest session. That fake session is created only when a first such request
 // is received, to avoid some overhead.
@@ -4321,13 +4326,13 @@ Wiki.getRestClosure = function(){
 }
 
 
-Wiki.trackBacklink = function( page, referer, is_private ){
+WikiProto.trackBacklink = function( page, referer, is_private ){
 // Remember some back link from referer to page
 // Returns true iff such link if first encountered
   return this.trackBacklinkName( page.name, referer, is_private)
 }
 
-Wiki.trackBacklinkName = function( pagename, referer, is_private ){
+WikiProto.trackBacklinkName = function( pagename, referer, is_private ){
 // Remember some back link from referer to page
   De&&mand( pagename)
   var bag = this.allBacklinksByPage[pagename]
@@ -4343,7 +4348,7 @@ Wiki.trackBacklinkName = function( pagename, referer, is_private ){
   }
 }
 
-Wiki.forEachBacklink = function( page, with_private, cb ){
+WikiProto.forEachBacklink = function( page, with_private, cb ){
 // Iterates backlinks of a page. calls cb( referrer_page, page, is_private )
 // Side effect: delete obsolete links when referrer does not link to page
 // anymore.
@@ -4390,7 +4395,7 @@ Wiki.forEachBacklink = function( page, with_private, cb ){
   return true
 }
 
-Wiki.forEachPage = function( home, session, cb, already_incarned_only ){
+WikiProto.forEachPage = function( home, session, cb, already_incarned_only ){
 // Iterate all reacheable pages from some root page.
 //  However, don't visit new seen pages if "alreay_incarned_only" is set.
 // Defauts to "HomePage" root.
@@ -4457,7 +4462,7 @@ Wiki.forEachPage = function( home, session, cb, already_incarned_only ){
 }
 
 
-Wiki.trackDraftPage = function( page ){
+WikiProto.trackDraftPage = function( page ){
 // Remembers if a page is a draft page
   if( !page.isDraft() )return this.trackNondraftPage( page)
   if( this.allTransientPages[page.name] ){
@@ -4472,7 +4477,7 @@ Wiki.trackDraftPage = function( page ){
 }
 
 
-Wiki.trackNondraftPage = function( page ){
+WikiProto.trackNondraftPage = function( page ){
 // Forgets that a page is in draft mode
 // Note: this does not restore the non draft version of the page,
 // it actually forget about it. It is up to the caller to use
@@ -4494,7 +4499,7 @@ Wiki.trackNondraftPage = function( page ){
 }
 
 
-Wiki.draftsCount = function( with_codes ){
+WikiProto.draftsCount = function( with_codes ){
 // Returns the number of draft pages, with or without draft codes (and users)
   if( !with_codes )return this.countDrafts
   // That was fast, but it gets slower if I need draft codes too
@@ -4506,15 +4511,15 @@ Wiki.draftsCount = function( with_codes ){
   return size
 }
 
-Wiki.isEmpty = function( exclude_drafts ){
+WikiProto.isEmpty = function( exclude_drafts ){
 // ToDo: this does not work well
   return this.countPageWrites ==  0
   && (exclude_drafts || this.draftsCount() == 0)
 }
-Wiki.declareIdempotentPredicate( "isEmpty")
+WikiProto.declareIdempotentPredicate( "isEmpty")
 
 
-Wiki.forEachDraft = function( cb, with_codes ){
+WikiProto.forEachDraft = function( cb, with_codes ){
 // Iterates draft pages, with or without draft code/user pages
   var name
   var page
@@ -4528,7 +4533,7 @@ Wiki.forEachDraft = function( cb, with_codes ){
   }
 }
 
-Wiki.stampsCount = function(){
+WikiProto.stampsCount = function(){
 // Returns the number of entries in "RecentStamps"
   var page = this.allPages["RecentStamps"]
   if( !page ) return 0
@@ -4539,9 +4544,9 @@ Wiki.stampsCount = function(){
   if( nstamps > 0 ){ nstamps-- }
   return nstamps
 }
-Wiki.declareIdempotentGetter( "stampsCount")
+WikiProto.declareIdempotentGetter( "stampsCount")
 
-Wiki.forEachSession = function( cb ){
+WikiProto.forEachSession = function( cb ){
 // Iterate over all sessions, there can be a lot
   var id
   var session
@@ -4560,12 +4565,12 @@ Wiki.forEachSession = function( cb ){
   }
 }
 
-Wiki.recentSessionsCount = function(){
+WikiProto.recentSessionsCount = function(){
   return this.allSessions.length
 }
-Wiki.declareIdempotentGetter( "recentSessionsCount")
+WikiProto.declareIdempotentGetter( "recentSessionsCount")
 
-Wiki.forEachMember = function( cb ){
+WikiProto.forEachMember = function( cb ){
 // Iterate over members that logged in since start up.
 // This does not include guest users, they're not "members".
   var code
@@ -4581,7 +4586,7 @@ Wiki.forEachMember = function( cb ){
   }
 }
 
-Wiki.forEachClone = function( cb ){
+WikiProto.forEachClone = function( cb ){
   var name
   var wiki
   var r
@@ -4592,7 +4597,7 @@ Wiki.forEachClone = function( cb ){
   }
 }
 
-Wiki.clonesCount = function(){
+WikiProto.clonesCount = function(){
   var sum = 0
   var name
   for( name in this.allClones ){
@@ -4600,15 +4605,15 @@ Wiki.clonesCount = function(){
   }
   return sum
 }
-Wiki.declareIdempotentGetter( "clonesCount")
+WikiProto.declareIdempotentGetter( "clonesCount")
 
-Wiki.membersCount = function(){
+WikiProto.membersCount = function(){
 // Returns total number of members who logged in since start up.
   return this.countMembers
 }
-Wiki.declareIdempotentGetter( "membersCount")
+WikiProto.declareIdempotentGetter( "membersCount")
 
-Wiki.recentMembersCount = function(){
+WikiProto.recentMembersCount = function(){
   return this.countMembers
   // Alternative:
   var sz = 0
@@ -4618,7 +4623,7 @@ Wiki.recentMembersCount = function(){
 
 
 
-Wiki.putPage = function( page, body, cb ){
+WikiProto.putPage = function( page, body, cb ){
 // Put page in store (unless draft) and cache, asynchronous
   page.de&&mand( !page.isDraft(), "cannot put draft page")
   // this is a create if some failed attempt to get page from store occured.
@@ -4671,7 +4676,7 @@ Wiki.putPage = function( page, body, cb ){
   }))
 }
 
-Wiki.fixProto = function( page, cb ){
+WikiProto.fixProto = function( page, cb ){
 // Does nothing for most pages, just calls cb().
 // "About" pages have "proto" data that are the data
 // of a page whose name is on the first line of the page.
@@ -4720,7 +4725,7 @@ Wiki.fixProto = function( page, cb ){
 }
 
 
-Wiki.fetchPage = function( name, cb ){
+WikiProto.fetchPage = function( name, cb ){
 // Get page in store, asynchronous
 // If page is draft, get non draft version incarned
 // Calls cb( err, page)
@@ -4793,7 +4798,7 @@ Wiki.fetchPage = function( name, cb ){
   }
   // Get from store. unless previous failure
   if( cached && cached.err ){
-    this.store_de&&bug( "Useless refetch avoided, err:", cached.err)
+    this.store_de&&bug( "Useless refetch avoided, err:", err)
     return !cb ? cached.body : cb.call( this, cached.err, cached)
   }
   if( cached && cached.isPending() ){
@@ -4887,14 +4892,14 @@ Wiki.fetchPage = function( name, cb ){
   return this
 }
 
-Wiki.resetInheritedPage = function( page ){
+WikiProto.resetInheritedPage = function( page ){
 // Need to be followed by a call to fetchPage()
   De&&mand( page.wasInherited(), "not inherited" )
   page.body = "Original"
   return this
 }
 
-Wiki.putPageSync = function( page, body ){
+WikiProto.putPageSync = function( page, body ){
 // ToDo: this is hack, get rid of it somehow
   page.body = body.toString()
   return this
@@ -4945,7 +4950,7 @@ Wiki.extractBasicYaml = WikiProto.extractBasicYaml = function( text ){
   return size ? vals : null
 }
 
-Wiki.injectBasicYaml = function( text, hash, at_the_end ){
+Wiki.injectBasicYaml = WikiProto.injectBasicYaml = function( text, hash, at_the_end ){
 // Replaces old basic Yaml in text by new one built from data hash.
   // Make sure text is \n terminated
   if( text && text.charAt( text.length - 1) != "\n" ){
@@ -5016,7 +5021,7 @@ Wiki.injectBasicYaml = function( text, hash, at_the_end ){
 
 // section: wikifetch.js
 
-Wiki.fetchRfc = function( id, cb ){
+WikiProto.fetchRfc = function( id, cb ){
   var that = this
   var name = "#rfc" + id
   var url = '/rfc/rfc' + id + '.txt'
@@ -5057,7 +5062,7 @@ Wiki.fetchRfc = function( id, cb ){
 }
 
 
-Wiki.fetchRemotePage = function( url, pagename, cb ){
+WikiProto.fetchRemotePage = function( url, pagename, cb ){
 // Returns false if bad url, or else returns true and later calls the callback
   var that = this
 
@@ -5166,7 +5171,7 @@ Wiki.fetchRemotePage = function( url, pagename, cb ){
     })
     .addListener( 'error', function(){
       // ToDo: better error handling
-      that.de&&bug( "ERROR on HTTP Client, domain:", domain, "port:", port, "uri:", uri)
+      this.de&&bug( "ERROR on HTTP Client, domain:", domain, "port:", port, "uri:", uri)
       return cb.call( that, 1)
     })
     request.end()
@@ -5179,7 +5184,7 @@ Wiki.fetchRemotePage = function( url, pagename, cb ){
 }
 
 
-Wiki.fetchC2 = function( pagename, cb ){
+WikiProto.fetchC2 = function( pagename, cb ){
 // Fetch a page from Ward's C2 wiki
   var that = this
   var url = '/cgi/wiki?edit=' + pagename
@@ -5237,19 +5242,19 @@ Wiki.fetchC2 = function( pagename, cb ){
 // section: end wikifetch.js
 
 
-Wiki.getPageLastSession = function( pagename ){
+WikiProto.getPageLastSession = function( pagename ){
   return this.lookupPage( pagename).lastSession
 }
 
-Wiki.isAnonymous = function( ignore_title ){
+WikiProto.isAnonymous = function( ignore_title ){
 // A wiki is anonymous if its name is a random FreeCode, unless some
 // config based title was given (and is not to be ignored)
   if( !ignore_title && this.config.title )return false
   return /3\w\w\-\w\w\w\-\w\w\w$/.test( this.name)
 }
-Wiki.declareIdempotentPredicate( "isAnonymous")
+WikiProto.declareIdempotentPredicate( "isAnonymous")
 
-Wiki.isGuest = function( name ){
+WikiProto.isGuest = function( name ){
 // Tells if a user is a "guest" user (vs a "member" user)
   if( name.includes( "Guest") ) return true
   if( this.isVeryOpen() ) return false // ToDo: keep this?
@@ -5259,13 +5264,13 @@ Wiki.isGuest = function( name ){
   return false
 }
 
-Wiki.unshiftTest3Code = function( code ){
+WikiProto.unshiftTest3Code = function( code ){
 // Determine what Wiki.random3Code() will return, for tests.
   Wiki.testRandom3Codes || (Wiki.testRandom3Codes = [])
   Wiki.testRandom3Codes.unshift( code)
 }
 
-Wiki.random3Code = function( sep ){
+Wiki.random3Code = WikiProto.random3Code = function( sep ){
 // I use auto generated names for wiki names, and invitation codes sometimes.
 // And also for User unique ids.
 // They are 3xx-xxx-xxx style usually, I call them FreeCodes
@@ -5290,7 +5295,7 @@ Wiki.random3Code = function( sep ){
   return str
 }
 
-Wiki.random4Code = function( sep ){
+Wiki.random4Code = WikiProto.random4Code = function( sep ){
 // ToDo: I will use 4Code instead of 3 codes to avoid too much collisions.
 // I will use auto generated names for wiki names and invitation codes sometimes.
 // And also for User unique ids.
@@ -5315,7 +5320,8 @@ Wiki.random4Code = function( sep ){
   return str
 }
 
-Wiki.createDisposableCode = function(){
+Wiki.createDisposableCode = WikiProto.createDisposableCode = function(){
+// Static
 // Return a "D3aabbbccc" style random string.
 // Such codes are used as session identifiers for session without
 // human created code attached.
@@ -5408,13 +5414,13 @@ Wiki.jsonEncode = function( value ){
 }
 
 
-Wiki.host = function(){ return SW.domain }
-Wiki.declareIdempotentGetter( "host")
+WikiProto.host = function(){ return SW.domain }
+WikiProto.declareIdempotentGetter( "host")
 
 // ToDo: https://secure.wikimedia.org/wikipedia/en/wiki/Percent-encoding
 // I suspect I don't handle weird page names (ie chinese, russian, arabic,
 // etc) so well...
-Wiki.permalink = function( pagename, code, fullname ){
+WikiProto.permalink = function( pagename, code, fullname ){
   return SW.protocol
   + this.host()
   + "/" 
@@ -5425,7 +5431,7 @@ Wiki.permalink = function( pagename, code, fullname ){
 }
 
 
-Wiki.htmlA = function( label, page, title ){
+WikiProto.htmlA = function( label, page, title ){
 // Returns "<a ...." with permalink to page. title is optional.
 // Neither page nor title need to be encoded
   return HtmlA(
@@ -5435,7 +5441,7 @@ Wiki.htmlA = function( label, page, title ){
   )
 }
 
-Wiki.interwiki = function( moniker ){
+WikiProto.interwiki = function( moniker ){
 // See http://meatballwiki.org/wiki/InterMap
   if( moniker == SW.name ){
     return SW.protocol + this.host() + (SW.test ? ":" + SW.port : "") + "/"
@@ -5488,7 +5494,7 @@ Wiki.interwiki = function( moniker ){
 //
 // ToDo: save context into the "AboutWiki" page.
 
-Wiki.saveContext = function( that ){
+WikiProto.saveContext = function( that ){
 // This method gets called every so often to save the hot status
 // of "hot" pages. This status is about when the page was
 // last visited, last modified and its potential draft content.
@@ -5552,7 +5558,7 @@ Wiki.saveContext = function( that ){
   that.saveContext1( that, context, pages)
 }
 
-Wiki.saveContext1 = function( that, context, pages ){
+WikiProto.saveContext1 = function( that, context, pages ){
 // Asynchronously iterates over pages, then calls saveContext2()
   var page = pages.pop()
   if( !page ){
@@ -5567,7 +5573,7 @@ Wiki.saveContext1 = function( that, context, pages ){
   setTimeout( that.saveContext1, 1, that, context, pages)
 }
 
-Wiki.saveContext2 = function( context ){
+WikiProto.saveContext2 = function( context ){
 // Save accumulated context info into a private page, "PrivateContext"
   Sw.setTimeNow()
   var timenow = Sw.timeNow
@@ -5660,7 +5666,7 @@ Wiki.saveContext2 = function( context ){
   this.saveContext3()
 }
 
-Wiki.saveContext3 = function(){
+WikiProto.saveContext3 = function(){
 // Final step
   this.timeSaveContextStarted = 0
   // If reset in progress, complete reset
@@ -5674,7 +5680,7 @@ Wiki.saveContext3 = function(){
   }
 }
 
-Wiki.sampleCounters = function( nhttpreqs ){
+WikiProto.sampleCounters = function( nhttpreqs ){
   // Return null if no activity since previous sampling
   if( nhttpreqs && nhttpreqs == this.countHttpRequests ){
     return null
@@ -5704,7 +5710,7 @@ Wiki.sampleCounters = function( nhttpreqs ){
   return context
 }
 
-Wiki.updateCounters = function( context ){
+WikiProto.updateCounters = function( context ){
   var all_counters = {
     timeSampled:         Sw.timeNow,
     countErrors:         0,
@@ -5791,7 +5797,7 @@ Wiki.diffCounters = function( c0, c1, force ){
   return counters
 }
 
-Wiki.parsePrivateContext = function( page ){
+WikiProto.parsePrivateContext = function( page ){
 // Check the content of a private context file, either "PrivateContext"
 // or "PrivateContextBackup"
 // Returns true if ok
@@ -5840,7 +5846,7 @@ Wiki.parsePrivateContext = function( page ){
   return true
 }
 
-Wiki.restoreContext = function( page ){
+WikiProto.restoreContext = function( page ){
 // This method is called when a wiki is initialized.
 // It process the informations from the PrivateContext page.
 // It asynchrously eventually change the wiki's state to "operational"
@@ -5872,7 +5878,7 @@ Wiki.restoreContext = function( page ){
   that.restoreContext1( that, context, pages)
 }
 
-Wiki.restoreContext1 = function( that, context, pages ){
+WikiProto.restoreContext1 = function( that, context, pages ){
 // This is the second step of Wiki.restoreContext()
 // It restore context for pages.
 // When done, restoreContext2() is called to finish the initialization.
@@ -5887,7 +5893,7 @@ Wiki.restoreContext1 = function( that, context, pages ){
   setTimeout( that.restoreContext1, 1, that, context, pages)
 }
 
-Wiki.restoreContext2 = function( context ){
+WikiProto.restoreContext2 = function( context ){
 // This is the final step of a wiki's initialization. Context restoration
 // started in the wiki constructor when .restoreContext() was called.
 // Static. called by setTimeout in Wiki.restoreContext1()
@@ -5945,7 +5951,7 @@ Wiki.restoreContext2 = function( context ){
   }
 }
 
-Wiki.contextInfo = function( context ){
+WikiProto.contextInfo = function( context ){
   if( !NDe )return
   var counters = this.sampleCounters()
   De&&bug( "Counters: ", Sys.inspect( counters))
@@ -5955,7 +5961,7 @@ Wiki.contextInfo = function( context ){
   NDe&&bug( "Context size: ", this.lastContext.length)
 }
 
-Wiki.scheduleSaveContext = function(){
+WikiProto.scheduleSaveContext = function(){
 // This method gets called when something potentially changed in a wiki.
 // See Wiki.touch()
 // It schedules Wiki.saveContext() that will check for changes and
@@ -5975,7 +5981,7 @@ Wiki.scheduleSaveContext = function(){
   this.context_de&&bug( "saving scheduled, delay: ", delay)
 }
 
-Wiki.touch = function( hard ){
+WikiProto.touch = function( hard ){
 // Basic change management, time based
   this.timeLastTouched = Sw.timeNow
   if( !this.saveContextScheduled ){
@@ -5992,7 +5998,7 @@ Wiki.touch = function( hard ){
 // section: end wikictx.js
 
 
-Wiki.isBotRequest = function( req ){
+WikiProto.isBotRequest = function( req ){
   De&&mand( req.response, "no response" )
   var useragent = req.headers["user-agent"]
   var langs = req.headers["accept-language"]
@@ -6054,7 +6060,7 @@ Wiki.toAscii = function( txt ){
   return txt
 }
 
-Wiki.sanitizePath = function( str ){
+WikiProto.sanitizePath = function( str ){
 // Figure out a decent path for a page. Returns "" if none.
 // "/jhr" => "jhr/HomePage"
 // "/JeanHuguesRobert" => "JeanHuguesRobert"
@@ -6146,7 +6152,7 @@ Wiki.sanitizePath = function( str ){
 }
 
 
-Wiki.sanitizeMail = function( mail ){
+Wiki.sanitizeMail = WikiProto.sanitizeMail = function( mail ){
 // Return null or figure out a somehow valid mail address
   // Get rid of spaces
   mail = mail.replace( /\s/g, "")
@@ -6181,7 +6187,7 @@ Wiki.sanitizeName = function( name ){
   return name.replace( /[^A-Za-z_0-9 ']/g, "")
 }
 
-Wiki.changeDefaultToMentorConfig = function(){
+WikiProto.changeDefaultToMentorConfig = function(){
 // Change content of "AboutWiki" page to use "PrivateMentorWiki"
 // instead of default "PrivateWiki".
 // This basically switches from "very open" to just "open".
@@ -6214,7 +6220,7 @@ Wiki.changeDefaultToMentorConfig = function(){
   }
 }
 
-Wiki.wikinamize = function( name, prefix, postfix ){
+WikiProto.wikinamize = function( name, prefix, postfix ){
 // Turn a text into a valid, "nice to read", wiki name
 // ToDo: Refactor into multiple methods, this one is too complex
   // If in cache, cool
@@ -6605,32 +6611,32 @@ function Page( wiki, name, body, proto, inherited, err ){
   this.err = err
 }
 
-Page.prototype = Page
-MakeDebuggable( Page, "Page")
+var PageProto = Page.prototype = {};
+MakeDebuggable( PageProto, "Page")
 
-Page.assertIsPage = function(){
+PageProto.assertIsPage = function(){
   // Help migrate from pagename strings to Page objects
   return true
 }
 
-Page.toString = function(){
+PageProto.toString = function(){
   return this.name
   // return "<Page " + this.wiki.fullname() + " " + this.name + ">"
 }
 
-Page.fullname = function(){
+PageProto.fullname = function(){
   return this.wiki.fullname() + this.name
 }
 
-Page.getStore = function(){
+PageProto.getStore = function(){
   return this.wiki.pageStore
 }
 
-Page.getStoreUrl = function(){
+PageProto.getStoreUrl = function(){
   return this.getStore().getUrl( this.name)
 }
 
-Page.dump = function( sep ){
+PageProto.dump = function( sep ){
   var buf = ["Page"]
   var that = this
   var attr = "name wiki body nondraft data"
@@ -6646,7 +6652,7 @@ Page.dump = function( sep ){
 }
 //Session.declareIdempotentGetter( "dump")
 
-Page.get = function( key, visited ){
+PageProto.get = function( key, visited ){
 // Access "property" of page
   if( this.data && (key in this.data) ){
     return this.data[key]
@@ -6663,7 +6669,7 @@ Page.get = function( key, visited ){
   }
 }
 
-Page.set = function( key, value ){
+PageProto.set = function( key, value ){
 // Write access to property/attribute of page.
 // This does not update the page in store.
 // To update the page in store, please use .write().
@@ -6743,7 +6749,7 @@ Page.lookup = function( wiki, pagename, default_name ){
   return page
 }
 
-Page.incarnFetch = function( body, proto, inherited, err ){
+PageProto.incarnFetch = function( body, proto, inherited, err ){
 // Called when page is fetched from store
   // Some insane sanitization
   if( body && !inherited ){
@@ -6798,7 +6804,7 @@ Page.incarnFetch = function( body, proto, inherited, err ){
   return this
 }
 
-Page.incarnRestore = function( body, inherited, err ){
+PageProto.incarnRestore = function( body, inherited, err ){
 // This method gets called when the raw body content of a page is fetched
 // from the PageStore.
 // It updates the non draft version of the page using that raw body.
@@ -6852,7 +6858,7 @@ Page.incarnRestore = function( body, inherited, err ){
   return nondraft
 }
 
-Page.incarnBody = function( body, err ){
+PageProto.incarnBody = function( body, err ){
 // Set the body content of the page.
 // If "err" is "dirty", then it means that page is not in sync with store.
 // If "err" is "pending", then it means either a read or write is ongoing.
@@ -6868,18 +6874,18 @@ Page.incarnBody = function( body, err ){
   }
 }
 
-Page.incarnErr = function( err ){
+PageProto.incarnErr = function( err ){
   this.err = err
 }
 
-Page.incarnDraft = function(){
+PageProto.incarnDraft = function(){
   this.de&&mand( !this.isDraft() )
   var page = this.nondraft = new Page( this.wiki, this.name)
   page.de&&mand( !page.isDraft() )
   page.incarnFromPage( this)
 }
 
-Page.incarnFromPage = function( from, with_body ){
+PageProto.incarnFromPage = function( from, with_body ){
 // Incarn this page using data from another one
 // Note: existing body is kept unless specified otherwise using with_body
   var page = this
@@ -6904,7 +6910,7 @@ Page.incarnFromPage = function( from, with_body ){
   page.err = page.err
 }
 
-Page.incarnUpdate = function( from ){
+PageProto.incarnUpdate = function( from ){
 // If page is a draft, reincarn it using fresh data from store
 // "from" defaults to current non draft page
 // Note: draft body is kept of course
@@ -6912,7 +6918,7 @@ Page.incarnUpdate = function( from ){
   this.incarnFromPage( from || this.nondraft)
 }
 
-Page.wasStored = function(){
+PageProto.wasStored = function(){
 // Returns true if page is known to exists in store, presumably with
 // same content as local body.
 // Returns false if page is not in synch with store, ie when page is dirty.
@@ -6922,27 +6928,27 @@ Page.wasStored = function(){
 // pending result is delivered.
   return !!(this.body && (!this.err || this.isPending()))
 }
-Page.declareIdempotentPredicate( "wasStored")
+PageProto.declareIdempotentPredicate( "wasStored")
 
-Page.isDirty = function(){
+PageProto.isDirty = function(){
 // Returns true if local content is not in synch with store
   return this.err == "dirty"
 }
 
-Page.setDirty = function(){
+PageProto.setDirty = function(){
   this.err = "dirty"
 }
 
-Page.isPending = function(){
+PageProto.isPending = function(){
 // Returns true if some IO is going on (read or write) with the result pending
   return this.err == "pending"
 }
 
-Page.setPending = function(){
+PageProto.setPending = function(){
   this.err = "pending"
 }	
 
-Page.dequeueCb = function( err ){
+PageProto.dequeueCb = function( err ){
   if( this.queuedRequest.length == 0 ){
     this.err = err
     return
@@ -6951,7 +6957,7 @@ Page.dequeueCb = function( err ){
   cb.call( this)
 }
 
-Page.isVirtual = function(){
+PageProto.isVirtual = function(){
 // A virtual page has it's content stored inside another page.
 // ToDo: have PrivateContext, PrivateCodes & RecentStamps be stored into
 // AboutWiki
@@ -6963,7 +6969,7 @@ Page.isVirtual = function(){
   }
 }
 
-Page.isVirtualStore = function(){
+PageProto.isVirtualStore = function(){
 // A virtual store page is a page that contains other pages, so called virtual
 // pages. These pages are either small or frequently accessed page associated to
 // the wiki. This includes all the pages that are preloaded when a wiki is
@@ -6971,19 +6977,19 @@ Page.isVirtualStore = function(){
   return this.isContainer
 }
 
-Page.getVirtualBody = function( name ){
+PageProto.getVirtualBody = function( name ){
 // Return the (JSON) content of a virtual page
   this.isContainer = true
   return this.get( "Page" + name)
 }
 
-Page.setVirtualBody = function( name, body ){
+PageProto.setVirtualBody = function( name, body ){
 // Set the (JSON) content of a virtual page
   this.isContainer = true
   return this.set( "Page" + name, body)
 }
 
-Page.devirtualize = function( cb ){
+PageProto.devirtualize = function( cb ){
 // Move page from virtual store to regular store (ie PageStore)
   if( this.isDraft() )return this.nondraft.devirtualize( cb)
   this.de&&mand( this.isVirtual() )
@@ -7012,7 +7018,7 @@ Page.devirtualize = function( cb ){
   })
 }
 
-Page.virtualize = function( container, cb ){
+PageProto.virtualize = function( container, cb ){
 // Move page from store to virtual store
   this.de&&mand( !this.isVirtual() )
   if( this.isDraft() )return this.nondraft.virtualize( container, cb)
@@ -7027,7 +7033,7 @@ Page.virtualize = function( container, cb ){
   })
 }
 
-Page.read = function( cb, local ){
+PageProto.read = function( cb, local ){
 // Get content from store or cache, then call cb( err, page)
 // If page is a draft, content is put in the attached non draft page
 // Also deals with "virtual stores" for "virtual" pages.
@@ -7152,7 +7158,7 @@ Page.read = function( cb, local ){
 
 }
 
-Page.getBodyWithJsonContext = function(){
+PageProto.getBodyWithJsonContext = function(){
 // Returns current body plus JSON encoded page's context data.
 // This is a serialized version of the page, with all data.
 // This is the encoding I use when I store a page inside another "container"
@@ -7164,7 +7170,7 @@ Page.getBodyWithJsonContext = function(){
   return body
 }
 
-Page.extractBodyAndJsonContext = function( body ){
+PageProto.extractBodyAndJsonContext = function( body ){
 // Returns {body:str,context:obj_or_null}
 // "body" is encoded like Page.getBodyWithJsonContext() does
   var ctx = null
@@ -7188,7 +7194,7 @@ Page.extractBodyAndJsonContext = function( body ){
 }
 
 
-Page.write = function( body, cb ){
+PageProto.write = function( body, cb ){
 // Writes page to store (unless draft) then calls cb( err, page)
 // If page is draft, content is saved locally only, not in store.
 // Note: this.data takes over whatever Yaml section is in the body.
@@ -7234,7 +7240,7 @@ Page.write = function( body, cb ){
   return this.wiki.putPage( this, body, cb)
 }
 
-Page.wasIncarned = function(){
+PageProto.wasIncarned = function(){
 // Returns true if page was incarned (ie was fetched from store)
 // Note: returns true when page was fetched even when such fetch failed.
   if( this.nondraft ){
@@ -7245,17 +7251,17 @@ Page.wasIncarned = function(){
   }
   return !!((this.body !== null || this.err) && this.wiki.allPages[this.name])
 }
-Page.declareIdempotentPredicate( "wasIncarned")
+PageProto.declareIdempotentPredicate( "wasIncarned")
 
-Page.isVoid = function(){
+PageProto.isVoid = function(){
 // Returns true if page is empty
 // Returns false if page's body is unknown because page was never incarned
 // See also .isNull()
   return this.wasIncarned() && this.getBody().length === 0
 }
-Page.declareIdempotentPredicate( "isVoid")
+PageProto.declareIdempotentPredicate( "isVoid")
 
-Page.wasDeleted = function(){
+PageProto.wasDeleted = function(){
 // Returns true if page was fore sure deleted.
 // Return false if it was not or was not incarned.
 // Side effect on links list: clear it if page was deleted
@@ -7268,9 +7274,9 @@ Page.wasDeleted = function(){
   }
 }
 // I know that it does a small side effect, it's ok
-Page.declareIdempotentPredicate( "wasDeleted")
+PageProto.declareIdempotentPredicate( "wasDeleted")
 
-Page.isNull = function(){
+PageProto.isNull = function(){
 // Return true if page's content is basically empty, whatever the reason
 // See also .isVoid()
   if( false && this.inherited ){
@@ -7285,16 +7291,16 @@ Page.isNull = function(){
   }
   return false
 }
-Page.declareIdempotentPredicate( "isNull")
+PageProto.declareIdempotentPredicate( "isNull")
 
-Page.resetLinks = function(){
+PageProto.resetLinks = function(){
 // Forget about links from this page to other pages.
 // This is called when the page is displayed, prior to calls to
 // Session.trackBacklink(), that in turn calls Page.trackLinkTo()
   this.links = {}
 }
 
-Page.getLinks = function(){
+PageProto.getLinks = function(){
   var list = []
   for( var item in this.links ){
     list.push( item)
@@ -7302,7 +7308,7 @@ Page.getLinks = function(){
   return list.sort()
 }
 
-Page.getBacklinks = function( with_private ){
+PageProto.getBacklinks = function( with_private ){
   var list = []
   this.wiki.forEachBacklink( this, with_private, function( referer ){
     list.push( referer.name)
@@ -7310,24 +7316,24 @@ Page.getBacklinks = function( with_private ){
   return list.sort()
 }
 
-Page.trackLinkTo = function( otherpage ){
+PageProto.trackLinkTo = function( otherpage ){
 // Track link from this page to some other page. Does not track the
 // corresponding back link.
 // Private. Called by Session.trackBacklink( page, referer)
   this.links[otherpage.name] = otherpage
 }
 
-Page.linksTo = function( otherpage ){
+PageProto.linksTo = function( otherpage ){
 // Check if there is a known link in this page to the other page
 // Note: this is based on what was tracked when the page was last displayed
   return !!this.links[otherpage.name]
 }
 
-Page.trackVisit = function( from_page ){
+PageProto.trackVisit = function( from_page ){
   
 }
 
-Page.getBody = function( nondraft ){
+PageProto.getBody = function( nondraft ){
 // Returns either the current or non draft text body, as a string.
 // Note: never returns null, even for not incarned pages, returns "" instead.
 // The body of inherited page is always the non draft version.
@@ -7348,7 +7354,7 @@ Page.getBody = function( nondraft ){
   return this.body || ""
 }
 
-Page.getNondraftBody = function(){
+PageProto.getNondraftBody = function(){
 // Return string version of body of nondraft version of page.
 // Returns "" if no nondraft version (+ warning)
   if( this.nondraft ){
@@ -7359,38 +7365,38 @@ Page.getNondraftBody = function(){
     return ""
   }
 }
-Page.declareIdempotentGetter( "getNondraftBody")
+PageProto.declareIdempotentGetter( "getNondraftBody")
 
-Page.touch = function(){
+PageProto.touch = function(){
   this.wiki.touch()
   return 
 }
 
-Page.isParent = function(){
+PageProto.isParent = function(){
   return this.kindIs( "Parent")
 }
-Page.declareIdempotentGetter( "isParent")
+PageProto.declareIdempotentGetter( "isParent")
 
 
-Page.getParentPageName = function(){
+PageProto.getParentPageName = function(){
   if( !this.isParent() )return this.name
   return this.name.substr( "Parent".length)
 }
-Page.declareIdempotentGetter( "getParentPageName")
+PageProto.declareIdempotentGetter( "getParentPageName")
 
-Page.wasInherited = function(){
+PageProto.wasInherited = function(){
   return !!this.inherited
 }
-Page.declareIdempotentPredicate( "wasInherited")
+PageProto.declareIdempotentPredicate( "wasInherited")
 
-Page.isDraft = function(){
+PageProto.isDraft = function(){
 // Returns true if page is a "draft"
 // Note: all draft pages have a "nondraft" property
   return !!this.nondraft
 }
-Page.declareIdempotentPredicate( "isDraft")
+PageProto.declareIdempotentPredicate( "isDraft")
 
-Page.draft = function(){
+PageProto.draft = function(){
 // Save a "non draft" version of the page that can be easely restored.
 // See .stamp() to forget non draft version.
 // See .undraft() to restore non draft version.
@@ -7418,7 +7424,7 @@ Page.draft = function(){
   return this
 }
 
-Page.stamp = function(){
+PageProto.stamp = function(){
 // Forget "non draft" version of a page.
   if( !this.isDraft() )return false
   this.nondraft = null
@@ -7426,7 +7432,7 @@ Page.stamp = function(){
   return true
 }
 
-Page.undraft = function(){
+PageProto.undraft = function(){
 // Restore page's content using previously saved "non draft" version.
   if( !this.isDraft() ){
     this.bug_de&&bug( "useless undraft, page: ", this)
@@ -7441,18 +7447,18 @@ Page.undraft = function(){
   return true
 }
 
-Page.setVisitor = function( session ){
+PageProto.setVisitor = function( session ){
   this.setLastSession( session)
   return this
 }
   
-Page.session = function(){
+PageProto.session = function(){
 // Returns user session if page is a user name
   return this.wiki.getSession( this.name)
 }
-Page.declareIdempotentGetter( "session")
+PageProto.declareIdempotentGetter( "session")
 
-Page.setLastSession = function( session ){
+PageProto.setLastSession = function( session ){
   if( session.isBot )return
   if( session != this.lastSession ){
     this.countVisits++
@@ -7463,46 +7469,46 @@ Page.setLastSession = function( session ){
   return this
 }
 
-Page.lastVisit = function(){
+PageProto.lastVisit = function(){
   return this.lastSession
 }
-Page.declareIdempotentGetter( "lastVisit")
+PageProto.declareIdempotentGetter( "lastVisit")
 
-Page.visitCount = function(){
+PageProto.visitCount = function(){
   return this.countVisits
 }
-Page.declareIdempotentGetter( "visitCount")
+PageProto.declareIdempotentGetter( "visitCount")
 
-Page.lastVisitor = function(){
+PageProto.lastVisitor = function(){
 // Returns userName() of last visitor
   var session = this.lastVisit()
   return session ? session.userName() : this.lastVisitorName
 }
-Page.declareIdempotentGetter( "lastVisitor")
+PageProto.declareIdempotentGetter( "lastVisitor")
 
-Page.timeVisited = function(){
+PageProto.timeVisited = function(){
   return this.timeLastSession
 }
-Page.declareIdempotentGetter( "timeVisited")
+PageProto.declareIdempotentGetter( "timeVisited")
 
-Page.setWriter = function( username ){
+PageProto.setWriter = function( username ){
   NDe&&bug( "Set writer on ", this, " to ", username)
   this.lastWriterName = username
   this.timeLastModified = Sw.timeNow
   this.touch()
 }
 
-Page.lastWriter = function(){
+PageProto.lastWriter = function(){
   return this.lastWriterName
 }
-Page.declareIdempotentGetter( "lastWriter")
+PageProto.declareIdempotentGetter( "lastWriter")
 
-Page.timeModified = function(){
+PageProto.timeModified = function(){
   return this.timeLastModified
 }
-Page.declareIdempotentGetter( "timeModified")
+PageProto.declareIdempotentGetter( "timeModified")
 
-Page.isHot = function( ignore_sessions ){
+PageProto.isHot = function( ignore_sessions ){
 // A page is "hot" when some activity occured about it recently
 // Note: hot => !cold but the inverse is not true because in addition
 // to not beeing "hot" a "cold" page must also have received no visitors
@@ -7512,9 +7518,9 @@ Page.isHot = function( ignore_sessions ){
   if( !ignore_sessions && session && !session.isAway() ){ return true }
   return !!this.wiki.allHotPages[this.name]
 }
-Page.declareIdempotentPredicate( "isHot")
+PageProto.declareIdempotentPredicate( "isHot")
 
-Page.setHot = function( restore ){
+PageProto.setHot = function( restore ){
   De&&mand( !"PrivateContext".starts( this.name),
     "hot PrivateContext: " + this.name)
   // Don't hotify copies, too much noise
@@ -7537,13 +7543,13 @@ Page.setHot = function( restore ){
   return true
 }
 
-Page.clearHot = function(){
+PageProto.clearHot = function(){
   if( !this.wiki.allHotPages[this.name] )return false
   delete this.wiki.allHotPages[this.name]
   return true
 }
 
-Page.isCold = function(){
+PageProto.isCold = function(){
 // A page is cold unless it is hot obviously.
 // But only not visited pages eventually become truely cold.
   // Page is cold if it is empty
@@ -7557,9 +7563,9 @@ Page.isCold = function(){
   if( this.isHot() )return false
   return true
 }
-Page.declareIdempotentPredicate( "isCold")
+PageProto.declareIdempotentPredicate( "isCold")
 
-Page.trash = function(){
+PageProto.trash = function(){
 // Get rid of "draft" content, get back to previous stamped page
   if( this.isDraft() ){
     this.undraft() 
@@ -7568,7 +7574,7 @@ Page.trash = function(){
   return false
 }
 
-Page.kindIs = function( kind ){
+PageProto.kindIs = function( kind ){
   if( !this.cachedKinds ){ this.cachedKinds = {} }
   var cached // = this.cachedKinds[kind]
   if( cached === true || cached === false )return cached
@@ -7580,7 +7586,7 @@ Page.kindIs = function( kind ){
   )
 }
 
-Page.getKinds = function(){
+PageProto.getKinds = function(){
 // returns ordered list of "kinds", longest first
 // Note: result may vary depending on cache
 // ToDo: is this a bug or a feature?
@@ -7600,33 +7606,31 @@ Page.getKinds = function(){
   return list
 }
 
-Page.isPublic = function(){
+PageProto.isPublic = function(){
   return this.kindIs( "Public")
 }
-Page.declareIdempotentPredicate( "isPublic")
+PageProto.declareIdempotentPredicate( "isPublic")
 
-Page.isUser = function(){
+PageProto.isUser = function(){
   return this.kindIs( "User")
   || this.kindIs( "CopyUser")
 }
-Page.declareIdempotentPredicate( "isUser")
+PageProto.declareIdempotentPredicate( "isUser")
 
-Page.userName = function(){
+PageProto.userName = function(){
   return this.kindIs( "User") ? this.name.substr( "User".length) : ""
 }
 
-Page.isUserId = function(){
+PageProto.isUserId = function(){
 // Returns true if page describes a User (see that class)
   return this.kindIs( "UserId")
   ||     this.kindIs( "WikiId")
   ||     this.kindIs( "TwitterId")
-  ||     this.kindIs( "FacebookId")
-  ||     this.kindIs( "LinkedInId")
   ||     this.kindIs( "MailId")
   ||     this.kindIs( "DropboxId")
 }
 
-Page.getService = function(){
+PageProto.getService = function(){
 // Returns the service that the user id page references.
 // Returns "" if page is not a user id page.
   if( !this.isUserId() ){
@@ -7637,7 +7641,7 @@ Page.getService = function(){
   return this.name.substr( 0, ii)
 }
 
-Page.getId = function(){
+PageProto.getId = function(){
 // Returns the id part of a user id page. This is the unique id local to
 // the service. For "Mail", this is the mail address.
   if( !this.isUserId() )return ""
@@ -7645,60 +7649,60 @@ Page.getId = function(){
   return this.name.substr( ii + "Id".length)
 }
 
-Page.isShortName = function(){
+PageProto.isShortName = function(){
   return this.isTwitterUser()
 }
 
-Page.isName = function(){
+PageProto.isName = function(){
   return this.isShortName()
   ||     this.isFacebookUser()
   ||     this.isLinkedInUser()
   ||     this.isUserId()
 }
 
-Page.getName = function(){
+PageProto.getName = function(){
   return this.isName() ? this.name : ""
 }
 
-Page.isTwitterUser = function(){
+PageProto.isTwitterUser = function(){
   if( this.isSpecial() )return false
   var is_it = !!this.name.match( /^@[^@#-]*$/)
   // ToDo: cache
   return is_it
 }
 
-Page.isFacebookUser = function(){
+PageProto.isFacebookUser = function(){
   if( this.isSpecial() )return false
   var is_it = !!this.name.match( /^[^@#-]*@$/)
   // ToDo: cache
   return is_it
 }
 
-Page.isLinkedInUser = function(){
+PageProto.isLinkedInUser = function(){
   if( this.isSpecial() )return false
   var is_it = !!this.name.match( /^[^@#-]*In$/)
   // ToDo: cache
   return is_it
 }
 
-Page.isTag = function(){
+PageProto.isTag = function(){
   if( this.name.charAt( 0) === "#" )return true
   return this.kindIs( "Tag") || this.kindIs( "Category")
 }
-Page.declareIdempotentPredicate( "isTag")
+PageProto.declareIdempotentPredicate( "isTag")
 
-Page.isBot = function(){
+PageProto.isBot = function(){
   return "BotGuest".ends( this.name) || "Bot".ends( this.name)
 }
-Page.declareIdempotentPredicate( "isBot")
+PageProto.declareIdempotentPredicate( "isBot")
 
-Page.frontLine = function( alternate_text ){
+PageProto.frontLine = function( alternate_text ){
   return (!this.wasIncarned() || this.isVoid() || this.wasDeleted())
   ? ""
   : (this.getBody() || alternate_text).frontLine() 
 }
 
-Page.getUsers = function( alternate_text ){
+PageProto.getUsers = function( alternate_text ){
 // Returns the space separated list of user names that
 // is the content of the first line of the page.
 // Only "User" and "Code" pages contains such a list. 
@@ -7706,9 +7710,9 @@ Page.getUsers = function( alternate_text ){
   return this.frontLine( alternate_text)
   .trim().replace( /,/g, " ").replace( /"  "/g, " ")
 }
-Page.declareIdempotentGetter( "getUsers")
+PageProto.declareIdempotentGetter( "getUsers")
 
-Page.getFirstUser = function(){
+PageProto.getFirstUser = function(){
 // Returns the first item of this.getUsers()
 // "Code" pages first user is the name of the user that logs in.
   var users = this.getUsers()
@@ -7723,15 +7727,15 @@ Page.getFirstUser = function(){
   }
   return users
 }
-Page.declareIdempotentGetter( "getFirstUser")
+PageProto.declareIdempotentGetter( "getFirstUser")
 
-Page.isMentorCode = function(){
+PageProto.isMentorCode = function(){
   if( !this.isCode() )return false
   return this.getUsers().includes( "Mentor")
 }
-Page.declareIdempotentPredicate( "isMentorCode")
+PageProto.declareIdempotentPredicate( "isMentorCode")
 
-Page.getSource = function(){
+PageProto.getSource = function(){
 // Return source for Copy pages and Deleted pages.
 // Else, returns this
   var name
@@ -7744,102 +7748,102 @@ Page.getSource = function(){
   name = this.wiki.protoGuest.wikinamize( name, null, "Page")
   return this.wiki.protoGuest.lookup( name)
 }
-Page.declareIdempotentGetter( "getSource")
+PageProto.declareIdempotentGetter( "getSource")
 
-Page.isCopy = function(){
+PageProto.isCopy = function(){
   return this.kindIs( "Copy")
 }
-Page.declareIdempotentPredicate( "isCopy")
+PageProto.declareIdempotentPredicate( "isCopy")
 
-Page.isRestore = function(){
+PageProto.isRestore = function(){
   return this.kindIs( "UserRestore")
 }
-Page.declareIdempotentPredicate( "isRestore")
+PageProto.declareIdempotentPredicate( "isRestore")
 
-Page.isPrivate = function(){
+PageProto.isPrivate = function(){
   return this.kindIs( "Private")
   || this.kindIs( "Mentor")
   || this.kindIs( "CopyPrivate")
   || this.kindIs( "CopyMentor")
 }
-Page.declareIdempotentPredicate( "isPrivate")
+PageProto.declareIdempotentPredicate( "isPrivate")
 
-Page.isMember = function(){
+PageProto.isMember = function(){
   return this.kindIs( "Member")
   || this.kindIs( "Membre")
   || this.kindIs( "CopyMember")
   || this.kindIs( "CopyMembre")
 }
-Page.declareIdempotentPredicate( "isMember")
+PageProto.declareIdempotentPredicate( "isMember")
 
-Page.isDeletion = function(){
+PageProto.isDeletion = function(){
   return this.kindIs( "Deleted")
 }
-Page.declareIdempotentPredicate( "isDeletion")
+PageProto.declareIdempotentPredicate( "isDeletion")
 
-Page.isAbout = function(){
+PageProto.isAbout = function(){
 // "about" pages are pages with "proto" data about them
 // The data comes from another page, specified on the first line
   return (this.kindIs( "About") && this.name != "AboutUs")
   ||      this.kindIs( "Super")
 }
-Page.declareIdempotentPredicate( "isAbout")
+PageProto.declareIdempotentPredicate( "isAbout")
 
-Page.isSecret = function(){
+PageProto.isSecret = function(){
   return this.kindIs( "Secret")
   || this.kindIs( "CopySecret")
 }
-Page.declareIdempotentPredicate( "isSecret")
+PageProto.declareIdempotentPredicate( "isSecret")
 
-Page.isMap = function(){
+PageProto.isMap = function(){
   return this.kindIs( "Map")
   || this.kindIs( "Carte")
   || this.kindIs( "CopyMap")
   || this.kindIs( "CopyCarte")
 }
-Page.declareIdempotentPredicate( "isMap")
+PageProto.declareIdempotentPredicate( "isMap")
 
-Page.isToc = function(){
+PageProto.isToc = function(){
   return this.kindIs( "Toc")
 }
-Page.declareIdempotentPredicate( "isToc")
+PageProto.declareIdempotentPredicate( "isToc")
 
-Page.isLocal = function(){
+PageProto.isLocal = function(){
   return this.kindIs( "Local")
 }
-Page.declareIdempotentPredicate( "isLocal")
+PageProto.declareIdempotentPredicate( "isLocal")
 
-Page.isYour = function(){
+PageProto.isYour = function(){
   return this.kindIs( "Your")
   ||     this.kindIs( "Tu")
 }
-Page.declareIdempotentPredicate( "isYour")
+PageProto.declareIdempotentPredicate( "isYour")
 
-Page.isThis = function(){
+PageProto.isThis = function(){
   return this.kindIs( "This")
   ||     this.kindIs( "Ista")
 }
-Page.declareIdempotentPredicate( "isThis")
+PageProto.declareIdempotentPredicate( "isThis")
 
-Page.isRead = function(){
+PageProto.isRead = function(){
   return this.kindIs( "Read")
   ||     this.kindIs( "Lire")
 }
-Page.declareIdempotentPredicate( "isRead")
+PageProto.declareIdempotentPredicate( "isRead")
 
-Page.isDo = function(){
+PageProto.isDo = function(){
   return this.kindIs( "Do")
   ||     this.kindIs( "Op")
 }
-Page.declareIdempotentPredicate( "isDo")
+PageProto.declareIdempotentPredicate( "isDo")
 
-Page.isToDo = function(){
+PageProto.isToDo = function(){
   return this.kindIs( "ToDo")
   ||     this.kindIs( "OpOp")
 }
-Page.declareIdempotentPredicate( "isToDo")
+PageProto.declareIdempotentPredicate( "isToDo")
 
-Page.getToDo = function(){
+PageProto.getToDo = function(){
   if( this.isDo()    )return this.name
   if( !this.isToDo() )return "Do" + this.name
   var do_cmd = this.frontLine()
@@ -7851,60 +7855,60 @@ Page.getToDo = function(){
   }
   return do_cmd || "DoIt"
 }
-Page.declareIdempotentGetter( "getToDo")
+PageProto.declareIdempotentGetter( "getToDo")
 
-Page.isHelp = function(){
+PageProto.isHelp = function(){
   return this.kindIs( "Help")
   || this.kindIs( "Aide")
 }
-Page.declareIdempotentPredicate( "isHelp")
+PageProto.declareIdempotentPredicate( "isHelp")
 
-Page.isCode = function(){
+PageProto.isCode = function(){
   return "Code".starts( this.name)
 }
-Page.declareIdempotentPredicate( "isCode")
+PageProto.declareIdempotentPredicate( "isCode")
 
-Page.getCode = function(){
+PageProto.getCode = function(){
   if( !this.isCode() ){ return "" }
   return this.name.substr( "Code".length)
 }
-Page.declareIdempotentGetter( "getCode")
+PageProto.declareIdempotentGetter( "getCode")
 
-Page.isDisposableCode = function(){
+PageProto.isDisposableCode = function(){
   return this.isCode() && Wiki.isDisposableCode( this.getCode())
 }
-Page.declareIdempotentPredicate( "isDisposableCode")
+PageProto.declareIdempotentPredicate( "isDisposableCode")
 
-Page.isHtml = function(){
+PageProto.isHtml = function(){
   return this.kindIs( "Html")
 }
-Page.declareIdempotentPredicate( "isHtml")
+PageProto.declareIdempotentPredicate( "isHtml")
 
-Page.isHome = function(){
+PageProto.isHome = function(){
   return this === this.wiki.homePage
 }
-Page.declareIdempotentPredicate( "isHtml")
+PageProto.declareIdempotentPredicate( "isHtml")
 
-Page.isGuest = function(){
+PageProto.isGuest = function(){
   return this.kindIs( "Guest")
   ||     this.kindIs( "Visiteur")
 }
-Page.declareIdempotentPredicate( "isGuest")
+PageProto.declareIdempotentPredicate( "isGuest")
 
-Page.isStamps = function(){
+PageProto.isStamps = function(){
   return "Stamps".ends( this.name)
 }
-Page.declareIdempotentPredicate( "isStamps")
+PageProto.declareIdempotentPredicate( "isStamps")
 
 // ToDo: Chat pages
 // See long polling https://github.com/yojimbo87/minotaur
 // Or Video Chat maybe, http://code.google.com/p/tokboxapi/wiki/CallWidget
-Page.isChat = function(){
+PageProto.isChat = function(){
   return "Chat".ends( this.name)
 }
-Page.declareIdempotentPredicate( "isChat")
+PageProto.declareIdempotentPredicate( "isChat")
 
-Page.isSpecial = function(){
+PageProto.isSpecial = function(){
   return this.isUser()
   || this.isCode()
   || this.isSecret()
@@ -7916,9 +7920,9 @@ Page.isSpecial = function(){
   || this.isDo()
   || this.isDeletion()
 }
-Page.declareIdempotentPredicate( "isSpecial")
+PageProto.declareIdempotentPredicate( "isSpecial")
 
-Page.isSensitive = function(){
+PageProto.isSensitive = function(){
   return this.isUser()
   || this.isCode()
   || this.isMap()
@@ -7927,22 +7931,22 @@ Page.isSensitive = function(){
   || this.isCopy()
   || this.isDeletion()
 }
-Page.declareIdempotentPredicate( "isSensitive")
+PageProto.declareIdempotentPredicate( "isSensitive")
 
-Page.isTweet = function(){
+PageProto.isTweet = function(){
   return this.name.includes( "Tweet")
 }
-Page.declareIdempotentPredicate( "isTweet")
+PageProto.declareIdempotentPredicate( "isTweet")
 
-Page.isAngular = function( with_to_do ){
+PageProto.isAngular = function( with_to_do ){
 // Is angular if name says so unless data says otherwise
   if( this.kindIs( "Angular") )return true
   if( this.data && this.data.isNotAngular )return false
   if( this.data && this.data.isAngular    )return true
 }
-Page.declareIdempotentPredicate( "isAngular")
+PageProto.declareIdempotentPredicate( "isAngular")
 
-Page.needsAngular = function(){
+PageProto.needsAngular = function(){
 // DoAngular pages need angular.js when run, but ToDo do too
   if( this.kindIs( "DoAngular") )return true
   if( !this.kindIs( "ToDo")     )return false
@@ -7950,33 +7954,33 @@ Page.needsAngular = function(){
   if( this.data && this.data.isAngular    )return true
   return true
 }
-Page.declareIdempotentPredicate( "needsAngular")
+PageProto.declareIdempotentPredicate( "needsAngular")
 
-Page.isCss = function(){
+PageProto.isCss = function(){
 // Is CSS if name says so unless data says otherwise
   return (
     (this.name.includes( "Style") && !(this.data && this.data.isNotCss))
     || (this.data && this.data.isCss)
   )
 }
-Page.declareIdempotentPredicate( "isCss")
+PageProto.declareIdempotentPredicate( "isCss")
 
-Page.isLessCss = function(){
+PageProto.isLessCss = function(){
   return this.data && this.data.isLess
 }
 
-Page.isMarkdown = function(){
+PageProto.isMarkdown = function(){
   if( this.data && this.data.isNotMarkdown )return false
   if( this.data && this.data.isMarkdown    )return true
   return this.getBody().indexOf( "mrkdwn") >= 0
 }
 
-Page.isProxy = function(){
+PageProto.isProxy = function(){
   return this.kindIs( "Proxy")
 }
-Page.declareIdempotentPredicate( "isProxy")
+PageProto.declareIdempotentPredicate( "isProxy")
 
-Page.getProxy = function(){
+PageProto.getProxy = function(){
   return this.isProxy() ? this.frontLine() : ""
 }
 
@@ -7992,7 +7996,7 @@ Page.getProxy = function(){
 // content is updated and stored, but this is much less frequent, it occurs
 // only when the page's content is edited.
 
-Page.saveContext = function(){
+PageProto.saveContext = function(){
   var ctx = {name: this.name}
   if( this.timeCreated       ){ ctx.timeCreated  = this.timeCreated       }
   if( this.lastVisitor()     ){ ctx.visitor      = this.lastVisitor()     }
@@ -8014,7 +8018,7 @@ Page.saveContext = function(){
   return ctx
 }
 
-Page.restoreContext = function( ctx, source ){
+PageProto.restoreContext = function( ctx, source ){
 // This method gets called when a page is loaded from store or when a
 // wiki is started (source == "wiki").
 // It restore some informations about the page, when it was accessed,
@@ -8023,7 +8027,7 @@ Page.restoreContext = function( ctx, source ){
 // the page is stored or some other source (PrivateContext).
 // This is done to bufferize changes and avoid writes to too many pages.
   if( !ctx )return
-  this.deep_context_de&&bug( "restoreContext:", Sys.inspect( ctx))
+  this.deep_context_de&&bug( "restoreContext:", Sys.inspect( ctx) )
   if( ctx.name && ctx.name != this.name ){
     this.bug_de&&bug( "Mismatch, name:", ctx.name)
     return
@@ -8042,10 +8046,15 @@ Page.restoreContext = function( ctx, source ){
     }
   }
   if( ctx.inherited ){
-    this.inherited = this.wiki.parentWiki.lookupPage( this.name)
+    if( !this.wiki.parentWiki ){
+      bug( "BUG? Page is wrongly inherited in context, root: " + this.wiki + ", page=" + this );
+      this.inherited = null;
+    }else{
+      this.inherited = this.wiki.parentWiki.lookupPage( this.name)
+    }
   }
   if( ctx.draft ){
-    this.context_de&&bug( "restore draft")
+    this.context_de&&bug( "restore draft" )
     this.draft()
     this.body = ctx.draft.toString()
   }
@@ -8103,7 +8112,7 @@ Page.restoreContext = function( ctx, source ){
 // Class User
 //
 // There are two kinds of users, local and proxy users. Proxy users are
-// users of some external service like twitter, mail, facebook...
+// users of some external service like twitter, mail...
 //
 // A "local" User has:
 //  an id, a 3Code
@@ -8113,26 +8122,11 @@ Page.restoreContext = function( ctx, source ){
 //  a default userlabel, equal to the username unless otherwise specified
 //  a personnal wiki, named after the id
 //  a list of wikis that the user has had some interaction with, with a date
-//  an associated primary Facebook proxy user, maybe
-//    & secondary Facebook proxy users, maybe
-//  an associated primary LinkedIn proxy user, maybe
-//    & secondary LinkedIn proxy users, maybe
 //  an associated primary Twitter proxy user, maybe
 //    & secondary Twitter proxy users, maybe
 //  an associated primary Mail proxy user, maybe
 //    & secondary Mail proxy users, maybe
 //
-// A Facebook user has:
-//  a facebook id
-//  a username maybe, @ terminated
-//  a userlabel, that is the user's full name usually
-//  an associated simpliwiki "local" user
-//
-// A LinkedIn user has:
-//  a linkedin id
-//  a username maybe, In terminated
-//  a userlabel, that is the user's first name + last name
-//  an associated simpliwiki "local" user
 //
 // A Twitter user has:
 //  a twitter id
@@ -8168,10 +8162,6 @@ function User( wiki, service, id, username, userlabel ){
       this.name = "[" + username + "]"
     }else if( service == "Twitter" ){
       this.name = "@" + username
-    }else if( service == "Facebook" ){
-      this.name = username + "@"
-    }else if( service == "LinkedIn" ){
-      this.name = username + "In"
     }else{
       this.name = username
     }
@@ -8195,19 +8185,20 @@ function User( wiki, service, id, username, userlabel ){
   }
   this.user_de&&bug( "New User")
 }
-MakeDebuggable( User, "User")
-User.prototype = User
+var UserProto = User.prototype = {};
 
-User.assertIsUser = function(){ return true }
+MakeDebuggable( UserProto, "User")
 
-User.toString = function(){
+UserProto.assertIsUser = function(){ return true }
+
+UserProto.toString = function(){
   return "<U "
   + this.service.substr( 0, 1)
   + this.id[this.service][0]
   + ">"
 }
 
-User.dump = function(){
+UserProto.dump = function(){
   var buf = [this.toString()]
   for( var item in this.id ){
     buf.push( item + "=" + this.id[item].join( " "))
@@ -8215,7 +8206,7 @@ User.dump = function(){
   return buf.join( ",")
 }
 
-User.saveContext = function(){
+UserProto.saveContext = function(){
   var ctx = {
     id: this.id,
     name: this.name,
@@ -8225,7 +8216,7 @@ User.saveContext = function(){
   return ctx
 }
 
-User.reset = function(){
+UserProto.reset = function(){
   this.user_de( "reset()")
   this.wiki  = null
   this.id    = null
@@ -8241,6 +8232,7 @@ User.reset = function(){
 }
 
 User.lookup = function( wiki, service, id ){
+// static
 // Returns a page in the wiki for the user.
 // returned page's user property points on the User object.
 // This is synchronous, as a result there is no guarantee that the content
@@ -8263,14 +8255,14 @@ User.lookup = function( wiki, service, id ){
   return page
 }
 
-User.lookupByPage = function( wiki, page ){
+UserProto.lookupByPage = function( wiki, page ){
   var service = page.getService()
   var id      = page.getId()
   if( !service || !id )return null
   return User.lookup( wiki, service, id)
 }
 
-User.getId = function(){
+UserProto.getId = function(){
 // Returns the string id of this user, local to the service she/he belongs to.
 // If user is a local user, id is a 3Code.
 // If user is a proxy, id is a twitter name if user is a twitter user, a mail
@@ -8278,7 +8270,7 @@ User.getId = function(){
   return this.id[this.service][0]
 }
 
-User.getName = function(){
+UserProto.getName = function(){
 // Returns the twitter screen name if possible, or else the facebook screen
 // or else whatever I can.
 // Note: this name is not unique, unless twitter or facebook of course.
@@ -8300,20 +8292,6 @@ User.getName = function(){
       || /\d*/.test( name)
       ){
         name = "@" + id
-      }
-    }else if( service == "Facebook" ){
-      // Better a name than none, better a new name than digits
-      if( !name
-      || /\d*/.test( name.replace( "@", ""))
-      ){
-        name = id + "@"
-      }
-    }else if( service == "LinkedId" ){
-      // Better a name than none, better a new name than digits
-      if( !name
-      || /\d*/.test( name.replace( /In$/, ""))
-      ){
-        name = id + "In"
       }
     }else if( service == "Wiki" ){
       // Better a name than none, better a new name than digits
@@ -8347,94 +8325,92 @@ User.getName = function(){
   return this.name
 }
 
-User.getServiceId = function(){
+UserProto.getServiceId = function(){
 // Returns the service name concatenated with the id
 // Format: sssssIdiiii
   return this.service + "Id" + this.id[this.service][0]
 }
 
-User.getService = function(){
+UserProto.getService = function(){
 // Return which service this user belongs to.
 // ie. returns "Twitter" if twitter user, "Mail" if mail user, etc
   return this.service
 }
 
-User.getName = function(){
+UserProto.getName = function(){
   return this.user
 }
 
-User.getLabel = function(){
+UserProto.getLabel = function(){
   this.test_de&&bug( "getLabel:", this.label)
   return this.label
 }
 
-User.setLabel = function( label ){
+UserProto.setLabel = function( label ){
   if( label != this.label ){
     this.label = label
     this.touch()
   }
 }
 
-User.getLocalId = function(){
+UserProto.getLocalId = function(){
   return this.isProxy()
   ? this.getPrimaryId( "User")
   : this.id["User"][0]
 }
 
-User.getWikiId = function(){
+UserProto.getWikiId = function(){
   return this.isWiki()
   ? this.id["Wiki"][0]
   : this.getPrimaryId( "Wiki")
 }
 
-User.getTwitterId = function(){
+UserProto.getTwitterId = function(){
   return this.isTwitter()
   ? this.id["Twitter"][0]
   : this.getPrimaryId( "Twitter")
 }
 
-User.getFacebookId = function(){
+UserProto.getFacebookId = function(){
   return this.isFacebook()
   ? this.id["Facebook"][0]
   : this.getPrimaryId( "Facebook")
 }
 
-User.getLinkedInId = function(){
+UserProto.getLinkedInId = function(){
   return this.isLinkedIn()
   ? this.id["LinkedIn"][0]
   : this.getPrimaryId( "LinkedIn")
 }
 
-User.getMailId = function(){
+UserProto.getMailId = function(){
   return this.isMail()
   ? this.id["Mail"][0]
   : this.getPrimaryId( "Mail")
 }
 
-User.getDropboxId = function(){
+UserProto.getDropboxId = function(){
   return this.isDropbox()
   ? this.id["Dropbox"][0]
   : this.getPrimaryId( "Dropbox")
 }
 
-User.isLocalOnly = function(){
+UserProto.isLocalOnly = function(){
   this.de&&mand( !this.isProxy() )
   return !this.getTwitterId()
-  && !this.getFacebookId()
-  && !this.getLinkedInId()
   && !this.getWikiId()
 }
 
-User.isReady = function(){
+UserProto.isReady = function(){
 // User is "ready" when the corresponding local user is identified.
   return !!(this.local)
 }
 
-User.isPremium = function(){
+UserProto.isPremium = function(){
   return this.premium
 }
 
-User.logout = function( loop ){
+UserProto.logout = function( loop ){
   var session = this.session
   var user
   this.de&&mand( !loop )
@@ -8450,7 +8426,7 @@ User.logout = function( loop ){
   }
 }
 
-User.trackVisit = function( session ){
+UserProto.trackVisit = function( session ){
   this.user_de&&bug( "trackVisit:", session)
   this.de&&mand( !this.isProxy() )
   if( session.isGuest() && !session.wiki.isVeryOpen() ){
@@ -8496,13 +8472,13 @@ User.trackVisit = function( session ){
   })
 }
 
-User.getVisits = function(){
+UserProto.getVisits = function(){
 // Returns the hash that contains the visits
   this.de&&mand( !this.isProxy() )
   return this.visits
 }
 
-User.getSortedVisits = function(){
+UserProto.getSortedVisits = function(){
   var visits = this.getVisits()
   if( !visits )return []
   var item
@@ -8521,42 +8497,42 @@ User.getSortedVisits = function(){
   return visits
 }
 
-User.isProxy = function(){
-// A "proxy" user is a user that belongs to either Twitter, Facebook or mail.
+UserProto.isProxy = function(){
+// A "proxy" user is a user that belongs to either Twitter or mail.
   return !this.isLocal
 }
 
-User.isDeprecated = function(){
+UserProto.isDeprecated = function(){
 // A local user becomes deprecated after a merging due to a conflict
   this.de&&mand( this.isLocal )
   return !!this.update
 }
 
-User.is = function( service ){
+UserProto.is = function( service ){
   return this.service == service
 }
 
-User.getPrimaryId = function( service ){
+UserProto.getPrimaryId = function( service ){
   return this.isProxy()
   ? this.local.getPrimaryId( service)
   : this.id[service] ? this.id[service][0] : ""
 }
 
-User.getIds = function( service ){
+UserProto.getIds = function( service ){
   return this.isProxy()
   ? this.local.getIds( service)
   : this.id[service] ? this.id[service].slice( 0) : []
 }
 
-User.getOwnIds = function( service ){
+UserProto.getOwnIds = function( service ){
   return this.id[service] ? this.id[service].slice( 0) : []
 }
 
-User.setOwnIds = function( service, list ){
+UserProto.setOwnIds = function( service, list ){
   this.id[service] = list
 }
 
-User.hasId = function( service, id, as_primary ){
+UserProto.hasId = function( service, id, as_primary ){
   this.de&&mand( service )
   this.de&&mand( id )
   if( this.service == service )return this.id[service][0] == id
@@ -8567,7 +8543,7 @@ User.hasId = function( service, id, as_primary ){
   return ids.indexOf( id) >=  0
 }
 
-User.hasOwnId = function( service, id, as_primary ){
+UserProto.hasOwnId = function( service, id, as_primary ){
   if( this.service == service )return this.id[service][0] == id
   var ids = this.getOwnIds( service)
   if( as_primary ){
@@ -8576,11 +8552,11 @@ User.hasOwnId = function( service, id, as_primary ){
   return ids.indexOf( id) >=  0
 }
 
-User.getSecondaryIds = function( service ){
+UserProto.getSecondaryIds = function( service ){
   return this.getIds( service).slice( 1)
 }
 
-User.setPrimaryId = function( service, id ){
+UserProto.setPrimaryId = function( service, id ){
   this.de&&mand( !this.isProxy() )
   this.de&&mand( service )
   this.de&&mand( id )
@@ -8596,7 +8572,7 @@ User.setPrimaryId = function( service, id ){
   return this
 }
 
-User.addId = function( service, id ){
+UserProto.addId = function( service, id ){
 // Add an id for the specified service, it becomes the new primary id.
   this.de&&mand( service )
   this.de&&mand( id )
@@ -8627,7 +8603,7 @@ User.addId = function( service, id ){
   return this
 }
 
-User.clearId = function( service, id ){
+UserProto.clearId = function( service, id ){
   this.de&&mand( !this.isProxy() )
   this.de&&mand( service )
   this.de&&mand( id )
@@ -8639,18 +8615,18 @@ User.clearId = function( service, id ){
   return this
 }
 
-User.clearSecondaryId = function( service, id ){
+UserProto.clearSecondaryId = function( service, id ){
   this.de&&mand( !this.isProxy() )
   this.de&&mand( id != this.getPrimaryId( id) )
   return this.clearId( service, id)
 }
 
-User.clearPrimaryId = function( service ){
+UserProto.clearPrimaryId = function( service ){
   this.de&&mand( !this.isProxy() )
   return this.clearId( this.getPrimaryId( service))
 }
 
-User.getAllOtherIds = function(){
+UserProto.getAllOtherIds = function(){
 // Returns all the ids for all the other services
 // Returns { s2[id1, id2, ...], s3...}
 // For proxies, delegates to local user
@@ -8660,13 +8636,13 @@ User.getAllOtherIds = function(){
   return ids
 }
 
-User.getOtherIds = function( service ){
+UserProto.getOtherIds = function( service ){
 // Returns the ids in other (non local) services, as a list
 // Returns null if none
   return this.getAllOtherIds[service]
 }
 
-User.isEmpty = function(){
+UserProto.isEmpty = function(){
 // A User is empty if it does not reference some other user
   var size = 0
   for( var key in this.id ){
@@ -8677,7 +8653,7 @@ User.isEmpty = function(){
   return true
 }
 
-User.assertLocalNotEmpty = function(){
+UserProto.assertLocalNotEmpty = function(){
   if( !this.isProxy() && !this.isEmpty() )return
   if( this.isProxy() ){
     this.bug_de&&bug( "unexpected proxy user:" + this)
@@ -8689,7 +8665,7 @@ User.assertLocalNotEmpty = function(){
   this.de&&mand( false )
 }
 
-User.assertProxyNotEmpty = function(){
+UserProto.assertProxyNotEmpty = function(){
   if( this.isProxy()
   && !this.isEmpty()
   && this.id["User"]
@@ -8708,43 +8684,33 @@ User.assertProxyNotEmpty = function(){
   this.de&&mand( false )
 }
 
-User.isWiki = function(){
+UserProto.isWiki = function(){
 // True if user is a "Wiki" type of proxy 
   return this.isProxy() && this.service == "Wiki"
 }
 
-User.isTwitter = function(){
+UserProto.isTwitter = function(){
 // True if user is a proxy that belongs to Twitter
   return this.isProxy() && this.service == "Twitter"
 }
 
-User.isFacebook = function(){
-// True if user is a proxy that belongs to Facebook
-  return this.isProxy() && this.service == "Facebook"
-}
-
-User.isLinkedIn = function(){
-// True if user is a proxy that belongs to Facebook
-  return this.isProxy() && this.service == "LinkedIn"
-}
-
-User.isMail = function(){
+UserProto.isMail = function(){
 // True if user is a proxy that has a mail address
   return this.isProxy() && this.service == "Mail"
 }
 
-User.isDropbox = function(){
+UserProto.isDropbox = function(){
 // True if user is a proxy that has a Dropbox token
   return this.isProxy() && this.service == "Dropbox"
 }
 
-User.touch = function(){
+UserProto.touch = function(){
 // Track a change so that .save() knows it has to persist it.
   this.deep_user_de&&bug( "touched")
   this.isDirty = true
 }
 
-User.load = function( cb ){
+UserProto.load = function( cb ){
 // Incarn the user's page and then invoke cb( err, user, page).
 // Sets page.user to reference This.
 // Invokes cb( 0, user, page) or cb( err, user, page) on error.
@@ -8761,7 +8727,7 @@ User.load = function( cb ){
   this.page.read( loaded)
 }
 
-User.restoreUserContext = function(){
+UserProto.restoreUserContext = function(){
 // Called when page is loaded. This method reads data from the page in order
 // to retrieve the various ids of the user on various services.
 // This method is expected to be called once only.
@@ -8791,7 +8757,7 @@ User.restoreUserContext = function(){
   this.isLoaded = true
 }
 
-User.save = function( cb ){
+UserProto.save = function( cb ){
 // Persists changes, if any, into the user's page.
 // If user is a proxy, local user is saved too if it is know.
 // Invokes cb( 0, user, page) or cb( err, user, page) on error.
@@ -8830,22 +8796,22 @@ User.save = function( cb ){
   this.page.write( text, saved)
 }
 
-User.set = function( key, value ){
+UserProto.set = function( key, value ){
   this.de&&mand( this.isLoaded )
   this.de&&mand( this.page.wasIncarned() )
-  var old_value = this.page.get( key)
+  var old_value = page.get( key)
   if( value != old_value ){
-    this.page.set( key, value)
+    page.set( key, value)
     this.deep_user_de&&bug( "set:", key, "to:", value)
     this.isDirty = true
   }
 }
 
-User.get = function( key ){
+UserProto.get = function( key ){
   return this.page.get( key)
 }
 
-User.trackServiceId = function( service, id, cb ){
+UserProto.trackServiceId = function( service, id, cb ){
 // Remembers the id of the user in another service.
 // This information is stored in the local user if This belongs to some
 // other service.
@@ -8883,14 +8849,14 @@ User.trackServiceId = function( service, id, cb ){
     }
     user.save( function( serr, saved_user, page ){
       that.deep_user_de&&bug( "track, savedUser:", user)
-      that.de&&mand( serr || saved_user == user )
+      de&&mand( serr || saved_user == user )
       user.de&&mand( serr || !user.isDirty, "dirty" )
       // Create a bi-directional relationship
       var otheruser
       if( user.isLocal ){
         otheruser = User.lookup( that.wiki, service, id).user
       }else{
-        that.de&&mand( user.id["User"])
+        de&&mand( user.id["User"])
         otheruser = User.lookup( that.wiki, "User", user.id["User"][0]).user
       }
       user.deep_user_de&&bug( "track other:", otheruser)
@@ -8944,47 +8910,37 @@ User.extractId = function( id ){
 }
 
 // For Wiki ids, where wiki=code forms the full id
-User.extractWikiName = User.extractName
-User.extractCode     = User.extractId
+UserProto.extractWikiName = User.extractName
+UserProto.extractCode     = User.extractId
 
-User.trackTwitterId = function( name, id, cb ){
+UserProto.trackTwitterId = function( name, id, cb ){
 // Track the user's twitter id
   this.trackServiceId( "Twitter", name + "=" + id, cb)
 }
 
-User.trackFacebookId = function( name, id, cb ){
-// Track the user's facebook id
-  this.trackServiceId( "Facebook", name + "=" + id, cb)
-}
-
-User.trackLinkedInId = function( name, id, cb ){
-// Track the user's linkedin id
-  this.trackServiceId( "LinkedIn", name + "=" + id, cb)
-}
-
-User.trackWikiId = function( wiki, code, cb ){
+UserProto.trackWikiId = function( wiki, code, cb ){
 // Track the user's wiki id
 // Note: order is reverse than usual, ie id first and then screenname
 // because id is a wiki name & screenname is actually a code/secret
   this.trackServiceId( "Wiki", wiki + "=" + code, cb)
 }
 
-User.trackMailId = function( id, cb ){
+UserProto.trackMailId = function( id, cb ){
 // Track the user's mail id
   this.trackServiceId( "Mail", id, cb)
 }
 
-User.trackDropboxId = function( id, cb ){
+UserProto.trackDropboxId = function( id, cb ){
 // Track the user's dropbox id
   this.trackServiceId( "Dropbox", id, cb)
 }
 
-User.trackLocalId = function( id, cb ){
+UserProto.trackLocalId = function( id, cb ){
 // Associate a proxy user with it's local user account
   this.trackServiceId( "User", id, cb)
 }
 
-User.getLocal = function( cb, seen, proxy_user, loop ){
+UserProto.getLocal = function( cb, seen, proxy_user, loop ){
 // Get the local user, works on proxy users.
 // Invokes cb( 0, local_user), cb( err, local_user) on error.
 // When the callback is called, the User object is fully loaded(), ie. .load()
@@ -9015,10 +8971,10 @@ User.getLocal = function( cb, seen, proxy_user, loop ){
             proxy_user.getService(),
             proxy_user.getId(),
             function fix_corruption_save_the_world_cb( err, lusr, pusr ){
-              that.de&&mand( lusr == that,       "bad local:" + lusr + "!=" + that)
-              that.de&&mand( pusr == proxy_user, "bad proxy:" + pusr + "!=" + proxy_user)
+              that.de&&mand( lusr  == that,       "bad local:" + lusr + "!=" + that)
+              that.de&&mand( puser == proxy_user, "bad proxy:" + pusr + "!=" + proxy_user)
               lusr.assertLocalNotEmpty()
-              pusr.assertProxyNotEmpty()
+              puser.assertProxyNotEmpty()
               if( err ){
                 // ToDo: err handling...
                 that.bug_de&&bug( "Unhandled error in User.getLocal()")
@@ -9072,16 +9028,14 @@ User.getLocal = function( cb, seen, proxy_user, loop ){
   })
 }
 
-User.getHomepage = function( cb ){
+UserProto.getHomepage = function( cb ){
 // Returns the "HomePage" of the user, inside the user's personnal wiki.
 // cb is cb( err, page, user, local_user)
 // This is a fairly powerfull function as it can start from a proxy User,
 // load the local User, init her wiki and then read the HomePage right
 // before calling the cb... !
   // Do nothing if homepage was accessed before
-  if( this.homepage ){
-    cb.call( this, this.homepage.err, this, this.homepage.user)
-  }
+  if( this.homepage ){ cb.call( this, this.homepage.err, this, user) }
   var that = this
   // Load local User
   this.getLocal( function( err, user ){
@@ -9103,7 +9057,7 @@ User.getHomepage = function( cb ){
   })
 }
 
-User.mergeWith = function( other ){
+UserProto.mergeWith = function( other ){
 // Called to merge two local users in one
 // Returns the one that is considered the "main" user
 // The other one gets an addition property: "user" that reference the
@@ -9117,7 +9071,7 @@ User.mergeWith = function( other ){
   return this
 }
 
-User.test = function(){
+UserProto.test = function(){
 
   var that = this
   function p(){ that.test_de&&bug .apply( that, arguments) }
@@ -9277,7 +9231,7 @@ User.test = function(){
 // A session object tracks the connection between a web browser user and
 // SimpliWiki. The same web browser can be involved in multiple session,
 // typically with multiple wikis. Sometimes the user behing the web browser
-// is identified, or even authenticated (twitter, facebook), sometimes she
+// is identified, or even authenticated (twitter), sometimes she
 // just provided some comment about her, not enough to uniquely identify
 // her, sometimes the user is totally anonymous.
 //
@@ -9477,7 +9431,7 @@ Session.login = function( wiki, subdomain, custom, path, code, query, req ){
     code = this.loginCode
     if( !code ){
       // Use the code of "Connect with SimpliWiki" if any
-      code = this.useWikiCodeCookie( req)
+      code = this.useWikiCodeCookie( req )
       if( code ){
         // If "secret" code, transform it somehow so that mentor cannot
         // use it to impersonate visitor
@@ -9531,14 +9485,8 @@ Session.login = function( wiki, subdomain, custom, path, code, query, req ){
     this.twitterName   = ""
     this.twitterLabel  = ""
     this.twitterId     = ""
-    this.facebookName  = ""
-    this.facebookLabel = ""
-    this.facebookId    = ""
-    this.linkedinName  = ""
-    this.linkedinLabel = ""
-    this.linkedinId    = ""
   }
-  this.isOwner      = false // Authentic fb & twitter users "own" some wikis
+  this.isOwner      = false // Authentic twitter users "own" some wikis
   this.isMentor     = false
   this.isAdmin      = false 
   this.canMentor    = false
@@ -9815,45 +9763,32 @@ Session.login = function( wiki, subdomain, custom, path, code, query, req ){
     this.bug_de&&bug( "Already bound to a user:", this.user)
   }
 
-  // Get this.twitterName & id and facebookName & id from cookies
+  // Get this.twitterName & id from cookies
   this.useWikiCodeCookie(     req)
   this.useTwitterNameCookie(  req)
-  this.useFacebookNameCookie( req)
-  this.useLinkedInNameCookie( req)
 
   // Some additional stuff if login with one of those
   if( this.user
   || this.wikiCode
   || this.twitterName
-  || this.facebookName
-  || this.linkedinName
   ){
     // I load the User object then I proceed with the login
     return this.trackUser( function( err, session, user ){
       // What is done here is only one part of the story, see .userFoundEvent()
       if( !err ){
-        that.de&&mand( that == session, 
-        "bad session, " + that + " != " + session )
+        de&&mand( that == session,   "bad session, " + that + " != " + session )
         // There are cases with multiple User objects, ie conflict&merge
         if( that.user != user ){
           that.login_de&&bug( "user:" + that.user + ", andAlso:" + user )
         }
       }
-      // Explicit code takes over twitter,fb & co identity
-      if( login_with_code() )return
       // I load the desired page and I proceed with the login 
-      page = that.lookup( page)
+      page = this.lookup( page)
       return page.read( function( err, page){
         // ToDo: err handling
         // First try to log owner with the right name
         if( that.isWikiOwner( "@" + that.twitterName) ){
           return that.twitterLoginForm( that.twitterName, page, req) 
-        }
-        if( that.isWikiOwner( that.facebookName + "@") ){
-          return that.facebookLoginForm( that.facebookName, page, req)
-        }
-        if( that.isWikiOwner( that.linkedinName + "In") ){
-          return that.linkedinLoginForm( that.linkedinName, page, req)
         }
         if( that.isWikiOwner( that.wikiId + "-wiki") ){
           return that.wikiLoginForm( that.wikiId, page, req) 
@@ -9863,12 +9798,6 @@ Session.login = function( wiki, subdomain, custom, path, code, query, req ){
           // ToDo: err handling
           return that.twitterLoginForm( that.twitterName, page, req) 
         }
-        if( that.cookiedFacebookName ){
-          return that.facebookLoginForm( that.facebookName, page, req)
-        }
-        if( that.cookiedLinkedinName ){
-          return that.linkedinLoginForm( that.linkedinName, page, req)
-        }
         if( that.cookiedWikiId ){
           // ToDo: err handling
           return that.wikiLoginForm( that.wikiId, page, req) 
@@ -9877,12 +9806,6 @@ Session.login = function( wiki, subdomain, custom, path, code, query, req ){
         if( that.twitterName ){
           // ToDo: err handling
           return that.twitterLoginForm( that.twitterName, page, req) 
-        }
-        if( that.facebookName ){
-          return that.facebookLoginForm( that.facebookName, page, req)
-        }
-        if( that.linkedinName ){
-          return that.linkedinLoginForm( that.linkedinName, page, req)
         }
         if( that.wikiCode ){
           // ToDo: err handling
@@ -10017,119 +9940,17 @@ Session.twitterLoginForm = function( name, page, req ){
   return this.userLoginForm( "@" + name, is_mentor, page, req)
 }
 
-Session.fixFacebookLogin = function( name, req ){
-// Checks if facebook user is mentor of the wiki. This is true if the wiki's
-// name is equal to the user's screen name + "@".
-// Also sets the login name & login page to match the owner name.
-// ToDo: what if screen name changes?
-  var is_mentor = false
-  if( !name ){
-    name = this.useFacebookNameCookie( req)
-    if( !name && this.user ){
-      if( this.user.getFacebookId() ){
-        name =  User.extractName( this.user.getFacebookId())
-      }
-    }
-  }
-  !name || (name = name + "@")
-  if( this.isWikiOwner( name) ){
-    this.login_de&&bug( "ownerFacebookUser:", name, ", mentor of its own wiki")
-    is_mentor = true
-    // ToDo: move this to loginForm() cause 
-    // However: not a mentor if wiki config says so
-    if( this.wiki.config.mentor
-    &&  this.wiki.config.mentor != name + "@"
-    ){
-      this.login_de&&bug( "notMentorFacebookUser:", name)
-      this.loginLog( "owner but not configured mentor, " + name)
-      is_mentor = false
-    }else{
-      this.isOwner = true
-      this.loginLog( "(owner " + name + ")")
-      if( this.loginName != name ){
-        this.login_de&&bug( "ownerName:", name, "insteadOf:", this.loginName)
-        this.setLoginName( name)
-      }
-    }
-  }
-  return is_mentor
-}
-
-
-Session.facebookLoginForm = function( name, page, req ){
-// Change session's user & right based on authenticated facebook name.
-// Called by Session.login()
-  this.login_de&&bug( "facebookLogin:", name, "page:", page)
-  // If name of user matches name of wiki, make user a mentor
-  var is_mentor = this.fixFacebookLogin( name, req)
-  if( is_mentor ){
-    this.login_de&&bug( "mentor of facebook user's wiki, user:", name)
-  }
-  return this.userLoginForm( name + "@", is_mentor, page, req)
-}
-
-Session.fixLinkedInLogin = function( name, req ){
-// Checks if linkedin user is mentor of the wiki. This is true if the wiki's
-// name is equal to the user's screen name + "In".
-// Also sets the login name & login page to match the owner name.
-// ToDo: what if screen name changes?
-  var is_mentor = false
-  if( !name ){
-    name = this.useLinkedInNameCookie( req)
-    if( !name && this.user ){
-      if( this.user.getLinkedInId() ){
-        name =  User.extractName( this.user.getLinkedInId())
-      }
-    }
-  }
-  !name || (name = name + "In")
-  if( this.isWikiOwner( name) ){
-    this.login_de&&bug( "ownerLinkedInUser:", name, ", mentor of its own wiki")
-    is_mentor = true
-    // ToDo: move this to loginForm() cause 
-    // However: not a mentor if wiki config says so
-    if( this.wiki.config.mentor
-    &&  this.wiki.config.mentor != name
-    ){
-      this.login_de&&bug( "notMentorLinkedInUser:", name)
-      this.loginLog( "owner but not configured mentor, " + name)
-      is_mentor = false
-    }else{
-      this.isOwner = true
-      this.loginLog( "(owner " + name + ")")
-      if( this.loginName != name ){
-        this.login_de&&bug( "ownerName:", name, "insteadOf:", this.loginName)
-        this.setLoginName( name)
-      }
-    }
-  }
-  return is_mentor
-}
-
-
-Session.linkedinLoginForm = function( name, page, req ){
-// Change session's user & right based on authenticated linkedin name.
-// Called by Session.login()
-  this.login_de&&bug( "linkedinLogin:", name, "page:", page)
-  // If name of user matches name of wiki, make user a mentor
-  var is_mentor = this.fixLinkedInLogin( name, req)
-  if( is_mentor ){
-    this.login_de&&bug( "mentor of linkedin user's wiki, user:", name)
-  }
-  return this.userLoginForm( name + "In", is_mentor, page, req)
-}
-
 
 Session.userLoginForm = function( user, is_mentor, page, req ){
 // This method is called after .login() if there is any information available
 // to somehow identify (or even authenticate) the user.
-// It is called by either twitterLoginForm() or facebookLoginForm(), ...
+// It is called by either twitterLoginForm() or ...
 
   var that = this
   this.login_de&&bug( "userLogin:", user, "mentor:", is_mentor, "page:", page)
 
   // ToDo: better authentication, it is premature to declare authentic,
-  // twitter id or facebook must be checked against their signature in
+  // twitter id must be checked against their signature in
   // cookies first
   // OTOH there is no signature on LinkedIn
   // Note: so far (feb 14 2011) it's the only place when isAuthentic is set
@@ -10211,7 +10032,7 @@ Session.userLoginForm = function( user, is_mentor, page, req ){
     // Let's try to retrieve the User object asap
     if( !that.user ){
       that.user = that.wiki.lookupUser( that)
-      that.de&&mand( !that.user || that.user.isLocal )
+      de&&mand( !that.user || that.user.isLocal )
     }
     // More work
     that.loginForm( user, code, false, is_mentor, page, req)
@@ -10236,18 +10057,10 @@ Session.codeLoginForm = function( page, intentional_code, req ){
   // Now let's try to figure out the user's name
   var user
   
-  // Whatever happens, twitter, facebook, linkedin user is mentor of her own wiki
+  // Whatever happens, twitter user is mentor of her own wiki
   var is_mentor = false
   if( this.fixTwitterLogin( null, req) ){
     this.login_de&&bug( "also twitter owner is mentor")
-    is_mentor = true
-  }
-  if( this.fixFacebookLogin( null, req) ){
-    this.login_de&&bug( "also facebook owner is mentor")
-    is_mentor = true
-  }
-  if( this.fixLinkedInLogin( null, req) ){
-    this.login_de&&bug( "also linkedin owner is mentor")
     is_mentor = true
   }
 
@@ -10443,7 +10256,7 @@ Session.loginForm = function( user, code, intentional, has_mentor, page, req ){
     user = this.wiki.config.mentorUser
     this.login_de&&bug( this, "configDefinedMentor:", user)
     this.loginLog( "using configured mentor code, " + user)
-    has_mentor = true
+    is_mentor = true
     is_config_defined_mentor = true
   }
   if( !user ){
@@ -10828,7 +10641,7 @@ Session.loginForm = function( user, code, intentional, has_mentor, page, req ){
       that.trackUser( function( err, session, user ){
         // What is done here is only one part of the story, see .userFoundEvent()
         if( !err ){
-          that.de&&mand( that == session, "bad session, " + that + " != " + session )
+          de&&mand( that == session,   "bad session, " + that + " != " + session )
           // There are cases with mutliple User objects, ie conflict&merge
           if( that.user != user ){
             that.login_de&&bug( "user:" + that.user + ", andAlso:" + user )
@@ -11071,7 +10884,6 @@ Session.discardDraftCode = function(){
   if( !code_page.isDraft() )return
 
   // Clear only if there is no "non draft" page
-  var that = this
   code_page.read( function( err ){
     // If no err, it means the page exists in a non draft form
     if( !err )return
@@ -11144,7 +10956,7 @@ Session.touch = function(){
 
 
 Session.handleChangedLogin = function( page, req ){
-// Check current value of "connect" cookies (inc twitter, facebook & linkedin).
+// Check current value of "connect" cookies (inc twitter).
 // If changed, logout session and redirect to some decent page
 // Return false if nothing happened, true if req is beeing processed.
 
@@ -11223,74 +11035,6 @@ Session.handleChangedLogin = function( page, req ){
     }
   }
 
-  var oldname = this.cookiedFacebookName
-  var newname = this.useFacebookNameCookie( req)
-  if( oldname ){
-    // Logout if cookie disappeared/changed
-    if( newname != oldname ){
-      this.login_de&&bug( "facebook cookie gone")
-      this.logout( "facebook bye")
-      var pagename
-      if( page.isSensitive() ){
-        pagename = "/HomePage"
-      }else{
-        pagename = "/" + page.name
-      }
-      pagename = ("/" + this.wiki.fullname() + pagename).replace( "//", "/")
-      // ToDo: I should redirect toward a closure
-      this.redirect( req, pagename)
-      return true
-    }else{
-      //this.login_de&&bug( "Facebook name is still", this.facebookName)
-    }
-  }else{
-    if( newname ){
-      if( this.isGuest() ){
-        this.login_de&&bug( "Delayed login, facebook")
-        this.facebookLoginForm( newname, page, req)
-        return true
-      }else{
-        need_tracking = true
-      }
-    }else{
-      //this.login_de&&bug( "No facebook name in cookies")
-    }
-  }
-
-  var oldname = this.cookiedLinkedinName
-  var newname = this.useLinkedInNameCookie( req)
-  if( oldname ){
-    // Logout if cookie disappeared/changed
-    if( newname != oldname ){
-      this.login_de&&bug( "linkedin cookie gone")
-      this.logout( "linkedin bye")
-      var pagename
-      if( page.isSensitive() ){
-        pagename = "/HomePage"
-      }else{
-        pagename = "/" + page.name
-      }
-      pagename = ("/" + this.wiki.fullname() + pagename).replace( "//", "/")
-      // ToDo: I should redirect toward a closure
-      this.redirect( req, pagename)
-      return true
-    }else{
-      //this.login_de&&bug( "Facebook name is still", this.facebookName)
-    }
-  }else{
-    if( newname ){
-      if( this.isGuest() ){
-        this.login_de&&bug( "Delayed login, linkedin")
-        this.linkedinLoginForm( newname, page, req)
-        return true
-      }else{
-        need_tracking = true
-      }
-    }else{
-      //this.login_de&&bug( "No linkedin name in cookies")
-    }
-  }
-
   // If new info about user, track wiki membership
   if( need_tracking ){
     this.login_de&&bug( "New login info, track user")
@@ -11320,23 +11064,16 @@ Session.getPlausibleName = function( page, req ){
     || (this.cookiedWikiName     && this.wikiId)
     || (this.cookiedTwitterName  && ("@" + this.cookiedTwitterName))
     || (this.cookiedFacebookName && (this.cookiedFacebookName + "@"))
-    || (this.cookiedLinkedinName && (this.cookiedLinkedinName + "In"))
     || this.wikiId
     || (this.twitterName  && ("@" + this.twitterName))
-    || (this.facebookName && (this.facebookName + "@"))
-    || (this.linkedinName && (this.linkedinName + "In"))
     || this.loginName.replace( /Guest$/, "").replace( /^Some$/, "someone")
   }
   // Try to figure out some default name based on other accounts
   var service_name = false
   || (this.cookiedWikiId       && this.wikiId)
   || (this.cookiedTwitterName  && ("@" + this.cookiedTwitterName))
-  || (this.cookiedFacebookName && (this.cookiedFacebookName + "@"))
-  || (this.cookiedLinkedinName && (this.cookiedLinkedinName + "In"))
   || this.wikiId
   || (this.twitterName  && ("@" + this.twitterName))
-  || (this.facebookName && (this.facebookName + "@"))
-  || (this.linkedinName && (this.linkedinName + "In"))
 
   return service_name
 }
@@ -11379,22 +11116,18 @@ Session.declareIdempotentPredicate( "isLion")
 
 Session.getLogins = function(){
 // Returns {page:id,page:id,...} for all wikis that the user can log into.
-// id is either a Code or the twitter/facebook/linkedin id.
+// id is either a Code or the twitter id.
   var logins = {}
-  var id
-  var that = this
-  ;["Twitter","Facebook","Linkedin"].forEach( function( service ){
+  var id;
+  var that = this;
+  ["Twitter"].forEach( function( service ){
     id = that["cookied" + service + "Name"]
     if( !id )return
     if( service == "Twitter" ){
       id = "@" + id
-    }else if( service == "Facebook" ){
-      id = id + "@"
-    }else if( service == "Linkedin" ){
-      id = id + "In"
     }
     logins[id] = id
-  })
+  });
   var cookies = this.req && this.req.headers.cookie
   if( !cookies )return logins
   // ToDo: DRY
@@ -11443,8 +11176,6 @@ Session.getUserObject = function(){
 
 Session.isAnonymous = function(){
   if( this.twitterName            )return false
-  if( this.facebookName           )return false
-  if( this.linkedinName           )return false
   if( this.wikiName               )return false
   if( this.user ){
     this.bug_de&&bug( "User object but no authentic name")
@@ -11524,13 +11255,16 @@ Session.getCookie = function( name, req ){
 }
 
 Session.encryptSha1 = function( str, salt ){
-  return Crypto.createHmac( "sha1", salt).update( str).digest( "hex")
+  return crypto.createHmac( "sha1", salt).update( str).digest( "hex")
 }
 
 Session.useWikiCodeCookie = function( req ){
 // Extract name & code from cookies set by user "Connect with SimpliWiki"
-// Note: side effect on this.wikiId && this.wikiCode, if cookie
-  var wiki_id = this.getCookie( "sw_wiki_id", req)
+// Note: side effect on this.twitterId && this.twitterName, if cookie
+  var wiki_id = this.getCookie( "sw_twitter_id", req)
+  if( !wiki_id ){
+    wiki_id = this.getCookie( "sw_twitter_screenname", req)
+  }
   // Sanitize
   if( wiki_id ){
     wiki_id = wiki_id.replace( /[^A-Z_a-z0-9]/g, "")
@@ -11539,7 +11273,7 @@ Session.useWikiCodeCookie = function( req ){
   ||  wiki_id == "null" // Dirty cookies, ignore them
   ||  wiki_id == "undefined"
   ){
-    return null
+    return null;
   }
   // Should check signature of wiki_id somehow
   //var signature_idx = twitter_id.indexOf( ":")
@@ -11548,25 +11282,24 @@ Session.useWikiCodeCookie = function( req ){
   var id = wiki_id // twitter_id.substr( 0, signature_idx)
   // ToDo: check signature, see http://dev.twitter.com/anywhere/begin#login-signup
   // Digest::SHA1.hexdigest( id + consumer_secret)
-  var name = this.getCookie( "sw_wiki_screenname", req)
+  var name = this.getCookie( "sw_twitter_screenname", req)
   // Sanitize
   if( name ){
-    name = name.replace( /[^A-Z_a-z0-9]/g, "").toLowerCase().capitalize()
+    name = name.replace( /[^A-Z_a-z0-9]/g, "")
   }
   if( !name ){
-    this.login_de&&bug( "Some wiki id but not the code/secret")
+    this.login_de&&bug( "Some wiki id but not the display name")
     return null
   }
   // Returning anonymous user
   if( name == "SomeGuest" || name == "null" ){
     return null
   }
-  this.wikiId   = this.cookiedWikiId   = id
-  this.wikiCode = this.cookiedWikiCode = name
-  if( false && (this.wikiLabel = this.getCookie( "sw_wiki_label", req)) ){
-    this.wiki.trackUserLabel( this.wikiCode, this.wikiLabel)
+  this.twitterId   = this.cookiedTwitterId   = id
+  this.twitterName = this.cookiedTwitterName = name
+  if( this.twitterLabel = this.getCookie( "sw_twitter_label", req ) ){
+    this.wiki.trackUserLabel( "@" + this.twitterName, this.twitterLabel)
   }
-  this.login_de&&bug( "Wiki cookie:", this.wikiCode)
   return name
 }
 
@@ -11606,79 +11339,6 @@ Session.useTwitterNameCookie = function( req ){
   return name
 }
 
-Session.useFacebookNameCookie = function( req ){
-// Extract facebook name from cookie
-// Note: facebook name does not include ending @
-// Note: side effect on this.facebookId && this.facebookName
-  var facebook_id = this.getCookie( "sw_facebook_id", req)
-  if( !facebook_id
-  ||  facebook_id == "null"	// Dirty cookies, ignore them
-  ||  facebook_id == "undefined"
-  ){
-    return null
-  }
-  // Should check signature of facebook_id
-  //var signature_idx = twitter_id.indexOf( ":")
-  //if( signature_idx == - 1 ) return null
-  //var signature = twitter_id.substr( signature_idx + 1)
-  var id = facebook_id // twitter_id.substr( 0, signature_idx)
-  // ToDo: check signature, see http://dev.twitter.com/anywhere/begin#login-signup
-  // Digest::SHA1.hexdigest( id + consumer_secret)
-  var name = this.getCookie( "sw_facebook_screenname", req)
-  if( !name ){
-    this.login_de&&bug( "Some facebook id but not the display name")
-    return null
-  }
-  // Returning anonymous user
-  if( name == "SomeGuest" || name == "null" ){
-     return null
-  }
-  this.facebookId   = this.cookiedFacebookId   = id
-  this.facebookName = this.cookiedFacebookName = name
-  if( this.facebookLabel = this.getCookie( "sw_facebook_label", req) ){
-    this.wiki.trackUserLabel( this.facebookName + "@", this.facebookLabel)
-  }
-  // Detect when I run as a Facebook app in a canvas
-  this.facebookIframe = this.getCookie( "sw_facebook_iframe", req)
-  this.login_de&&bug( "Facebook cookie:", this.facebookName)
-  return name
-}
-
-Session.useLinkedInNameCookie = function( req ){
-// Extract linkedin name from cookie
-// Note: linkedin name does not include ending In
-// Note: side effect on this.linkedinId && this.linkedinName
-  var linkedin_id = this.getCookie( "sw_linkedin_id", req)
-  if( !linkedin_id
-  ||  linkedin_id == "null"	// Dirty cookies, ignore them
-  ||  linkedin_id == "undefined"
-  ){
-    return null
-  }
-  // Should check signature of linkedin_id but linkedin misses that...
-  //var signature_idx = twitter_id.indexOf( ":")
-  //if( signature_idx == - 1 ) return null
-  //var signature = twitter_id.substr( signature_idx + 1)
-  var id = linkedin_id // twitter_id.substr( 0, signature_idx)
-  // ToDo: check signature, see http://dev.twitter.com/anywhere/begin#login-signup
-  // Digest::SHA1.hexdigest( id + consumer_secret)
-  var name = this.getCookie( "sw_linkedin_screenname", req)
-  if( !name ){
-    this.login_de&&bug( "Some linkedin id but not the display name")
-    return null
-  }
-  // Returning anonymous user
-  if( name == "SomeGuest" || name == "null" ){
-     return null
-  }
-  this.linkedinId   = this.cookiedLinkedinId   = id
-  this.linkedinName = this.cookiedLinkedinName = name
-  if( this.linkedinLabel = this.getCookie( "sw_linkedin_label", req) ){
-    this.wiki.trackUserLabel( this.linkedinName + "In", this.linkedinLabel)
-  }
-  this.login_de&&bug( "LinkedIn cookie:", this.linkedinName)
-  return name
-}
 
 Session.userName = function(){
 // The true user name
@@ -11781,12 +11441,8 @@ Session.trackUser = function( user_found_cb ){
   var ids         = {}
   var count_ids   = 0
   var twitter_id  = this.cookiedTwitterId
-  var facebook_id = this.cookiedFacebookId
-  var linkedin_id = this.cookiedLinkedinId
   var wiki_id     = this.cookiedWikiId
   if( twitter_id  ){ ids["Twitter"]  = ++count_ids }
-  if( facebook_id ){ ids["Facebook"] = ++count_ids }
-  if( linkedin_id ){ ids["LinkedId"] = ++count_ids }
   if( wiki_id     ){ ids["Wiki"]     = ++count_ids }
 
   // The callback is called once, when User object is found and all
@@ -11799,9 +11455,9 @@ Session.trackUser = function( user_found_cb ){
   // When all ids are processed, calls the callback
     // ToDo: err handling
     that.login_de&&bug( "user, tracked:", user, "ids:", remaining_ids)
-    that.de&&mand( session == that )
-    that.de&&mand( err || user.assertIsUser() )
-    // If favor the first found user, twitter before facebook before others
+    de&&mand( session == that )
+    de&&mand( err || user.assertIsUser() )
+    // If favor the first found user, twitter before others
     first_found_user || (first_found_user = user)
     remaining_ids--
     if( remaining_ids ){
@@ -11820,124 +11476,10 @@ Session.trackUser = function( user_found_cb ){
     }
   }
 
-  // If both twitter & facebook, try to link account together & avoid the
-  // need for a merge.
-  if( twitter_id && facebook_id ){
-    that.deep_user_de&&bug( "track both twitter & facebook")
-    var tpage = User.lookup(
-      this.wiki,
-      "Twitter",
-      this.twitterName  + "=" + twitter_id
-    )
-    var fpage = User.lookup(
-      this.wiki,
-      "Facebook",
-      this.facebookName + "=" + facebook_id
-    )
-    tpage.user.load( function( terr, tuser ){
-      if( !terr && tuser.isEmpty() ){
-        that.deep_user_de&&bug( "Twitter user is empty:", tuser)
-      }
-      fpage.user.load( function( ferr, fuser ){
-        if( !ferr && fuser.isEmpty() ){
-          that.deep_user_de&&bug( "Facebook user is empty:", fuser)
-        }
-        if( (terr || tuser.isEmpty()) && (ferr || fuser.isEmpty()) ){
-          that.deep_user_de&&bug( "dual track, both new, twitter first:", twitter_id)
-          // I wait for the result of twitter tracking before going further
-          return that.trackTwitterUser( function( err, session, tw_user ){
-            that.deep_user_de&&bug( "dual track, both new, facebook:", facebook_id)
-            // Now I can track facebook because I know the local user and
-            // as a result I am not going to create a duplicate
-            // Note: to avoid race condition, I respect this order,
-            // twitter first, then facebook.
-            that.de&&mand( that.user )
-            // Consume one id, don't actually fire
-            that.de&&mand( remaining_ids >= 2 )
-            tracked( 0, that, tw_user)
-            // Consume another id, may fire (if no linkedin id)
-            that.de&&mand( remaining_ids >= 1 )
-            return that.trackFacebookUser( tracked)
-          })
-          // Never reached
-          that.de&&mand( false )
-        }else if( terr || tuser.isEmpty() ){
-          that.deep_user_de&&bug( "dual track, twitter new")
-          if( !terr && tuser.isEmpty() ){
-            that.deep_user_de&&bug( "Twitter user is empty:", tuser)
-          }
-          return that.trackFacebookUser( function(){
-            that.deep_user_de&&bug( "dual track, bis, twitter new:", twitter_id)
-            // Consume one id, don't actually fire
-            that.de&&mand( remaining_ids >= 2 )
-            that.trackTwitterUser( tracked)
-            // Favor twitter, consume one id
-            that.de&&mand( remaining_ids >= 1 )
-            return tracked( 0, that, that.user)
-          })
-        }else if( ferr || fuser.isEmpty() ){
-          that.deep_user_de&&bug( "dual track, facebook new")
-          if( !ferr && fuser.isEmpty() ){
-            that.deep_user_de&&bug( "Facebook user is empty:", fuser)
-          }
-          return that.trackTwitterUser( function( err, session, tw_user){
-            that.deep_user_de&&bug( "dual track, bis, facebook new:", facebook_id)
-            // Consume one id, don't actually fire
-            that.de&&mand( remaining_ids >= 2 )
-            that.trackFacebookUser( tracked)
-            // Favor twitter, consume one id
-            that.de&&mand( remaining_ids >= 1 )
-            return tracked( 0, that, tw_user)
-          })
-        }
-        tuser.assertProxyNotEmpty()
-        fuser.assertProxyNotEmpty()
-        // Both pages exists already...
-        tuser.getLocal( function( terr, ltuser ){
-          ltuser.assertLocalNotEmpty() // ToDo: this bombed, jan 7 2011
-          fuser.getLocal( function track_local_cb( ferr, lfuser ){
-            lfuser.assertLocalNotEmpty() // ToDo: this bombed, feb 16 2011
-            // If same local user, perfect!
-            if( ltuser == lfuser ){
-              that.deep_user_de&&bug( "dual track, same user")
-              that.userFoundEvent( ltuser)
-              // Consume both ids & fire (unless pending linkedin id)
-              that.de&&mand( remaining_ids >= 2 )
-              tracked( 0, that, ltuser)
-              that.de&&mand( remaining_ids >= 1 )
-              return tracked( 0, that, ltuser)
-            }
-            // Conflict...
-            // This happens if user logged once with twitter and then
-            // later with facebook, or vice-versa and then with both.
-            // To unify thing, user can log with both identity at the
-            // same time, or first log with facebook and then with twitter,
-            // that's what the UI promotes
-            // However, if user first log with facebook, then with twitter
-            // and then with both... conflict! that's because two local
-            // users were created, and now need to be merged.
-            that.deep_user_de&&bug( "dual track, conflict")
-            that.deep_user_de&&bug( "local twitter user:", ltuser)
-            that.deep_user_de&&bug( "local facebook user:", lfuser)
-            that.userFoundEvent( lfuser)
-            that.userFoundEvent( ltuser)
-            // Favor Twitter account
-            that.de&&mand( remaining_ids >= 2 )
-            tracked( 0, that, ltuser)
-            that.de&&mand( remaining_ids >= 1 )
-            return tracked( 0, that, ltuser)
-          })
-        })
-      })
-    })
-  }else if( twitter_id ){
+  if( twitter_id ){
     this.deep_user_de&&bug( "track twitter:", twitter_id)
     that.de&&mand( remaining_ids >= 1 )
     this.trackTwitterUser( tracked)
-  }else if( facebook_id ){
-    this.deep_user_de&&bug( "track facebook", facebook_id)
-    that.de&&mand( remaining_ids >= 1 )
-    this.trackFacebookUser( tracked)
   }
 
   // Sorry but linkedin & wiki ids are second class citizen for now and as a result
@@ -11946,34 +11488,19 @@ Session.trackUser = function( user_found_cb ){
   // I apply a delay to avoid race conditions (bad, bad, bad)
   // ToDo: manage conflicts
   var interval
-  var done_with_linkedin = !linkedin_id
   var done_with_wiki     = !wiki_id
   function track_other_user(){
     that.deep_user_de&&bug( "track linkedin & wiki ids")
     // Wait until job is done with other ids (twitter and/or facebook)
-    if( wiki_id && linkedin_id && remaining_ids > 2     )return
-    if( (!wiki_id || !linkedin_id) && remaining_ids > 1 )return
+    if( wiki_id && remaining_ids > 2     )return
+    if( (!wiki_id ) && remaining_ids > 1 )return
     // All done? stop active wait
     if( remaining_ids < 1 ){
       clearInterval( interval)
       interval = null
       return
     }
-    if( !done_with_linkedin ){
-      if( linkedin_id && !that.linkedinId ){
-        done_with_linkedin = true
-        if( ids["LinkedIn"] ){
-          that.deep_user_de&&bug( "Oops, no more linkedin id to track")
-          // Consume one id 
-          that.de&&mand( remaining_ids >= 1 )
-          return tracked( 0, that, that.user)
-        }
-      }else{
-        that.de&&mand( remaining_ids >= 1 )
-        return that.trackLinkedInUser( tracked)
-      }
-      done_with_linkedin = true
-    }else if( !done_with_wiki ){
+    if( !done_with_wiki ){
       done_with_wiki = true
       if( wiki_id && !that.wikiId ){
         if( ids["Wiki"] ){
@@ -11990,9 +11517,7 @@ Session.trackUser = function( user_found_cb ){
       that.bug_de&&bug( "all done, yet remaingIds:", remaining_ids)
     }
   }
-  if( linkedin_id
-  ||  wiki_id
-  ){
+  if( wiki_id ){
     that.de&&mand( remaining_ids >= 1 )
     // I poll... when twitter&facebook ids are processed, I proceed
     interval = setInterval( track_other_user, remaining_ids > 1 ? 500 : 1)
@@ -12026,31 +11551,6 @@ Session.trackTwitterUser = function( cb ){
   })
 }
 
-Session.trackFacebookUser = function( cb ){
-// This function gets called when a Facebook user logs in a wiki.
-// It associates a "user" property to the session.
-// The corresponding User objects's page are updated on store.
-// Calls cb( err, this, localuser)
-  var that = this
-  var uid = that.facebookName + "=" + that.facebookId
-  this.de&&mand( uid )
-  this.trackServiceUser( "Facebook", uid, function trk_fbusr_cb( err, local ){
-    if( cb ){ cb.call( that, err, that, local) }
-  })
-}
-
-Session.trackLinkedInUser = function( cb ){
-// This function gets called when a LinkedIn user logs in a wiki.
-// It associates a "user" property to the session.
-// The corresponding User objects's page are updated on store.
-// Calls cb( err, this, localuser)
-  var that = this
-  var uid = that.linkedinName + "=" + that.linkedinId
-  this.de&&mand( uid )
-  this.trackServiceUser( "LinkedIn", uid, function trk_liusr_cb( err, local ){
-    if( cb ){ cb.call( that, err, that, local) }
-  })
-}
 
 Session.trackServiceUser = function( service, id, cb ){
 // Track the identity of a user, returns the local user via cb( err, user)
@@ -12096,7 +11596,7 @@ Session.isPremium = function(){
 
 Session.userFoundEvent = function( user ){
 // This method gets called when a User object is found that matches the credential
-// collected in the session. ie: either a twitterId, facebookId... (from cookies) that
+// collected in the session. ie: either a twitterId... (from cookies) that
 // was turned into a User object somewhere in the login procedure
 // It tracks the visit in the user's list of visited wikis.
 
@@ -12124,10 +11624,6 @@ Session.userFoundEvent = function( user ){
     // Play with identities. I restore id/name/label if appropriate
     var twitter_id    = user.getTwitterId()
     var twitter_name  = twitter_id && User.extractName(  twitter_id)
-    var facebook_id   = user.getFacebookId()
-    var facebook_name = facebook_id && User.extractName( facebook_id)
-    var linkedin_id   = user.getLinkedInId()
-    var linkedin_name = linkedin_id && User.extractName( linkedin_id)
     var wiki_id       = user.getWikiId()
     // For Wiki users, the code/secret is the name & it's stored last in the id
     var wiki_code     = wiki_id && User.extractCode( wiki_id)
@@ -12150,24 +11646,6 @@ Session.userFoundEvent = function( user ){
         this.twitterLabel = "?"
       }else if( this.twitterName != twitter_name ){
         this.loginLog( this.twitterName + " takes over " + twitter_name)
-      }
-    }
-    if( facebook_name ){
-      if( !this.facebookName ){
-        this.facebookName  = facebook_name
-        this.facebookId    = User.extractId( facebook_id)
-        this.facebookLabel = "?"
-      }else if( this.facebookName != facebook_name ){
-        this.loginLog( this.facebookName + " takes over " + facebook_name)
-      }
-    }
-    if( linkedin_name ){
-      if( !this.linkedinName ){
-        this.linkedinName  = linkedin_name
-        this.linkedinId    = User.extractId( linkedin_id)
-        this.linkedinLabel = "?"
-      }else if( this.linkedinName != linkedin_name ){
-        this.loginLog( this.linkedinName + " takes over " + linkedin_name)
       }
     }
     if( wiki_id ){
@@ -12227,7 +11705,7 @@ Session.userFoundEvent = function( user ){
 
 
 Session.hasTwoUsers = function(){
-// A session has two users if twitter id and facebook id refers to different
+// A session has two users if twitter id and another id refers to different
 // local users.
 // ToDo: handle LinkedIn too
 // See mergeUsers()
@@ -12256,7 +11734,7 @@ Session.mergeUsers = function( cb, other_user, visited_users ){
   var id
   var count_ids = 0
 
-  this.de&&mand( a != b )
+  de&&mand( a != b )
 
   // Avoid infinite loop
   visited_users || (this.mergedUsers = visited_users = {})
@@ -12288,16 +11766,6 @@ Session.mergeUsers = function( cb, other_user, visited_users ){
   if( id = b.getTwitterId() ){
     count_ids++
     a.trackTwitterId( User.extractName( id), User.extractId( id), tracked)
-  }
-
-  if( id = b.getFacebookId() ){
-    count_ids++
-    a.trackFacebookId( User.extractName( id), User.extractId( id), tracked)
-  }
-
-  if( id = b.getLinkedInId() ){
-    count_ids++
-    a.trackLinkedInId( User.extractName( id), User.extractId( id), tracked)
   }
 
   if( id = b.getWikiId() ){
@@ -12432,10 +11900,10 @@ Session.setUserData = function( name, val, page, is_global ){
     return this.setSessionData( name, val, page, is_global)
   }
   var pagename = page ? page.name : "User"
-  if( this.user.dataByPage[pagename] ){
+  if( user.dataByPage[pagename] ){
     this.dataByPage[pagename] = {}
   }
-  this.user.dataByPage[pagename][name] = val
+  user.dataByPage[pagename][name] = val
   if( is_global && pagename != "User" ){
     this.setUserData( name, val, null, false)
   }
@@ -12475,7 +11943,7 @@ Session.deletePage = function( page, cb ){
   // Make 2 copies, including one in regular copy archive
   this.copyPage( page, "Copy" + page.name, function(){
     that.copyPage( page, mvname, function( err ){
-      if( err ) return cb.call( that, err)
+      if( err ) return cb.call( this, err)
       if( page.wasInherited() ){
         mvname = "Original"
       }
@@ -12598,7 +12066,7 @@ Session.restorePage = function( copyname, cb ){
     if( err ){
       return cb.call( that, err, copypage, page)
     }
-    that.putPage( page, copypage.getBody(), function( err, putpage ){
+    this.putPage( page, copypage.getBody(), function( err, putpage ){
       return cb.call( that, err, copypage, putpage)
     })
   })
@@ -12807,8 +12275,6 @@ Session.canRead = function( page, maybe, alternate_text ){
     && !validusers.includes( "SomeGuest")
     && !(this.twitterName
       && validusers.includes( " @" + this.twitterName  + " "))
-    && !(this.facebookName
-      && validusers.includes( " "  + this.facebookName + "@ "))
     && !(this.wikiId
       && validusers.includes( " "  +this.facebookName  + "In "))
     ){
@@ -13109,7 +12575,7 @@ Session.doPageCommands.ListReferences = function( cmd, cb ){
   var that      = this
   all_pages.forEach( function( page ){
     var links     = page.getLinks()
-    var backlinks = page.getBacklinks( that.isMentor) // with_private
+    var backlinks = page.getBacklinks( this.isMentor) // with_private
     // Remove some noise
     if( (links.length + backlinks.length) < 2 )return
     if( backlinks.length < 1 )return
@@ -13192,8 +12658,9 @@ Session.doPageCommands.Profile = function( cmd, cb ){
     buf2 = []
     var msg
     var id
+    var ids;
     for( var item in user.id ){
-      var ids  = user.id[item]
+      ids  = user.id[item]
       for( var idx in ids ){
         msg = ""
         id = ids[idx]
@@ -13201,16 +12668,6 @@ Session.doPageCommands.Profile = function( cmd, cb ){
           id = User.extractName( id)
           msg += "[@" + id
           + "](http://" + SW.domain + "/@" + id + ")"
-        }else
-        if( item == "Facebook" ){
-          id = User.extractName( id)
-          msg += "[" + id
-          + "@](http://" + SW.domain + "/" + id + "@)"
-        }else
-        if( item == "LinkedIn" ){
-          id = User.extractName( id)
-          msg += "[" + id
-          + "In](http://" + SW.domain + "/" + id + "In)"
         }else
         if( item == "Wiki" ){
           id = User.extractId( id)
@@ -13331,21 +12788,25 @@ Session.doPageCommands.TheLionNot = function( cmd, cb ){
 // npm dropbox
 
 // Try to install support for Dropbox
+var Dropbox = null;
 try{
-  var Dropbox = require( "dropbox")
-  Section.sys.puts( "dropbox module loaded")
+  Dropbox = require( "dropbox")
+  trace( "dropbox module loaded")
   if( !SW.dbkey ){
-    Section.sys.puts( "No Dropbox key (SW.dbkey)")
+    trace( "No Dropbox key (SW.dbkey)")
     Dropbox = null
   }
   if( !SW.dbsecret ){
-    Section.sys.puts( "No Dropbox secret (SW.dbsecret)")
+    trace( "No Dropbox secret (SW.dbsecret)")
     Dropbox = null
   }
+  // ToDo: fix dropbox support
+  trace( "Disable Dropbox support, broken " );
+  Dropbox = null;
 }catch( err ){
-  Section.sys.puts( "No Dropbox support, needs npm dropbox")
-  Section.sys.puts( "err: " + Sys.inspect( err))
-  // Section.sys.puts( "Current 'require.paths' is " + require.paths)
+  trace( "No Dropbox support, needs npm dropbox")
+  trace( "err: " + Sys.inspect( err))
+  //trace( "Current 'require.paths' is " + require.paths)
   Dropbox = null
 }
 
@@ -13804,7 +13265,7 @@ Session.doPageCommands.ExportToDropbox = function( cmd, cb ){
         var nok = 0
         var nko = 0
         var seen = {}
-        function loop( seen ){
+        var loop = function( seen ){
           var pagename = list.shift()
           // When done with the list, write result in feedback page
           if( !pagename ){
@@ -13854,7 +13315,7 @@ Session.doPageCommands.ExportToDropbox = function( cmd, cb ){
     var buf = []
     var root
     = this.canMentor ? this.wiki.homePage : this.lookup( this.userName())
-    function export_list( list ){
+    var export_list = function( list ){
       that.exportToDropboxInProgress = false
       buf = list.sort()
       push()
@@ -13974,7 +13435,7 @@ Session.doPageCommands.Cloud = function( cmd, cb ){
         var cloudSorted = {}
         var cloudKeys   = getProperties(cloud);
         var sortedTags  = sortByValue( cloudKeys, cloud).reverse()
-        for( var k in sortedTags ){
+        for (k in sortedTags) {
           cloudSorted[sortedTags[k]] = cloud[sortedTags[k]];
         }
         cloud = cloudSorted;
@@ -14004,17 +13465,17 @@ Session.doPageCommands.Cloud = function( cmd, cb ){
         cloud = cloudSorted
       }
 
-      var size_range = config.maxsize - config.minsize
+      size_range = config.maxsize - config.minsize
 
       // Find range of occurrence count (or number of visits)
-      for( var j in cloud ){
+      for( j in cloud ){
         tag_counts.push( cloud[j])
       }
       // Sort collected value to extract min and max
       tag_counts.sort( sortNum)
       var min_count = tag_counts[0]
       var max_count = tag_counts[tag_counts.length - 1]
-      De&&bugC( "Range, min:" + min_count + ", max: " + max_count)
+      de&&bugC( "Range, min:" + min_count + ", max: " + max_count)
       var slope = size_range / (max_count - min_count)
 
       var count = 0
@@ -14074,8 +13535,8 @@ Session.doPageCommands.Cloud = function( cmd, cb ){
       function render(){
         for (var i = element.length - 1; i >= 0; i--){
           var angle = element[i].elemAngle + offset;
-          var x = 120 + Math.sin(angle) * 30;
-          var y = 45  + Math.cos(angle) * 40;
+          x = 120 + Math.sin(angle) * 30;
+          y = 45  + Math.cos(angle) * 40;
           size = 1 - Math.sin(angle)
           var elementCenter = $(element[i]).width() / 2;
           var leftValue = ((sw_content_width/2) * x / 100 - elementCenter) + "px"
@@ -14103,12 +13564,11 @@ Session.doPageCommands.Cloud = function( cmd, cb ){
   config.maxsize = 200
   config.math = 'log'
   var tags_only = "Tags".ends( cmd)
-  var that = this
   all_pages.forEach( function( page ){
     if( page.wasInherited() )return
     if( tags_only && !page.isTag() )return
     var links     = page.getLinks()
-    var backlinks = page.getBacklinks( that.isMentor) // with_private
+    var backlinks = page.getBacklinks( this.isMentor) // with_private
     // Remove some noise
     if( (links.length + backlinks.length) < 2 )return
     if( backlinks.length < 2 )return
@@ -14881,7 +14341,7 @@ try{
 
   // I manage an identity hash to avoid recursive loops
   seen || (seen = [])
-  function track( obj ){
+  var track = function( obj ){
     var ii
     // Very ineffecient, but it works
     // Note: I cannot use seen[obj] directly because JavaScript {}
@@ -14899,13 +14359,13 @@ try{
   }
   track( target)
   
-  function esc( str ){
+  var esc = function( str ){
     return Wiki.htmlize( str
     .replace( /\"/g, '\\"')
     .replace( /\n/g, '\\n'))
   }
   
-  function frag( str, n ){
+  var frag = function( str, n ){
     str = str.toString()
     n || (n = 30)
     if( str.length <= n )return '"' + esc( str) + '"'
@@ -14913,7 +14373,7 @@ try{
   }
   
   var that = this
-  function link( key ){
+  var link = function( key ){
     var closure
     var id = track( key)
     closure = seen[id].closure
@@ -14929,7 +14389,7 @@ try{
   }
   
   // Javascript's typeof is deeply broken, fix that
-  function type( obj ){
+  var type = function( obj ){
     var t = typeof obj
     if( t === "object") {
       if( obj === null) return "null"
@@ -15123,9 +14583,9 @@ try{
   // 1/ no html, 2/ no ***xxx*** or ___xxxx___, issue with some image markup
   // The first issue is a feature when visitor does not want HTML ("safe" mode
   // in the jungle).
-  Section.sys.puts( "No markdown, see https://github.com/evilstreak/markdown-js")
-  Section.sys.puts( "try npm install markdown")
-  Section.sys.puts( Sys.inspect( err))
+  trace( "No markdown, see https://github.com/evilstreak/markdown-js")
+  trace( "try npm install markdown")
+  trace( Sys.inspect( err))
 }
 
 Session.wikifyText = function sw_wikify( text, is_rfc ){
@@ -15621,9 +15081,9 @@ Session.wikify = function( text, page, format, visited, cb ){
     + list.length + " " + this.i18n( "Pages:") + "\n" + list.join( "\n")
   }
   
-  // For small pages, it is usefull to check the length of longest line
+  // For small pages, it is useful to check the length of longest line
   // This helps to use a big font on small pages
-  if( !is_code ){
+  if( false && !is_code ){
     var maxlen = 0
     if( page ){
       delete page.maxCols
@@ -15886,7 +15346,7 @@ Session.wikify = function( text, page, format, visited, cb ){
         var is_own = "YourOwn".starts( pagename)
         var property = pagename.substr( "Your".length)
         if( is_own ){
-          property = property.substr( "Own".length)
+          property = property.substr( "Own".lenght)
        }
         if( this.loginPage.get( property) ){
           pagename = this.loginPage.get( property)
@@ -16217,7 +15677,7 @@ Session.timeLabel = function( time, with_gmt ){
 // section: end date.js
 
 Session.userLabelTooltip = function( page, with_less ){
-// Assuming page is the "name" of a user, a @twitter, facebook@ or linkednn
+// Assuming page is the "name" of a user, a @twitter
 // this method returns that name plus some user label about it, if such
 // information is available.
 // If the page is about a guest, returns the guest's entry point in the wiki.
@@ -16258,15 +15718,9 @@ Session.tooltip = function( page, with_user_label ){
   }else
 
   if( page.isHome() ){
-    if( this.wiki.name == this.facebookName + "@" ){
-      title.push( this.i18n( "your personal Facebook wiki"))
-    }else
     if( this.wiki.name == "@" + this.twitterName ){
-      title.push( this.i18n( "your personal Twitter wiki"))
-    }else
-    if( this.wiki.name == this.linkedinName + "In" ){
-      title.push( this.i18n( "your personal LinkedIn wiki"))
-    }else
+      title.push( this.i18n( "your personal wiki"))
+    }
     if( this.wiki.name == this.wikiId + "-wiki" ){
       title.push( this.i18n( "a wiki of yours"))
     }
@@ -16282,12 +15736,8 @@ Session.tooltip = function( page, with_user_label ){
         title.push( this.i18n( "anonymous"))
       }else{
         title.push( this.i18n( "your personal page"))
-        if( this.wiki.name == this.facebookName + "@" ){
-          title.push( this.i18n( "in your personal Facebook wiki"))
-        }else if( this.wiki.name == this.linkedinName + "In" ){
-          title.push( this.i18n( "in your personal LinkedIn wiki"))
-        }else if( this.wiki.name == "@" + this.twitterName ){
-          title.push( this.i18n( "in your personal Twitter wiki"))
+	if( this.wiki.name == "@" + this.twitterName ){
+          title.push( this.i18n( "in your personal wiki"))
         }else if( this.wiki.name == this.wikiId + "-wiki" ){
           title.push( this.i18n( "in a wiki of yours"))
         }
@@ -16619,9 +16069,7 @@ Session.configScript = function( page, other, editclosure ){
   var ctx = {
     // System level
     domain:      SW.domain,
-    fbid:        SW.fbid,
     twid:        SW.twid,
-    likey:       SW.likey,
     // Wiki level
     wiki:        this.wiki.fullname(),
     wikiConfig:  wiki_config,
@@ -16644,7 +16092,6 @@ Session.configScript = function( page, other, editclosure ){
     address:     path,
     pageData:    page.data,
     pageCtx:     page.saveContext(),
-    onetruefan:  needs_onetruefan,
     isSource:    page.isSourceCode,
     isOembed:    !!this.isOembed,
     isIframe:    !!this.isIframe,
@@ -16665,7 +16112,6 @@ Session.configScript = function( page, other, editclosure ){
     //'var sw_fbid = "'        + SW.fbid + '"',
     //'var sw_twid = "'        + SW.twid + '"',
     //'var sw_likey = "'       + SW.likey + '"',
-    (needs_onetruefan ? "var sw_onetruefan = true" : ""), // (this.config.oneTrueFan ? "true" : "false")
     //'var sw_login = "'       + this.loginName + '"',
     //'var sw_is_source = '    + (page.isSourceCode ? "true" : "false"),
     //'var sw_wiki_config = '  + JSON.stringify( wiki_config),
@@ -16700,7 +16146,6 @@ Session.configScript = function( page, other, editclosure ){
     // Browser local time is unreliable, need to evaluate offset
     //'var sw_edit_closure = ' + (editclosure || "null"),
     'var sw_touch_device = !!("createTouch" in document)',
-    'var sw_meebo_bar = "'   + this.wiki.config.meeboBar + '"', 
     //'var sw_address = '
     //+ 'decodeURIComponent( "' + encodeURIComponent( path) + '")',
     'var De  = ' + !!De,
@@ -16714,9 +16159,7 @@ Session.configScript = function( page, other, editclosure ){
     // I can as well hide the body to avoid some flicker until .ready()
     'document.getElementsByTagName( "body")[0].style.display = "none"',
     //'/* ]]> */',
-    '</' + 'script>\n',
-    !this.wiki.config.meeboBar ? "" : this.script( this.meeboScript),
-    !needs_onetruefan ? "" : '<script src="http://e.onetruefan.com/js/widget.js"></script>'
+    '</' + 'script>\n'
   ].join( "\n")
 }
 
@@ -16914,7 +16357,7 @@ Session.scriptlet = function( name, fn ){
 //   script. As a result scripts have the ability not only to check if
 //   other scripts were loaded but also the ability to check if other
 //   scripts were or were not required yet. They can then decide to load these
-//   script (or adjust their behaviour). This is supposedly enought to
+//   script (or adjust their behaviour). This is supposedly enough to
 //   implement a decent dependencies manager. See also require() in CommonJS
 //
 //   Note: using .signal() one can define any goal, not just loading a script.
@@ -16929,7 +16372,8 @@ function loadfire( src, not_async ){
 // Anything after ; is "eval()" evaled when script gets loaded.
 
   // What is interesting
-  var me = loadfire
+  var me = loadfire;
+  var bug;
 
   var client_side = (typeof window !== "undefined")
   var scope = client_side ? window : global
@@ -16977,29 +16421,29 @@ function loadfire( src, not_async ){
     // Bonus, my de&&bug darling, see http://virteal.com/DebugDarling
     var de_def = false
     if( !scope.de ){
-      de     = true
-      de_def = true
+      scope.de     = true
+      scope.de_def = true
     }
-    bugC = (scope.console && console.log
-      && function bug( m ){ console.log( "de&&bug: " + m)})
-    || (de = false)
+    var bugC = ( scope.console && console.log
+      && function bug( m ){ console.log( "de&&bug: " + m ) } )
+    || ( scope.de = false );
     if( !client_side ){
-      bugC = require( "sys").puts
+      bugC = trace;
     }
-    if( de && !scope.bug ){
-      bug = bugC
+    if( scope.de && !scope.bug ){
+      scope.bug = bugC;
     }else if( de_def ){
-      de = false
+      scope.de = false
     }
 
     // de&&scribe() local traces
-    function scribe( msg ){
-      bugC( "loadfire: " + msg + " @" + me.age)
+    var scribe = function( msg ){
+      bugC( "loadfire: " + msg + " @" + me.age );
     }
 
     // I will fire every 500ms, so that timeouts can be handled by callbacks
     // Note: callbacks may also display some progress bar
-    function start_timeout(){
+    var start_timeout = function(){
       if( me.interval )return
       me.interval = setInterval( function(){
         // Update age
@@ -17012,7 +16456,7 @@ function loadfire( src, not_async ){
         me.fire( signal)
       }, 500)
     }
-    function stop_timeout(){
+    var stop_timeout = function(){
       if( !me.interval )return
       clearInterval( me.interval)
       me.interval = null
@@ -17078,7 +16522,7 @@ function loadfire( src, not_async ){
       }
       // If all scripts were loaded, invoke the "ready" callbacks
       var all_loaded = true
-      for( key in me.scripts ){
+      for( var key in me.scripts ){
         if( !me.scripts[key] ){
           all_loaded = false
           break
@@ -17135,7 +16579,7 @@ function loadfire( src, not_async ){
       return me.fire( script, true)
     }
 
-    function check_done( script ){
+    var check_done = function( script ){
     // Returns true if script (or [scripts]) was (were) loaded
     // Note: you don't need to provide the full script "src", I use indexOf()
       // Assume it's an array if it's not a string
@@ -17234,7 +16678,7 @@ function loadfire( src, not_async ){
     me.test = function loadfire_test(){
       function assert( ok, msg ){
         if( ok )return
-        de&&bugC( "Assert failure, " + msg)
+        de&&bugC( "Assert failure, " + msg )
         throw "loadfire assert failure " + msg
       }
       assert( me.did(),             "did()")
@@ -17297,7 +16741,7 @@ function loadfire( src, not_async ){
     me.load.load = me.bing = me.me = me
     // To please Richard Stallman & Richard Hawking
     me.free = me.all.me = me.bing.bang = me
-    // Enought, let's get back to some "real" work
+    // Nought, let's get back to some "real" work
 
     // An alias
     me.waits = me.does
@@ -17519,7 +16963,7 @@ Session.onloadScript = function sw_onload(){
     )
   }
 
-  // Define a "magic loader" that loads pages at ligth's speed.
+  // Define a "magic loader" that loads pages at light's speed.
   // Works only with browsers that support history.pushState()
   // See http://caniuse.com/#search=push
   window.sw_magic_loader = function sw_magic_loader( url, back ){
@@ -17751,12 +17195,12 @@ Session.onloadScript = function sw_onload(){
 
     // Make a guess about the font size
     var px = Math.floor( Math.min(
-      // Apparently width is 60% of height for monospace fonts
+      // Apparently width is 60% of height for mono-space fonts
       w / (c * 0.6),
       // 1.35em in css
       h / (r * (sw_touch_device ? 1 : 1.35))
     )) + 1
-    // + 1 to increase "guess" in order to avoid beeing too small
+    // + 1 to increase "guess" in order to avoid being too small
 
     // Set some limit
     if( px < 1 ){ px = 1 }
@@ -17881,7 +17325,8 @@ Session.onloadScript = function sw_onload(){
       deltar = Math.floor( deltar + 0.51)
       // console.log( "doch: ", doch, " deltar:", deltar)
       // ToDo: improve this
-      if( rows > 5 && deltar >= 1
+      if( false
+      && rows > 5 && deltar >= 1
       && !sw_touch_device
       && !sw_ctx.isEditPage
       ){
@@ -18388,8 +17833,6 @@ Session.onloadScript = function sw_onload(){
     // Signal screen size & other stuff to server
     if( sw_ctx.canScript == "maybe" ){ signalModel() }
 
-    if( sw_meebo_bar ){ Meebo( "domReady"); }
-
     // Install "Click to edit" asap, needs both sw_edit.js & sw_grow.js
 
     // Call sw_grow( "init") asap to install "click to edit" event listener
@@ -18851,7 +18294,7 @@ Session.viewForm = function( req, loop ){
 
   this.get_de&&bug( "viewForm:", page)
 
-  // Check login/logout with twitter, facebook...
+  // Check login/logout with twitter..
   if( that.handleChangedLogin( page, req) ){
     this.login_de&&bug( "changed login handled on page:", page)
     return
@@ -18895,7 +18338,7 @@ Session.viewForm = function( req, loop ){
     // Use user's name as default content for user pages, unless mentor
     if( !that.canMentor  ){
       data = this.userName()
-    // If mentor, maybe help register new facebook or twitter users
+    // If mentor, maybe help register new twitter users
     }else{
       if( page.name.includes( "@") || "In".ends( page.name) ){
         data = page.name.substr( "User".length)
@@ -19249,7 +18692,7 @@ Session.editForm = function( req, loop ){
     return this.viewForm( req)
   }
 
-  // Check login/logout with twitter, facebook, ...
+  // Check login/logout with twitter...
   if( this.handleChangedLogin( page, req) )return
   
   this.fixVisit( page)
@@ -19386,7 +18829,7 @@ Session.autogrowScript = function sw_grow( e ){
     de&&bugC( 's_grow( "init") called')
 
     // http://stackoverflow.com/questions/3053542/how-to-get-the-start-and-end-points-of-selection-in-text-area/3053640#3053640
-    function getInputSelection( el ){
+    var getInputSelection = function( el ){
       var start = 0
       var end   = 0
       var normalizedValue
@@ -19606,7 +19049,7 @@ Session.autogrowScript = function sw_grow( e ){
   // Copy submit buttons to the top menu
   if( !sw_ctx.buttonsWereCopied ){
     sw_ctx.buttonsWereCopied = true
-    sw_header_buttons()
+    window.sw_header_buttons && sw_header_buttons()
     // I show them now
     sw_fade( true, true)
   }
@@ -19622,7 +19065,7 @@ Session.autogrowScript = function sw_grow( e ){
   if( !sw_ctx.textarea_was_empty
   && val.charAt( val.length - 1) != "\n"
   ){
-    // ToDo: this works poorly if user is writting at the end
+    // ToDo: this works poorly if user is writing at the end
     // I detect if the caret is at the end
     var pos = getInputSelection( ta)
     pos = (pos.start > pos.end) ? pos.start : pos.end
@@ -20058,7 +19501,7 @@ Session.footerForm = function( page, tools ){
   var isuser = page.isUser()
   var with_code = false
 
-  // Login form? (twitter & facebook & linkedin & SignIn)
+  // Login form? (twitter SignIn)
   if( tools 
   && ( true
     || that.isGuest()
@@ -20076,7 +19519,7 @@ Session.footerForm = function( page, tools ){
     with_code = true
   }
   
-  // Login form? (twitter & facebook & SignIn)
+  // Login form? (twitter SignIn)
   if( with_code ){
     foot.push( that.serviceLoginForm())
   // Else, just SignIn
@@ -20170,7 +19613,7 @@ Session.footerForm = function( page, tools ){
         label = "<em>" + that.i18n( "SECRET!") + "</em>"
       }
     }
-    foot.push( "<br>"
+    false && foot.push( "<br>"
       + that.i18n( "Web address: ")
       + that.htmlA(
         label,
@@ -20341,7 +19784,7 @@ Session.footerForm = function( page, tools ){
 
   // page info
   if( that.isMentor ){
-    function info( page, msg ){
+    var info = function( page, msg ){
       var ctx = page.saveContext()
       if( msg ){ foot.push( "<br>" + msg) }
       foot.push( '<br>'
@@ -20395,9 +19838,9 @@ Session.footerForm = function( page, tools ){
       +   '<img src="/yanugred16.png"/>'
       +   ' <strong>Simpl<em>i</em>Wiki</strong>'
       + '</a>'
-      + '<a href="http://chartaca.com/c5e0f38e-a3e2-427f-9d4b-654865bd6300">'
-      + '<img src="http://chartaca.com/point/c5e0f38e-a3e2-427f-9d4b-654865bd6300/s.gif"/>'
-      + '</a>'
+      //+ '<a href="http://chartaca.com/c5e0f38e-a3e2-427f-9d4b-654865bd6300">'
+      //+ '<img src="http://chartaca.com/point/c5e0f38e-a3e2-427f-9d4b-654865bd6300/s.gif"/>'
+      //+ '</a>'
       + cpu
       //+ ' <a href="http://simpliwiki.com/with.google">'
       //+   "Google"
@@ -20440,7 +19883,7 @@ Session.parentLinkTo = function( page ){
 Session.declareIdempotentGetter( "parentLinkTo")
 
 Session.cloneLinkTo = function( clonename, page ){
-  page = page || this.wiki.homePage
+  page = page || it.wiki.homePage
   return this.wiki.permalink( clonename + "/" + page.name)
 }
 
@@ -21228,29 +20671,6 @@ Session.toolForm = function( page, view ){
     ))
   }
 
-  // Facebook icon
-  var facebook = this.user && this.user.getFacebookId()
-  if( facebook ){
-    var name = this.facebookName || User.extractName( facebook)
-    var id   = this.facebookId   || User.extractId(   facebook)
-    id && tool( this.htmlA(
-       '<img src="/facebook_ico.png" alt="facebook"/>',
-       'http://www.facebook.com/profile.php?id=' + id,
-       it.i18n( "Your Facebook account") + " (" + name + ")"
-    ))
-  }
-
-  // LinkedIn icon
-  var linkedin = this.user && this.user.getLinkedInId()
-  if( linkedin ){
-    var name = this.linkedinName || User.extractName( linkedin)
-    name && tool( this.htmlA(
-      '<img src="/linkedin_ico.png" alt="linkedin"/>',
-      'http://www.linkedin.com/profile/in/' + name,
-      it.i18n( "Your LinkedIn account") + " (" + name + ")"
-    ))
-  }
-
   // Mail account, for some well known providers
   var mail = this.user && this.user.getMailId()
   if( mail ){
@@ -21303,13 +20723,11 @@ Session.toolForm = function( page, view ){
   // If anonymous guest wandering around... "sign in"
   }else if( it.isGuest() && it.isAnonymous() ){
     tools.push( it.linkPage( "SignIn"))
-  // If special user wiki, display twitter or facebook name
+  // If special user wiki, display twitter  name
   }else if( it.wiki.isUserWiki() && !it.isDebug ){
-    // Some /user/Fxxxx wiki, use twitter name, fb fallback
+    // Some /user/Fxxxx wiki, use twitter name
     var name
     = it.twitterName
-    || it.facebookName
-    || it.linkedinName
     || it.wikiId
     || "???"
     if( name ){
@@ -21483,11 +20901,11 @@ Session.processPost = function( req, page ){
     if( post ){
       text += post
     }else{
-      that.bug_de&&bug( "No data in post?")
+      this.bug_de&&bug( "No data in post?")
     }
   })
   req.addListener( "end", function(){
-    that.post_de&&bug( "Receive POST data, R:", req.deId)
+    this.post_de&&bug( "Receive POST data, R:", req.deId)
     qs = QueryString.parse( text)
     // Weird, I need a toString() because these beasts are not strings...
     NDe&&bug( "Weird QueryString ", Sys.inspect( text))
@@ -21923,8 +21341,8 @@ Session.postForm = function( req, page, text, guest, verb, query ){
           // guestnamize() will do its best, see below
         }
       }
-      // Don't handle twitter & facebook names here, too complex, ToDo
-      if( "@".starts( guest) || "@".ends( guest) || "In".ends( guest) ){
+      // Don't handle twitter  names here, too complex, ToDo
+      if( "@".starts( guest) ){
         // Unless it's the "NewMember" special page
         if( !this.shouldAskForNewMember( page) ){
           // I could filter out such names, I prefer not to, it's more
@@ -22192,9 +21610,9 @@ Session.postForm = function( req, page, text, guest, verb, query ){
       }
       // If mentor creating a mentor, add to new mentor to "AboutWiki" page
       if( as_mentor ){
-        var mentors = that.getData( that.wiki.aboutwikiPage, "mentors")
+        var mentors = that.getData( wiki.aboutwikiPage, "mentors")
         mentors = (mentors + " " + guest).replace( /^ /, "")
-        that.setData( that.wiki.aboutwikiPage, "mentors", mentors)
+        that.setData( wiki.aboutwikiPage, "mentors", mentors)
         that.wiki.setOptions(
           that.wiki.config,
           {mentors: mentors},
@@ -22427,7 +21845,7 @@ Session.compressStamps = function( page, cb ){
         }
       }
       if( !limit ){
-        that.bug_de&&bug( "long loop in compress") // Fixed
+        this.bug_de&&bug( "long loop in compress") // Fixed
       }
       if( change ){
         buf.push( about + "\n" + change + "\n")
@@ -22685,7 +22103,7 @@ Session.comebackScript = function sw_comeback(){
 }
 
 Session.signinScript = function sw_signin(){
-// This is client code side that deals with Twitter, Facebook ... signin.
+// This is client code side that deals with Twitter signin.
 // It is included in index.html, simpli.html and in some wiki pages
 
 window.sw_set_cookie = function( srv, attr, value, days ){
@@ -22738,20 +22156,10 @@ window.install_signout = function( srv, e ){
     + '</button>'
   ).fadeIn( 1500)
   $("#signout" + srv).one( "click", function (){
-    if( srv == "sw" ){
-      sw_set_id_cookies( "wiki")
-    }else
-    if( srv == "tw" ){
+ 
+  debugger;   if( srv == "tw" ){
       sw_set_id_cookies( "twitter")
-      try{ twttr.anywhere.signOut(); }catch( e ){}
-    }else
-    if( srv == "fb" ){
-      sw_set_id_cookies( "faceboook")
-      try{ FB.logout() }catch( e ){}
-    }else
-    if( srv == "li" ){
-      sw_set_id_cookies( "linkedin")
-      try{ IN.User.logout() }catch( e ){}
+      //try{ twttr.anywhere.signOut(); }catch( e ){}
     }
     try{
       window["update_" + srv + "_login"].call()
@@ -22781,29 +22189,21 @@ window.install_signin = function(){
 }
 
 
-window.update_sw_login = function(){
-  sw_get_id_cookies( "wiki")
-  var id = sw_wiki_id
+window.update_sw_login =  window.update_tw_login = function(){
+  sw_get_id_cookies( "twitter" );
+  var id = window.sw_twitter_id
+  debugger;
   if( id ){
-    // I use the screen name to store the code
-    sw_set_id_cookies( "wiki", id, sw_wiki_screenname, id)
-    // ToDo: signature
-    var code = sw_wiki_screenname
-    if( !code ){
-      code = "Anonymous"
-    }else if( /^secret/.test( code) ){
-      code = "Secret"
-    }
-    install_signout( "sw", $('#sw-login').fadeOut( 0).html( ""
-      + ' <a href="/' + id 
-      + (!sw_wiki_screenname ? "" : ('?code=' + sw_wiki_screenname))
-      + '">' + id  + " " + code + "</a>"
-      + ' <img src="/yanugred16.png" />'
+    sw_set_id_cookies( "twitter", id, id, id )
+    install_signout( "tw", $('#sw-login').fadeOut( 0).html( ""
+      + ' <a href="/@' + id 
+      + '">@' + window.sw_twitter_screenname + "</a>"
+      + ' <img src="/twitter_ico.png" />'
     ))
   }else{
     // Do nothing if not displayed yet
     if( ! $("#sw-login").size() )return
-    sw_set_id_cookies( "wiki")
+    sw_set_id_cookies( "twitter" )
     $("#sw-login").html(
       '<div id="sw-login-box" class="sw_boxed">'
       //+'<img src="/yanugred16.png" width="16"/> '
@@ -22812,37 +22212,27 @@ window.update_sw_login = function(){
     $('#sw-login-box').one( "click", function( event ){
       $("#sw-login").css( "display", "inline")
       .html(
-          'name: <input id="sw-connect-id"></input>'
-        + '<select id="secret">'
-        +   '<option>code</option><option>secret</option>'
-        + '</select>'
-        + '<input id="sw-connect-code"></input>'
+          'twitter @name: <input id="sw-connect-id"></input>'
         + ' <button id="sw-login-ok">OK</button>'
       )
+      
       $('#sw-login-ok').one( "click", function( event ){
-        id = $('#sw-connect-id').val()
+      debugger;
+        id = $('#sw-connect-id').val();
+	var screen_name = id
         .substr( 0, 30)
-        .toLowerCase()
-        .replace( /[^a-z0-9]/g, "")
-        var code = id && $('#sw-connect-code').val()
-        .substr( 0, 30)
-        .toLowerCase()
-        .replace( /[^a-z0-9]/g, "")
-        // If "secret" was selected, add "secret" in front of the code
-        // to later detect it as a "secret" and hash it into a "public" key
-        if( $('#secret option:selected').text() == "secret" ){
-           code = code ? "secret" + code : ""
-        }
-        sw_set_id_cookies( "wiki", id, code, id)
+        .replace( /[^A-Z_a-z0-9]/g, "");
+	id = screen_name.toLowerCase();
+        sw_set_id_cookies( "twitter", id, screen_name, id)
         update_sw_login()
       })
     })
   }
   // ToDo: I need to reload the page?
-  if( typeof window.sw_logged_in_wiki === "undefined" ){
+  if( typeof window.sw_logged_in_twitter === "undefined" ){
     // Initial display
   }else{
-    if( window.sw_logged_in_wiki != !!id ){
+    if( window.sw_logged_in_twitter != !!id ){
       // Changed
       if( id && typeof Session === "undefined" && sw_ctx.isAnonymous ){
         // Reload the page to provide up to date view, unless index.html
@@ -22851,68 +22241,12 @@ window.update_sw_login = function(){
       }
     }
   }
-  sw_logged_in_wiki = !!id
+  window.sw_logged_in_twitter = !!id
 }
 
-window.update_tw_login = function( T ){
-  
-  sw_set_id_cookies( "twitter")
-  var is_in = !!(sw_twitter_id || T.isConnected())
-  // Do nothing if no change (note the !==, important at init time)
-  if( is_in === window.sw_logged_in_twitter )return
-
-  var id
-  var screenName
-  var label
-  var profileImage = ""
-
-  if( is_in ){
-    id         = sw_twitter_id
-    || T.currentUser.data( 'id_str') || T.currentUser.data( 'id')
-    screenName = sw_twitter_screenname
-    ||  T.currentUser.data( 'screen_name').toLowerCase()
-    label      = sw_twitter_label
-    || T.currentUser.data( 'name')
-    sw_set_id_cookies( "twitter", id, screenName, label)
-    // ToDo: signature
-    // Display image on index.html only, too much noise otherwise
-    // ToDo: get rid of that, I later decided to remove these images, noisy
-    if( window.sw_is_index ){
-      profileImage = T.currentUser.data( 'profile_image_url')
-      profileImage = "<img src='" + profileImage + "'/> "
-    }
-    install_signout( "tw", $('#tw-login').fadeOut( 0).html( ""
-      // + profileImage
-      + '<a href="/@' + screenName + '">@' + screenName + "</a>"
-      // + " (" + label + ")"
-      + ' <img src="/twitter_ico.png" />'
-    ))
-    // ToDo: Should set the value of the "wiki!" form to @xxxx
-  }else{
-    // Empty div but avoid flicker, 26px is the height of Twitter's button
-    $("#tw-login").html( '<span style="min-height:26px"> </span>')
-    T( "#tw-login").connectButton()
-    install_signin()
-  }
-
-  // ToDo: I need to reload the page?
-  if( typeof window.sw_logged_in_twitter === "undefined" ){
-    // Initial display
-  }else{
-    if( window.sw_logged_in_twitter != is_in ){
-      // Changed
-      if( is_in && typeof Session === "undefined" && sw_ctx.isAnonymous ){
-        // Reload the page to provide up to date view, unless index.html
-        window.location = ""
-        location.reload( true)
-      }
-    }
-  }
-  sw_logged_in_twitter = is_in
-}
 
 window.sw_twitterOnLoad = function sw_twitterOnLoad(){
-  twttr.anywhere( function( T ){ 
+  /*twttr.anywhere( function( T ){ 
     T.bind( "authComplete", function( e, user ) {
       // triggered when auth completed successfully
       update_tw_login( T)
@@ -22922,212 +22256,7 @@ window.sw_twitterOnLoad = function sw_twitterOnLoad(){
       update_tw_login( T)
     })
     update_tw_login( T)
-  })
-}
-
-
-window.update_fb_login = function( S ){
-// See http://fbrell.com/
-
-  sw_set_id_cookies( "facebook")
-  S || (S = FB.getSession())
-  var is_in = !!(sw_facebook_id || S)
-  // Do nothing if no change (note the !==, important at init time)
-  if( is_in === window.sw_logged_in_facebook )return
-
-  var screenName
-  var label
-  var async_reload = false
-
-  if( is_in ){
-    FB.api( "/me", function( response ){
-      var link = response.link
-      if( !link ){
-        window.console && console.log
-        && console.log( "No link in response") && console.log( response)
-        return
-      }
-      var ii = link.lastIndexOf( "/")
-      screenName = link.substr( ii + 1).toLowerCase()
-      // For user without a profile
-      // ToDo: I should help the user get a vanity url
-      var needs_vanity = false
-      if( (ii = screenName.indexOf( "id=")) >= 0 ){
-        screenName = "id" + screenName.substr( ii + "id=".length)
-        needs_vanity = true // sic
-      }
-      label = response.name
-      sw_set_id_cookies( "facebook", response.id, screenName, label)
-      if( window.sw_is_iframe
-      &&  window.sw_is_index
-      && !window.sw_comeback
-      && !window.sw_logged_in_twitter // Avoid landing with bad id
-      ){
-        // I get here when user logs in using the SimpliWiki fb canvas app
-        // ToDo: and also when using /with.google
-        sw_set_cookie( "facebook", "iframe", "true")
-        // console.log( "fb reload:" + window.location)
-        try{
-          window.location = "/" + screenName + "@/User" + screenName + "@"
-          // window.location.reload( true) -- don't do that, breaks
-          return
-        }catch( err ){
-          De&&bug( "Can't change location, err: " + err)
-        }
-      }
-      if( async_reload ){
-         // Reload the page to provide up to date view
-         // console.log( "asynch reload")
-         window.location = ""
-         window.location.reload( true)
-         return
-      }
-      install_signout( "fb", $('#fb-login').fadeOut( 0).html( ""
-        // + (window.sw_is_index
-        //  ?   '<fb:profile-pic uid="loggedinuser" linked="true">'
-        //    + '</fb:profile-pic> '
-        //  : "")
-        + '<a href="/' + screenName + '@">' + screenName + '@</a>'
-        //+ " (" + label + ")"
-        + ' <img src="/facebook_ico.png" />'
-        + (!needs_vanity
-          ? ""
-          : '<em>!!! Please set your Facebook "username"</em>.'
-          + 'Visit <a href="https://www.facebook.com/username">'
-          + 'https://www.facebook.com/username</a>'
-        )
-      ))
-      FB.XFBML.parse() // document.getElementById( 'fb-login'))
-    })
-
-  }else{
-    $("#fb-login").html(
-      '<fb:login-button size="medium" autologoutlink="true">'
-      + 'Connect with Facebook' // Session.i18n( 'Connect with Facebook')
-      + '</fb:login-button>'
-    )
-    install_signin()
-    FB.XFBML.parse( document.getElementById( 'fb-login'))
-  }
-
-  // ToDo: I need to reload the page
-  if( typeof window.sw_logged_in_facebook === "undefined" ){
-    // Initial display
-  }else{
-    if( window.sw_logged_in_facebook != is_in ){
-      // Changed
-      if( is_in && typeof Session === "undefined" && sw_ctx.isAnonymous ){
-        // I will reload the page to provide an up to date view
-        async_reload = true
-      }
-    }
-  }
-  sw_logged_in_facebook = is_in
-}
-
-window.fbAsyncInit = function() {
-  // $("#fb-login").html( '<fb:login-button></fb:login-button>')
-  // update_fb_login( FB.getSession())
-  FB.init({
-    appId  : sw_ctx.fbid,
-    status : true, // check login status
-    cookie : true, // enable cookies to allow the server to access the session
-    xfbml  : false, // parse XFBML, false, done in update_fb_login
-    // ToDo: double check Expires headers and caching by browser
-    channelUrl  : 'http:/'+'/simpliwiki.com/channel.html'  // custom channel
-  })
-  FB.Event.subscribe( 'auth.sessionChange', function( response ){
-    update_fb_login( response.session)
-  })
-  FB.getLoginStatus( function( response ){
-    update_fb_login( response.session)
-  })
-}
-
-
-// LinkedIn
-
-IN = {}
-
-window.update_li_login = function(){
-// See http://fbrell.com/
-
-  sw_set_id_cookies( "linkedin")
-  var is_in = IN.isIn && IN.User.isAuthorized()
-  // Do nothing if no change (note the ===, important with "undefined")
-  if( IN.isIn === window.sw_logged_in_linkedin )return
-
-  var id
-  var screen_name
-  var label
-
-  if( is_in  ){
-    IN.API.Profile( "me").fields(
-      "id", "firstName", "lastName", "pictureUrl",
-      "public-profile-url"
-      // ToDo: "twitter-accounts"?
-    ).result( function( result ){
-      var user = result.values[0]
-      id          = user.id
-      screen_name = user["publicProfileUrl"] || ("/id" + id)
-      var ii = screen_name.lastIndexOf( "/")
-      screen_name = screen_name.substr( ii + 1).toLowerCase()
-      label       = user.firstName + " " + user.lastName
-      sw_set_id_cookies( "linkedin", id, screen_name, label)
-      install_signout( "li", $('#li-login').fadeOut( 0).html( ""
-        //+ (window.sw_is_index
-        //  ?   '<img src="' + user["pictureUrl"] + '"/>'
-        //  : "")
-        + '<a href="/' + screen_name + 'In">' + screen_name + 'In</a>'
-        //+ " (" + label + ")"
-        + ' <img src="/linkedin_ico.png" />'
-      ))
-      // Manage tags. ToDo: parse less
-      IN.parse( document.body)
-    })
-
-  }else{
-    $("#li-login").html(
-      '<script type="IN/Login"'
-      + ' data-onAuth="sw_linkedinIn" data-onLogout="sw_linkedinOut"'
-      + '></script>'
-    )
-    install_signin()
-    // Manage tags. ToDo: parse less
-    IN.parse( document.body)
-  }
-
-  // ToDo: I need to reload the page
-  if( typeof window.sw_logged_in_linkedin === "undefined" ){
-    // Initial display
-  }else{
-    if( window.sw_logged_in_linkedin != is_in ){
-      // Changed
-      if( is_in && typeof Session === "undefined" && sw_ctx.isAnonymous ){
-        // I will reload the page to provide an up to date view
-        async_reload = true
-      }
-    }
-  }
-  sw_logged_in_linkedin = is_in
-}
-
-window.sw_linkedinOnLoad = function sw_linkedinOnLoad(){
-  // de&&bugC( "linkedin loaded") 
-  IN.isIn = false
-  IN.Event.on( IN, "auth",   sw_linkedinIn)
-  IN.Event.on( IN, "logout", sw_linkedinOut)
-  update_li_login()
-}
-window.sw_linkedinIn = function(){
-  // de&&bugC( "linkedin login")
-  IN.isIn = true
-  update_li_login()
-}
-window.sw_linkedinOut = function(){
-  // de&&bugC( "linkedin logout")
-  IN.isIn = false
-  update_li_login()
+  })*/
 }
 
 
@@ -23157,11 +22286,8 @@ window.onFooterDisplay = function( force, brutal ){
   )return
 
   // Code to load some scripts, async, after a small delay, maybe
-  (  sw_ctx.fbid
+  (  true
   || sw_ctx.twid
-  || sw_ctx.likey
-  || window.sw_onetruefan
-  || window.sw_shareaholic
   || window.sw_fb_like_button_href)
   && setTimeout( function(){
     // If still visible, load
@@ -23186,36 +22312,10 @@ window.onFooterDisplay = function( force, brutal ){
         })
         return true
       })
-      // Load facebook connect
-      if( typeof sw_ctx === "undefined" ){
-        sw_lang = "en"
-      }else{
-        sw_lang = sw_ctx.lang
-      }
-      var lang = (sw_lang == "fr") ? "fr" : "en_US"
-      // Will call fbAsyncInit() when loaded
-      sw_ctx.fbid && loadfire( document.location.protocol
-        + '/' + '/connect.facebook.net/' + lang + '/all.js'
-      )
-      // Load linkedin connect
-      sw_ctx.likey && loadfire.event( function( fire ){
-        if( !window.sw_linkedinOnLoad )return
-        var content = "\n  api_key: " + sw_ctx.likey
-        + "\n  onLoad: sw_linkedinOnLoad\n  authorize: true\n"
-        // Will call sw_linkedinOnLoad when loaded
-        fire.load( "http://platform.linkedin.com/in.js>" + content)
-        var found = false
-        return true
-      })
+      var lang = (window.sw_lang == "fr") ? "fr" : "en_US"
       sw_login_buttons_were_displayed = true
     }
     if( !sw_footer_was_displayed ){
-      // Load ontruefan
-      window.sw_onetruefan
-      && loadfire( "http://e.onetruefan.com/js/widget.js")
-      // Load shareaholic
-      window.sw_shareaholic
-      && loadfire( "shareaholic-publishers.min.js")
       // Load fb like button
       if( window.sw_fb_like_button_href ){
         $('#sw_fb_like_button').html( '<iframe src='
@@ -23265,28 +22365,17 @@ window.onFooterDisplay = function( force, brutal ){
 
   // Code to load some scripts, async, after a small delay
   // ToDo: DRY, this is a repeat from just above
-  (  sw_ctx.fbid
-  || sw_ctx.likey
-  || window.sw_onetruefan
-  || window.sw_shareaholic
-  || window.sw_fb_like_button_href)
+  ( window.sw_fb_like_button_href)
   && setTimeout( function(){
     if( !force && !$("#footer").is(":visible") )return
     sw_footer_was_displayed = true
     // Load facebook connect (for fb_like button only)
     if( typeof sw_ctx === "undefined" ){
-      sw_lang = "en"
+      window.sw_lang = "en"
     }else{
-      sw_lang = sw_ctx.lang
+      window.sw_lang = sw_ctx.lang
     }
-    var lang = (sw_lang == "fr") ? "fr" : "en_US"
-    sw_ctx.fbid && loadfire( document.location.protocol
-    + '/' + '/connect.facebook.net/' + lang + '/all.js')
-    // Load ontruefan
-    window.sw_onetruefan
-    && loadfire( "http://e.onetruefan.com/js/widget.js")
-    // Load shareaholic
-    window.sw_shareaholic
+    var lang = (window.sw_lang == "fr") ? "fr" : "en_US"
     && loadfire( "shareaholic-publishers.min.js")
     // Load fb like button
     if( window.sw_fb_like_button_href ){
@@ -23307,7 +22396,7 @@ window.onFooterDisplay = function( force, brutal ){
 
 
 Session.serviceLoginForm = function( page ){
-// Return html code to login using a secret code (or twitter/facebook)
+// Return html code to login using a secret code (or twitter)
 // Return "" if client can't script or current page is inadequate
 
   page = (page || this.getCurrentPage())
@@ -23332,9 +22421,7 @@ Session.serviceLoginForm = function( page ){
   if( this.canScript ){
     buf += '<div id="login-buttons">'
     true     && (buf += '<div id="sw-login">SimpliWiki...<img src="/simpliwiki.gif" /></div>')
-    SW.fbid  && (buf += '<div id="fb-login">Facebook...  <img src="/facebook.gif" /></div>')
     SW.twid  && (buf += '<div id="tw-login">Twitter...   <img src="/twitter.gif" /></div>')
-    SW.likey && (buf += '<div id="li-login">LinkedIn...  <img src="/linkedin.gif" /></div>')
     SW.fbid  && (buf += '<div id="fb-root"></div>')
     buf += '</div>'
     // ask Session.html() to include twitter's script
@@ -23362,16 +22449,16 @@ Session.restorePhase1 = function( cb ){
    + " " + copypage.name
    + " " + ".*\n" // user name
   // I am user the pattern used by copyPage() to delimit copies
-  it.de&&bug( "Looking for ", delimit, "in ", copypage.getBody())
+  this.de&&bug( "Looking for ", delimit, "in ", copypage.getBody())
   var regex = new RegExp( delimit, "gi")
   var math
   var nth = 1 // 0th is useless
   var content = copypage.getBody().split( regex)
   //this.de&&bug( "Chuncks: ", content.length, Sys.inspect( content))
   var toc = []
-  var title
+  var title;
+  var match;
   // For each copy, I extract it's date
-  var match
   while( match = regex.exec( copypage.getBody()) ){
     // this.de&&bug( "Found ", Sys.inspect( match))
     title = match[0]
@@ -23476,7 +22563,7 @@ Session.restorePhase2 = function( restorepage ){
   NDe&&bug( "Restore ", page, ", using ", content)
   var that = this
   this.putPage( page, content, function( err ){
-    if( !that.isMentor ){
+    if( !this.isMentor ){
       that.logStamp( page, logmsg)
     }
   })
@@ -23639,7 +22726,7 @@ Session.rest = function( req ){
           var new_data = null
           var new_body = query.body
           if( verb == "putPage" ){
-            new_data = query.data
+            new_date = query.data
             if( new_data ){
               try{
                 new_data = JSON.parse( new_data)
@@ -23648,7 +22735,7 @@ Session.rest = function( req ){
                 // ToDo: handle {} => .data = null
               }catch( err ){
                 // ToDo: handle error
-                that.de&&bug( "Rest JSON parse err")
+                this.de&&bug( "Rest JSON parse err")
               }
             }else{
               new_data = that.wiki.extractBasicYaml( new_body)
@@ -23702,7 +22789,7 @@ Session.apiScript = function sw_api( cid, url, _$ ){
         var buf = []
         for( var key in hash ){
            buf.push(
-             key
+             strings[key]
              + ':"'
              + hash[key]
                .replace( /\//g, '\\')
@@ -23991,7 +23078,7 @@ Session.pushCookies = function( http_headers ){
       encodeURIComponent( title)
     )
   }
-  // ToDo: If logging out, forget the twitter & facebook names and ids?
+  // ToDo: If logging out, forget the twitter name and ids?
   // If I clear these cookies, this interferes with other sessions that used them.
   // ie, when user gets back to such a session she is detected as not logged in and
   // is logged again but as a guest, because the script that could restore the cookies
@@ -24002,12 +23089,6 @@ Session.pushCookies = function( http_headers ){
     push_cookie( "sw_twitter_screenname")
     push_cookie( "sw_twitter_id")
     push_cookie( "sw_twitter_label")
-    push_cookie( "sw_facebook_screenname")
-    push_cookie( "sw_facebook_id")
-    push_cookie( "sw_facebook_label")
-    push_cookie( "sw_linkedin_screenname")
-    push_cookie( "sw_linkedin_id")
-    push_cookie( "sw_linkedin_label")
     // If "hard" logout with DoByeBye, clear the cookies for all wikis
     if( this.byebye ){
       this.cookie_de&&bug( "Removing all cookies")
@@ -24265,7 +23346,7 @@ Session.html = function( page, title, body, editclosure ){
       }
     }
     if( style && style != "noStyle" && !this.isMentor ){
-      if( !SW.wikiword( style) ){
+      if( !SW.wikiword.test( style) ){
         this.css_de&&bug( "external css, url:", style)
         style = Wiki.htmlizeAttr( style)
         if( is_less ){
@@ -24447,7 +23528,7 @@ Session.html = function( page, title, body, editclosure ){
   // http://getclicky.com/#/whitelabel/
   if( head && this.wiki.name == "virteal" ){
     body += [
-      '<div><a href="http://virteal.com/">&copy;2006-2011 Virteal</a></div>',
+      '<div><a href="http://virteal.com/">&copy;2006-2014 Virteal</a></div>',
       ' <div align="right">',
       '<!-- Site Meter --> ',
       '<script type="text/javascript" src="http://s25.sitemeter.com/js/counter.js?site=s25virteal">' ,
@@ -24458,8 +23539,8 @@ Session.html = function( page, title, body, editclosure ){
       'alt="Site Meter" width="40" height="15" />',
       '</a> ',
       '</noscript> ',
-      '<!-- Copyright (c)2006 Site Meter --></div>',
-      '<script src="http://track3.mybloglog.com/js/jsserv.php?mblID=2007020914290638"></script> ',
+      //'<!-- Copyright (c)2006 Site Meter --></div>',
+      //'<script src="http://track3.mybloglog.com/js/jsserv.php?mblID=2007020914290638"></script> ',
       (page && page.isHome()
       ?  '<script src="/yanugs.js" type="text/javascript"></script>' 
        + '<script>YanUgs.move()</script>'
@@ -24497,23 +23578,6 @@ Session.html = function( page, title, body, editclosure ){
     if( this.needsCodeMirror ){
       this.needsCodeMirror = false
       javascript.push( "codemirror")
-    }
-    // Shareaholic script configuration
-    if( shrsb ){
-      // This one will dynamically load jquery.shareaholic-publishers-api.min.js
-      // which is a copy of
-      // http://blog.shareaholic.com/wp-content/plugins/sexybookmarks/spritegen/media/
-      // ... /js/jquery.shareaholic-publishers-api.min.js
-      // ToDo: I should to this only when footer is shown
-      // ToDo: ?use http://code.google.com/apis/loader/ or head.js
-
-      stylesheets.push( "/shr-style.css")
-      javascripttxt.push(
-        'var SHRSB_Globals = {src:""}, SHRSB_Settings = {};',
-        'var sw_shareaholic = true'
-      )
-      // ToDo: I should do that in onFooterDisplay, as I may never need it
-      false && javascript.push( "shareaholic-publishers.min")
     }
     // Do some wikify client side when possible
     if( !"on_rfc".starts( page.name) ){
@@ -24723,7 +23787,6 @@ Sw.i18n = {
     "sign in":      "connexion",
     "Some help, maybe": "Un peu d'aide, sans garantie",
     "LookedPage":   "Page ferm&eacute;",
-    "SignIn":       "Connexion",
     "Cancel":       "Revenir",
     "edit":         "&eacute;crire",
     "Editing ":     "Changez ",
@@ -24752,7 +23815,6 @@ Sw.i18n = {
     "a guest":      "un visiteur",
     " members":     " membres",
     "1 member":     "un membre",
-    "by ":          "par ",
     "Some active cloned wikis":
     "Quelques autres wikis actifs",
     "Some recent visitors": "Quelques visiteurs r&eacute;cents",
@@ -24815,7 +23877,6 @@ Sw.i18n = {
     "Some page":   "Une page",
     "Some peer, last seen ": "Un autre visiteur, actif ",
     "a draf":      "une &eacute;bauch",
-    "an empty page": "une page blanche",
     "blank page":  "page blanche",
     "Unpair":      "Quitter",
     "Unfollow":    "Quitter",
@@ -24831,22 +23892,14 @@ Sw.i18n = {
       "'code d'entr&eacute;e' pour ",
     "Your invitation code":
       "Votre code d'entr&eacute;e",
-    "in your personal Facebook wiki":
-      "dans votre wiki Facebook personnel",
-    "in your personal LinkedIn wiki":
-      "dans votre wiki LinkedIn personnel",
-    "in your personal Twitter wiki":
-      "dans votre wiki Twitter personnel",
+    "in your personal wiki":
+      "dans votre wiki personnel",
     "the personal page of ":
       "la page personnelle de ",
     "bookmark this page":
       "ajoutez cette page &agrave; vos favoris",
-    "your personal Facebook wiki":
-      "dans votre wiki Facebook personnel",
-    "your personal LinkedIn wiki":
-      "dans votre wiki LinkedIn personnel",
-    "your personal Twitter wiki":
-      "dans votre wiki Twitter personnel",
+    "your personal wiki":
+      "dans votre wiki personnel",
     "Your entry page": "Votre page d'entr&eacute;e",
     "your changes":  "vos modifications",
     "Your private wiki:": "Votre wiki priv&eacute; :",
@@ -24885,57 +23938,6 @@ Session.i18n = function( msg ){
 
 // section: end i18n.js
 
-
-// Unfortunately one cannot login from the bar... useless to me
-Session.meeboScript = function(){
-  if (typeof Meebo == "undefined" ){
-    Meebo=function(){(Meebo._=Meebo._||[]).push(arguments)};
-    (function(_){
-      var d=document, b=d.body,c;
-      if(!b){
-           c=arguments.callee;
-           return setTimeout(function(){c(_)},100)
-      }
-      var a='appendChild',c='createElement',
-      m=b.insertBefore(d[c]('div'),
-      b.firstChild),
-      n=m[a](d[c]('m')),
-      i=d[c]('iframe');
-      m.style.display='none';
-      m.id='meebo';
-      i.frameBorder="0";
-      n[a](i).id="meebo-iframe";
-      function s(){
-        return[
-          '<body onload=\'var d=document;d.getElementsByTagName("head")[0].',
-          a,
-          '(d.',
-          c,
-          '("script")).src="http',_.https?'s':'','://',_.stage?'stage-':'',
-          'cim.meebo.com',
-          '/cim?iv=2&network='
-          ,_.network,
-          _.lang?'&lang='+_.lang:'',
-          _.d?'&domain='+_.d:'',
-          '"\'></bo',
-          'dy>'
-        ].join('')
-      }
-      try{
-        d = i.contentWindow.document.open();
-        d.write(s());
-        d.close()
-      }catch(e){
-        _.d = d.domain;
-        i.src = 'javascript:d=document.open();d.write("'
-        + s().replace(/"/g,'\\"')
-        + '");d.close();'
-      }
-    })({ network: sw_meebo_bar, stage: false }) 
-    Meebo("makeEverythingSharable"); 
-  }
-  // Meebo("domReady");
-}
 
 // ----------------
 // section: mail.js
@@ -25003,7 +24005,7 @@ Session.registerMailAddress = function( text ){
     usermailpage,
     this.userName(),
     function( err, usermailpage ){
-      that.de&&bug( "Mail page ", usermailpage.name,
+      this.de&&bug( "Mail page ", usermailpage.name,
       " of ", that.userName() )
     }
   )
@@ -25889,8 +24891,8 @@ var Less = null
 try {
   Less = require( "less")
 }catch( err ){
-  Section.sys.puts( "No less, see lesscss.org")
-  Section.sys.puts( Sys.inspect( err))
+  trace( "No less, see lesscss.org")
+  trace( Sys.inspect( err))
 }
 
 if( Less ){
@@ -25900,7 +24902,7 @@ if( Less ){
       Sw.style = css
     })
   }catch( err ){
-    Section.sys.puts( "Is less broken? err:" + Sys.inspect( err))
+    trace( "Is less broken? err:" + Sys.inspect( err))
     Less = null
   }
 
@@ -25913,7 +24915,7 @@ if( Less ){
 // See https://github.com/mishoo/UglifyJS
 // npm install uglify
 // ToDo: install & test
-Uglify = null
+var Uglify = null
 
 
 // section: end css.js
@@ -25993,11 +24995,11 @@ Sw.cacheJsFile = function( name, content ){
 // I add some "pseudo" files in the cache
 
 // Credits: https://github.com/brianleroux/Google-Code-Prettyfy-for-NodeJS
-Prettyfy = null
+var Prettyfy = null
 try{
   Prettyfy = require( "prettyfy")
 }catch( err ){
-  Section.sys.puts( "npm prettyfy to get prettyfied source code")
+  trace( "npm prettyfy to get prettyfied source code")
 }
 
 // Style for Google's Prettyfy
@@ -26384,9 +25386,9 @@ Sw.handler = function handler( req, res ){
           + '</script>'
           + '<div id="login-buttons">'
           + '<div id="sw-login"></div>'
-          + '<div id="fb-login"></div>'
-          + '<div id="tw-login"></div>'
-          + '<div id="li-login"></div>'
+          //+ '<div id="fb-login"></div>'
+          //+ '<div id="tw-login"></div>'
+          //+ '<div id="li-login"></div>'
           + '<div id="fb-root"></div>'
           + '</div>'
           + '<div id="sw_comeback"></div>'
@@ -26403,9 +25405,7 @@ Sw.handler = function handler( req, res ){
           '<div id="fb-root"></div>'
           + Session.htmlScript( 
             'var sw_ctx = {'
-            +    'fbid:"'  + SW.fbid
-            + '", twid:"'  + SW.twid
-            + '", likey:"' + SW.likey
+            + 'twid:"'  + SW.twid
             + '"};'
           )
           + Session.htmlScript( Session.signinScript, true) // sync
@@ -26510,14 +25510,15 @@ if( previous_pid ){
 
 // ---------------------
 // section: debugvars.js
-if( De ){
+if( false && De ){
+// ToDo: broken after JHR 2014
 // Monitor the global scope, to make sure all local variables are declared
 // Thanks to  Jorge <jo...@jorgechamorro.com> in Nodejs Google Group, august 23
 (function(){
  var global = this
- var saved  = Object.getOwnPropertyNames( global)
+ var saved  = Object.prototype.getOwnPropertyNames.call( global )
  ;(function globalsMonitor( current, symbols ){
-  current = Object.getOwnPropertyNames( global)
+  current = Object.prototype.getOwnPropertyNames.call( global )
   if( current.length !== saved.length ){
    symbols = []
    current.forEach( function( v,i,o ){
