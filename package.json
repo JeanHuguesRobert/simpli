@@ -1,0 +1,43 @@
+{
+  "name": "simpli",
+  "version": "0.1.0",
+  "description": "A programmable liquid democracy Wiki",
+  "main": "lib/main.js",
+  "files": [
+    "lib",
+    "test"
+  ],
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "dependencies": {
+    "l8": ">=0.3.0"
+  },
+  "devDependencies": {
+    "coffee-script": "latest",
+    "browserify": "latest",
+    "uglify-js": "1",
+    "mocha": "latest"
+  },
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/JeanHuguesRobert/simpli.git"
+  },
+  "keywords": [
+    "wiki",
+    "cms",
+    "angular",
+    "vote"
+  ],
+  "author": {
+    "name": "Jean Hugues Robert",
+    "email": "jean_hugues_robert@yahoo.com",
+    "url": "http://virteal.com"
+  },
+  "license": "MIT"
+}
