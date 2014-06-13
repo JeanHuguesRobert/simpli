@@ -1,7 +1,0 @@
-#!/bin/bash
-#  Upload to github
-
-SW=/home/jhrobert/SimpliWiki
-cd $SW
-cp src/main.js simpli/lib/main.js
-
