@@ -1,0 +1,350 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{556b0241-71e2-449b-86ef-20e64c748b5b}</ProjectGuid>
+    <ProjectHome />
+    <ProjectView>ShowAllFiles</ProjectView>
+    <StartupFile>lib\main.js</StartupFile>
+    <WorkingDirectory>.</WorkingDirectory>
+    <OutputPath>.</OutputPath>
+    <ProjectTypeGuids>{3AF33F2E-1136-4D97-BBB7-1795711AC8B8};{349c5851-65df-11da-9384-00065b846f21};{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}</ProjectTypeGuids>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
+  <ItemGroup>
+    <Content Include="package.json" />
+    <Content Include="README.md" />
+    <Compile Include="lib\api.js" />
+    <Compile Include="lib\contexted.js" />
+    <Compile Include="lib\css.js" />
+    <Compile Include="lib\date.js" />
+    <Compile Include="lib\debug.js" />
+    <Compile Include="lib\debuggable.js" />
+    <Compile Include="lib\depends.js" />
+    <Compile Include="lib\dropbox.js" />
+    <Compile Include="lib\fluid.js" />
+    <Compile Include="lib\globals.js" />
+    <Compile Include="lib\html.js" />
+    <Compile Include="lib\i18n.js" />
+    <Compile Include="lib\include.js" />
+    <Compile Include="lib\interwiki.js" />
+    <Compile Include="lib\loadfire.js" />
+    <Compile Include="lib\mail.js" />
+    <Compile Include="lib\main.js" />
+    <Compile Include="lib\misc.js" />
+    <Compile Include="lib\mockreq.js" />
+    <Compile Include="lib\page.js" />
+    <Compile Include="lib\pagectx.js" />
+    <Compile Include="lib\pagestore.js" />
+    <Compile Include="lib\scrollcue.js" />
+    <Compile Include="lib\section.js" />
+    <Compile Include="lib\server.js" />
+    <Compile Include="lib\session.js" />
+    <Compile Include="lib\sessioncmd.js" />
+    <Compile Include="lib\sessionlogin.js" />
+    <Compile Include="lib\sessionpage.js" />
+    <Compile Include="lib\start.js" />
+    <Compile Include="lib\string.js" />
+    <Compile Include="lib\wiki.js" />
+    <Compile Include="lib\wikictx.js" />
+    <Compile Include="lib\wikifetch.js" />
+    <Compile Include="lib\wikify.js" />
+    <Compile Include="lib\wikilogin.js" />
+    <Compile Include="lib\yanug.png.js" />
+    <Content Include="src\error.txt" />
+    <Compile Include="src\hooks.js" />
+    <Compile Include="src\main.js" />
+    <Content Include="virteal\channel.html" />
+    <Content Include="virteal\index.html" />
+    <Content Include="virteal\shr-style.css" />
+    <Content Include="virteal\style.css" />
+    <Content Include="virteal\1.png" />
+    <Content Include="virteal\2.png" />
+    <Content Include="virteal\angular.png" />
+    <Content Include="virteal\battery.png" />
+    <Content Include="virteal\bckgrnd.png" />
+    <Content Include="virteal\bg.png" />
+    <Content Include="virteal\debug.png" />
+    <Content Include="virteal\dropbox.png" />
+    <Content Include="virteal\dropbox_ico.png" />
+    <Content Include="virteal\embedly.png" />
+    <Content Include="virteal\facebook_ico.png" />
+    <Content Include="virteal\fb-login-button.png" />
+    <Content Include="virteal\JeanHuguesRobert.png" />
+    <Content Include="virteal\jQuery_logo_color_ondark.png" />
+    <Content Include="virteal\jQuery_logo_color_onwhite.png" />
+    <Content Include="virteal\lesscss.png" />
+    <Content Include="virteal\linkedin_ico.png" />
+    <Content Include="virteal\ok.png" />
+    <Content Include="virteal\share.png" />
+    <Content Include="virteal\simplijs.png" />
+    <Content Include="virteal\synced_with_dropbox.png" />
+    <Content Include="virteal\twitter_ico.png" />
+    <Content Include="virteal\ueb16.png" />
+    <Content Include="virteal\webbouders.png" />
+    <Content Include="virteal\what.png" />
+    <Content Include="virteal\yahoo_ico.png" />
+    <Content Include="virteal\yanug16.png" />
+    <Content Include="virteal\yanug192.png" />
+    <Content Include="virteal\yanug24.png" />
+    <Content Include="virteal\yanug256.png" />
+    <Content Include="virteal\yanug2_64.png" />
+    <Content Include="virteal\yanug3.png" />
+    <Content Include="virteal\yanug32.png" />
+    <Content Include="virteal\yanug384.png" />
+    <Content Include="virteal\yanug3bis_128.png" />
+    <Content Include="virteal\yanug48.png" />
+    <Content Include="virteal\yanug512.png" />
+    <Content Include="virteal\yanug64.png" />
+    <Content Include="virteal\yanug96.png" />
+    <Content Include="virteal\yanugred16.png" />
+    <Content Include="virteal\yanugred64.png" />
+    <Content Include="virteal\yanug_blink64.png" />
+    <Content Include="virteal\yanug_neutral64.png" />
+    <Content Include="virteal\yanug_sad64.png" />
+    <Content Include="virteal\alpha.gif" />
+    <Content Include="virteal\beta.gif" />
+    <Content Include="virteal\facebook.gif" />
+    <Content Include="virteal\linkedin.gif" />
+    <Content Include="virteal\simpliwiki.gif" />
+    <Content Include="virteal\twitter.gif" />
+    <Compile Include="virteal\hooks.js" />
+    <Compile Include="virteal\shareaholic-publishers.min.js" />
+    <Compile Include="lib\simpli\main.js" />
+    <Content Include="virteal\images\error.txt" />
+    <Content Include="virteal\images\1.png" />
+    <Content Include="virteal\images\2.png" />
+    <Content Include="virteal\images\angular.png" />
+    <Content Include="virteal\images\battery.png" />
+    <Content Include="virteal\images\bckgrnd.png" />
+    <Content Include="virteal\images\bg.png" />
+    <Content Include="virteal\images\comfeed.png" />
+    <Content Include="virteal\images\custom-fugue-sprite.png" />
+    <Content Include="virteal\images\debug.png" />
+    <Content Include="virteal\images\dropbox.png" />
+    <Content Include="virteal\images\dropbox_ico.png" />
+    <Content Include="virteal\images\Edit-chalk-10o.png" />
+    <Content Include="virteal\images\embedly.png" />
+    <Content Include="virteal\images\facebook_ico.png" />
+    <Content Include="virteal\images\fb-login-button.png" />
+    <Content Include="virteal\images\green-grad.png" />
+    <Content Include="virteal\images\imoim.png" />
+    <Content Include="virteal\images\JeanHuguesRobert.png" />
+    <Content Include="virteal\images\jQuery_logo_color_ondark.png" />
+    <Content Include="virteal\images\jQuery_logo_color_onwhite.png" />
+    <Content Include="virteal\images\lesscss.png" />
+    <Content Include="virteal\images\linkedin_ico.png" />
+    <Content Include="virteal\images\mail_ico.png" />
+    <Content Include="virteal\images\ok.png" />
+    <Content Include="virteal\images\openid_small_logo.png" />
+    <Content Include="virteal\images\red-grad.png" />
+    <Content Include="virteal\images\share-enjoy.png" />
+    <Content Include="virteal\images\share-german.png" />
+    <Content Include="virteal\images\share-knowledge.png" />
+    <Content Include="virteal\images\share-love-hearts.png" />
+    <Content Include="virteal\images\share-wealth.png" />
+    <Content Include="virteal\images\share.png" />
+    <Content Include="virteal\images\shareaholic-220.png" />
+    <Content Include="virteal\images\sharing-caring-hearts.png" />
+    <Content Include="virteal\images\sharing-caring.png" />
+    <Content Include="virteal\images\sharing-shr.png" />
+    <Content Include="virteal\images\shr-sprite.png" />
+    <Content Include="virteal\images\shrsb-logo.png" />
+    <Content Include="virteal\images\simplijs.png" />
+    <Content Include="virteal\images\sprite.png" />
+    <Content Include="virteal\images\synced_with_dropbox.png" />
+    <Content Include="virteal\images\twitter_ico.png" />
+    <Content Include="virteal\images\ueb16.png" />
+    <Content Include="virteal\images\warning-big.png" />
+    <Content Include="virteal\images\webbouders.png" />
+    <Content Include="virteal\images\what.png" />
+    <Content Include="virteal\images\yahoo_ico.png" />
+    <Content Include="virteal\images\yanug16.png" />
+    <Content Include="virteal\images\yanug192.png" />
+    <Content Include="virteal\images\yanug24.png" />
+    <Content Include="virteal\images\yanug256.png" />
+    <Content Include="virteal\images\yanug2_64.png" />
+    <Content Include="virteal\images\yanug3.png" />
+    <Content Include="virteal\images\yanug32.png" />
+    <Content Include="virteal\images\yanug384.png" />
+    <Content Include="virteal\images\yanug3bis_128.png" />
+    <Content Include="virteal\images\yanug48.png" />
+    <Content Include="virteal\images\yanug512.png" />
+    <Content Include="virteal\images\yanug64.png" />
+    <Content Include="virteal\images\yanug96.png" />
+    <Content Include="virteal\images\yanugred16.png" />
+    <Content Include="virteal\images\yanugred64.png" />
+    <Content Include="virteal\images\yanug_blink64.png" />
+    <Content Include="virteal\images\yanug_neutral64.png" />
+    <Content Include="virteal\images\yanug_sad64.png" />
+    <Content Include="virteal\images\corsematin.jpg" />
+    <Content Include="virteal\images\einstein.jpg" />
+    <Content Include="virteal\images\jhr2.jpg" />
+    <Content Include="virteal\images\m6.jpg" />
+    <Content Include="virteal\images\napoleon.jpg" />
+    <Content Include="virteal\images\yanug.jpg" />
+    <Content Include="virteal\images\alpha.gif" />
+    <Content Include="virteal\images\beta.gif" />
+    <Content Include="virteal\images\facebook.gif" />
+    <Content Include="virteal\images\linkedin.gif" />
+    <Content Include="virteal\images\twitter.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include=".c9revisions" />
+    <Folder Include=".c9revisions\lib" />
+    <Folder Include=".c9revisions\lib\simpli" />
+    <Folder Include=".c9revisions\src" />
+    <Folder Include=".git" />
+    <Folder Include=".git\branches" />
+    <Folder Include=".git\hooks" />
+    <Folder Include=".git\info" />
+    <Folder Include=".git\logs" />
+    <Folder Include=".git\logs\refs" />
+    <Folder Include=".git\logs\refs\heads" />
+    <Folder Include=".git\logs\refs\remotes" />
+    <Folder Include=".git\logs\refs\remotes\origin" />
+    <Folder Include=".git\objects" />
+    <Folder Include=".git\objects\00" />
+    <Folder Include=".git\objects\01" />
+    <Folder Include=".git\objects\02" />
+    <Folder Include=".git\objects\08" />
+    <Folder Include=".git\objects\15" />
+    <Folder Include=".git\objects\16" />
+    <Folder Include=".git\objects\17" />
+    <Folder Include=".git\objects\18" />
+    <Folder Include=".git\objects\20" />
+    <Folder Include=".git\objects\29" />
+    <Folder Include=".git\objects\2b" />
+    <Folder Include=".git\objects\31" />
+    <Folder Include=".git\objects\33" />
+    <Folder Include=".git\objects\38" />
+    <Folder Include=".git\objects\3a" />
+    <Folder Include=".git\objects\48" />
+    <Folder Include=".git\objects\4d" />
+    <Folder Include=".git\objects\4e" />
+    <Folder Include=".git\objects\53" />
+    <Folder Include=".git\objects\59" />
+    <Folder Include=".git\objects\5a" />
+    <Folder Include=".git\objects\61" />
+    <Folder Include=".git\objects\6b" />
+    <Folder Include=".git\objects\6d" />
+    <Folder Include=".git\objects\73" />
+    <Folder Include=".git\objects\76" />
+    <Folder Include=".git\objects\7a" />
+    <Folder Include=".git\objects\7c" />
+    <Folder Include=".git\objects\7e" />
+    <Folder Include=".git\objects\80" />
+    <Folder Include=".git\objects\82" />
+    <Folder Include=".git\objects\89" />
+    <Folder Include=".git\objects\8c" />
+    <Folder Include=".git\objects\8e" />
+    <Folder Include=".git\objects\99" />
+    <Folder Include=".git\objects\9d" />
+    <Folder Include=".git\objects\a0" />
+    <Folder Include=".git\objects\a7" />
+    <Folder Include=".git\objects\a8" />
+    <Folder Include=".git\objects\aa" />
+    <Folder Include=".git\objects\ab" />
+    <Folder Include=".git\objects\ad" />
+    <Folder Include=".git\objects\af" />
+    <Folder Include=".git\objects\b5" />
+    <Folder Include=".git\objects\bc" />
+    <Folder Include=".git\objects\bd" />
+    <Folder Include=".git\objects\be" />
+    <Folder Include=".git\objects\c2" />
+    <Folder Include=".git\objects\c3" />
+    <Folder Include=".git\objects\c9" />
+    <Folder Include=".git\objects\ca" />
+    <Folder Include=".git\objects\cb" />
+    <Folder Include=".git\objects\cc" />
+    <Folder Include=".git\objects\cd" />
+    <Folder Include=".git\objects\d0" />
+    <Folder Include=".git\objects\d2" />
+    <Folder Include=".git\objects\d6" />
+    <Folder Include=".git\objects\da" />
+    <Folder Include=".git\objects\de" />
+    <Folder Include=".git\objects\df" />
+    <Folder Include=".git\objects\e1" />
+    <Folder Include=".git\objects\e8" />
+    <Folder Include=".git\objects\eb" />
+    <Folder Include=".git\objects\ed" />
+    <Folder Include=".git\objects\f2" />
+    <Folder Include=".git\objects\f5" />
+    <Folder Include=".git\objects\f6" />
+    <Folder Include=".git\objects\fb" />
+    <Folder Include=".git\objects\fc" />
+    <Folder Include=".git\objects\info" />
+    <Folder Include=".git\objects\pack" />
+    <Folder Include=".git\refs" />
+    <Folder Include=".git\refs\heads" />
+    <Folder Include=".git\refs\remotes" />
+    <Folder Include=".git\refs\remotes\origin" />
+    <Folder Include=".git\refs\tags" />
+    <Folder Include="lib" />
+    <Folder Include="lib\simpli" />
+    <Folder Include="NewFolder1\" />
+    <Folder Include="src" />
+    <Folder Include="virteal" />
+    <Folder Include="virteal\images" />
+    <Folder Include="virteal\wiki" />
+    <Folder Include="virteal\wiki\@jhr.dir" />
+    <Folder Include="virteal\wiki\336-pue-sys.dir" />
+    <Folder Include="virteal\wiki\37e-sjy-6xk.dir" />
+    <Folder Include="virteal\wiki\38r-67y-kvg.dir" />
+    <Folder Include="virteal\wiki\3ee-eea-x3k.dir" />
+    <Folder Include="virteal\wiki\3fc-2fh-pag.dir" />
+    <Folder Include="virteal\wiki\fbpage.dir" />
+    <Folder Include="virteal\wiki\fbpage.dir\id115811888485309" />
+    <Folder Include="virteal\wiki\granin.dir" />
+    <Folder Include="virteal\wiki\HelpSimpliWiki.dir" />
+    <Folder Include="virteal\wiki\jean.vincent@.dir" />
+    <Folder Include="virteal\wiki\jeanhuguesrobertIn.dir" />
+    <Folder Include="virteal\wiki\RecentStamps.dir" />
+    <Folder Include="virteal\wiki\SimpliWiki.dir" />
+    <Folder Include="virteal\wiki\UserGoogleBot.dir" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <Import Project="$(VSToolsPath)\Node.js Tools\Microsoft.NodejsTools.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>False</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>0</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:48022/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>True</UseCustomServer>
+          <CustomServerUrl>http://localhost:1337</CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}" User="">
+        <WebProjectProperties>
+          <StartPageUrl>
+          </StartPageUrl>
+          <StartAction>CurrentPage</StartAction>
+          <AspNetDebugging>True</AspNetDebugging>
+          <SilverlightDebugging>False</SilverlightDebugging>
+          <NativeDebugging>False</NativeDebugging>
+          <SQLDebugging>False</SQLDebugging>
+          <ExternalProgram>
+          </ExternalProgram>
+          <StartExternalURL>
+          </StartExternalURL>
+          <StartCmdLineArguments>
+          </StartCmdLineArguments>
+          <StartWorkingDirectory>
+          </StartWorkingDirectory>
+          <EnableENC>False</EnableENC>
+          <AlwaysStartWebServerOnDebug>False</AlwaysStartWebServerOnDebug>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

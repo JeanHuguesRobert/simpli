@@ -32,6 +32,9 @@ build/Release
 # see https://npmjs.org/doc/faq.html#Should-I-check-my-node_modules-folder-into-git
 node_modules
 
+# Visual studio stuff
+obj
+
 # Virteal subdirectory & hooks.js files with secrets
 virteal
 src/hooks.js
@@ -39,3 +42,7 @@ lib/hooks.js
 lib/local_hooks.js
 hooks.js
 local_hooks.js
+
+# git stuff
+.gitattributes
+
