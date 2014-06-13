@@ -1,0 +1,28 @@
+After you visit this page and then use "zoom out" ('a' in the top menu), the wiki's content gets displayed in two panes.
+
+The pane on the left shows the "current page"
+
+The pane on the right often shows the previous page. Sometimes it shows YourPage or the HomePage page.
+
+When modifying a page, it shows how the page looked before you started modifying it.
+
+To get back to the single pane mode, use the "zoom in" option ('A' in the top menu).
+
+To stay with one pane after a "zoom out" ('a' in the top menu), please visit OnePane
+
+To visit SimpliWiki and Google on two panes, see simpliwiki.com/with.google 
+
+See also simpliwiki.com/simpliwiki.html to visit two wikis.
+
+See also DisplayModes
+
+CategoryHelp
+
+---
+twoPanes: true
+notify: OnePane. DisplayModes
+
+
+
+__ctx__
+{"name":"TwoPanes","timeCreated":1294421189947,"visitor":"@jhr","timeVisited":1297586120060,"writer":"@jhr","creator":"@jhr","timeModified":1297586120060,"hot":true,"visits":12,"backlinks":["SimpliWikiTools","DisplayModes","OnePane","User@jhr","@jhrStamps","RecentStamps"]}

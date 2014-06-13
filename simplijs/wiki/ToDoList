@@ -1,0 +1,134 @@
+SimpliWiki:
+
+- First Beta version
+- xxxxChat pages
+- DropBox
+- Ajax to speedup "click to edit" cycle?
+- Better Support touch devices
+   http://ajaxian.com/archives/mobile-web-scaling-controls?utm_source=feedburner&utm_medium=feed&utm_campaign=Feed:+ajaxian+(Ajaxian+Blog)
+
+Done:
+
+- SW.hookStart(), just before start, HooksJs
+- DoCloudVisits, list pages "by popularity"
+- simplijs.com
+- API, via HTTP & Javascript, + angular.js
+- Ctrl-S to "Send" in edit mode
+- DoSearch, either in page names or visited pages
+- HelpDoCloud DoCloud, DoCloudPages, ...
+- NowCommand to ease editing
+- BookmarkLet to add external content to a wiki
+- Can now embed a wiki in a wiki
+- Prefer non "minor" change in "Compress"
+- "CodeSecret" & "SecretSecret" dynamic secrets
+- "near" & "far" panes, far is 60% of near
+- "on the fly" generation of sw_xxxx.js files
+- CssStyles & MatrixStyle, customizable CSS
+- simpliwiki.com/with.google & simpliwiki.com/simpliwiki.html
+- Simple diff, show differences in draft pages
+- NewMember to make it easier to add members
+- EmbedLy to embed multimedia content
+- "cool" on stamps page to fade away changes
+- Facebook integration (comments, sharing...)
+- Better single sign in
+- Facebook & Twitter unified login
+- "Compress" on stamps pages
+- DoDebugInspector for debugging
+- some wikification is now done client side
+- scroll cue effect when scrolling pages
+- no draft code in drafts for non mentors
+- "back button" after post is now ok
+- Invite/Block on draft code pages
+- Diff when viewing draft pages
+- "Comment" in edit pages
+- Better data display, fade as time passes
+- Login info in header displayed on the right
+- Better urls in address bar, HTML5 only
+- Twitter ownership of a wiki
+- Deployed http://simpliwiki.simpliwiki.com
+- Deployed http://sandbox.simpliwiki.com
+- Twitter connect
+- Virtual hosts
+- "fickle" version on amazon cloud
+- Some Facebook Open Graph metadata
+- Auto registration
+- Added management of user's email address
+- Added a "name" input in edit pages
+- Better display on iPhone
+- i18n french
+- improved readability, dynamic resizing
+- some context restore between reboots
+- faster "click to edit"
+- Got rid of "Mentor" pseudo user
+- MyTweets "Tweet" page
+- PrivateTools
+- display original of "draft" pages
+- "DoXXX" in "TOC" pages, TocSomeRfcs
+- DisplayModes, to change page's layout
+- CSS to center page (versus left aligned)
+- manage unprotected fully open wikis...
+- better display of ISO dates
+- Allow more than one name in User pages
+- Manage sub wikis, for members
+- Manage cloning
+- New homepage http://simpliwiki.com
+- rows param in query string
+- bookmarkable links
+- "Toc" pages, ie some transclusion
+- interwiki links
+- write protected wikis...
+- turn urls into links
+- "Meta" page, ie yaml defined
+- Add "Read" type of pages, ie read only
+- "restore" using copy pages
+- Read and Guest pages, see HelpPublicPages
+- DoHtmlPages to help export wiki's content
+- "Invitation code" to help new comers
+- ToDoList and BlogHere in SimpliWikiRecipes
+
+See also BlogHere
+
+@jhr - 2010-06-30T14:33:57.747Z
+@jhr - 2010-06-30T14:35:14.938Z
+@jhr - 2010-07-02T10:14:38.723Z
+@jhr - 2010-08-25T22:57:48.465Z
+@jhr - 2010-09-02T22:46:56.003Z
+@jhr - 2010-09-05T00:15:09.954Z
+@jhr - 2010-09-12T14:32:05.167Z
+@jhr - 2010-09-12T14:33:03.089Z
+@jhr - 2010-09-12T14:33:21.446Z
+@jhr - 2010-09-18T12:38:15.968Z
+@jhr date - 2010-09-20T12:16:47.482Z
+@jhr comments - 2010-09-20T12:17:25.002Z
+@jhr diff - 2010-09-26T12:06:24.265Z
+@jhr invite/block - 2010-09-27T20:59:47.864Z
+@jhr "back" & POST - 2010-09-27T21:01:02.371Z
+@jhr mentors & draft codes - 2010-09-27T21:04:49.209Z
+@jhr scroll cue - 2010-10-09T12:12:01.419Z
+@jhr - 2010-10-09T18:17:16.428Z
+@jhr client side wikify - 2010-10-15T08:34:52.540Z
+@jhr compress - 2010-10-20T18:31:43.540Z
+FacebookGuest - 2010-12-07T15:59:31.859Z
+@jhr cool - 2010-12-25T10:22:10.350Z
+@jhr NewMember - 2011-01-03T22:14:34.691Z
+@jhr simple diff - 2011-01-04T12:03:12.997Z
+jeanhuguesrobert@ - 2011-01-04T14:24:38.898Z
+@jhr with.google - 2011-01-07T17:27:26.816Z
+@jhr - 2011-01-07T18:43:27.679Z
+@jhr CssStyles - 2011-01-08T20:50:22.650Z
+@jhr html size optimization - 2011-01-09T00:26:38.696Z
+SomeGuest "far" pane - 2011-01-09T20:33:06.918Z
+@jhr - 2011-01-09T20:34:09.177Z
+@jhr CodeSecret & SecretSecret - 2011-01-10T19:37:34.531Z
+@jhr better "compress" - 2011-01-10T20:04:27.391Z
+@jhr wiki embedding - 2011-01-12T18:02:51.539Z
+@jhr BookmarkLet & NowCommand - 2011-01-15T19:05:39.817Z
+@jhr "cloud" "do" pages - 2011-01-17T20:40:07.744Z
+@jhr search - 2011-01-18T16:53:59.306Z
+@jhr Ctrl-S - 2011-01-18T23:31:26.418Z
+jeanhuguesrobert@ apis - 2011-01-20T15:05:14.612Z
+@jhr simplijs.com - 2011-01-21T19:04:09.238Z
+jeanhuguesrobert@ DoCloudVisits & hookStart - 2011-01-23T03:50:29.147Z
+
+__ctx__
+{"name":"ToDoList","timeCreated":1294855371525,"visitor":"jeanhuguesrobert@","timeVisited":1295754629128,"writer":"jeanhuguesrobert@","creator":"@jhr","timeModified":1295754629128,"hot":true,"visits":50,"backlinks":["SimpliWikiRecipes","BlogHere","jeanhuguesrobert@Stamps","User@jhr","JeanHuguesRobertStamps","RecentStamps"]}

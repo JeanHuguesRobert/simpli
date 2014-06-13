@@ -1,0 +1,9 @@
+To add a wiki to your site, add this HTML code:
+<code>
+  <script href="http://simpliwiki.com/embed.js"></script>
+</code>
+
+For finer control, SimpliWiki mimics DisqUs.
+
+__ctx__
+{"name":"EmbedJs","timeCreated":1294866801744,"visitor":"jeanhuguesrobert@","timeVisited":1295093227027,"writer":"jeanhuguesrobert@","creator":"@jhr","timeModified":1295093227027,"hot":true,"visits":3,"backlinks":["RecentStamps"]}

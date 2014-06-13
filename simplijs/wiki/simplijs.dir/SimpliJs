@@ -1,0 +1,14 @@
+Architecture
+
+There is currently OneBigFile with all the javascript code in it.
+
+However, to make collaboration easy, that file can be "sectionized" into smaller files.
+
+When the application starts, it (TODO) collects the sections coming from small files that are more recent than the big file.
+
+See also HooksJs
+
+jeanhuguesrobert@ - 2011-01-20T19:24:59.874Z
+
+__ctx__
+{"name":"SimpliJs","timeCreated":1295551050323,"visitor":"jeanhuguesrobert@","timeVisited":1295604776063,"writer":"jeanhuguesrobert@","creator":"jeanhuguesrobert@","timeModified":1295604776063,"hot":true,"visits":2,"backlinks":["HomePage"]}

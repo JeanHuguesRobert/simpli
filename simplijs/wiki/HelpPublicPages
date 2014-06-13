@@ -1,0 +1,59 @@
+HelpSimpliWiki > SimpliWikiDoc >
+
+This wiki is made of related pages. Pages are related because of WikiWords "links" between them.
+
+Rules about a page's name set who can read or change that page.
+
+*normal* pages are pages that everybody can read and change (but as a draft only, a registered users, ie a member, can stamp or clear the change).
+
+*Public* pages (whose name starts with "Public") are pages that everybody can change.
+
+*Guest* pages are pages that guests can read but cannot change.
+
+--- restricted ---
+
+*User* pages are private. The owner is on the very first line of the page.
+
+*Member* pages are for registered members only.
+
+*Private* pages are for mentors only.
+
+*Secret* pages are accessible only from a "map" page. Even if you know the secret name of the page, you must read the map first (??? See HelpSecrets???). 
+
+*Map* pages are for some recipients whose names are listed on the map or on some other related maps (??? See HelpMaps???).
+
+In "closed" wikis, normal pages behave like member pages, ie only members can read them.
+
+In "very open" wikis, normal pages behave like public pages, ie everybody can change them.
+
+See also AboutWiki about "open" versus "closed" wikis (mentors only).
+
+--- special ---
+
+*Read* pages are read only, unless mentor.
+
+*Toc* tables of content display many pages.
+
+See also SignIn, WikiNameForUsers & WikiNameForPages.
+
+--- examples ---
+
+NormalExamplePage
+PublicExamplePage
+GuestExamplePage
+ReadExamplePage
+TocExamplePage
+UserExamplePage
+MemberExamplePage
+PrivateExamplePage -- Mentors only
+MapExamplePage
+SecretExamplePage
+
+To copy the examples, change the page's name "ExamplePage" into whatever name suits your needs.
+
+CategoryHelp
+
+@jhr - 2011-02-18T22:31:46.492Z
+
+__ctx__
+{"name":"HelpPublicPages","timeCreated":1294266701536,"visitor":"@jhr","timeVisited":1298068549686,"writer":"@jhr","creator":"@jhr","timeModified":1298068549686,"hot":true,"visits":7,"backlinks":["AboutWiki","MetaConfig","ToDoList","@jhrStamps","WikiNameForPages","NewPage","TocHelpSimpliWiki","SimpliWikiDoc","CategoryHelp","HelpMaps"]}

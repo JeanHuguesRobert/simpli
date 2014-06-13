@@ -1,0 +1,9 @@
+A "DraftCode" is a temporary InvitationCode waiting for validation.
+
+Validation is done by "mentors", using the "Stamp" action (on the top menu bar). See LocalMentor or HelpMentor.
+
+Until validation, a guest can edit pages but as "drafts" only.
+
+See also SignIn
+
+CategoryHelp

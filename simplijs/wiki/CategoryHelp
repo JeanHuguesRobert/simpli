@@ -1,0 +1,40 @@
+This is the category of help pages.
+
+Some help pages:
+
+SimpliWikiDoc TocHelpSimpliWiki (all in one)
+  NewPage
+  SignIn
+  NewMember
+    LocalMentor
+    InvitationCode
+    DraftCode
+    WikiNameForUsers
+  SimpliWikiTools
+    HelpSearch
+    DisplayModes
+    HelpDoCloud
+  HelpPublicPages
+    WikiNameForPages
+    HelpMaps
+    HelpSecrets
+    AboutWiki
+      PrivateWiki
+      PrivateMentorWiki
+      PrivateClosedWiki
+  HelpStyles
+    HelpDirectives
+    NowCommand
+  HelpMentor
+    HelpArchive
+    SimpliWikiAdminTools
+  HelpApi, HelpAngular
+
+HelpHowTo
+SimpliWikiRecipes
+
+CategoryCategory
+
+
+__ctx__
+{"name":"CategoryHelp","timeCreated":1294135552240,"visitor":"@jhr","timeVisited":1299418517500,"writer":"@jhr","creator":"@jhr","timeModified":1299418517500,"hot":true,"visits":112,"backlinks":["HelpDoCloud","NowCommand","AdvancedWikis","HelpMentor","SpamPage","HelpApi","RecentStamps","HelpSimpliWiki","SimpliWikiDoc","NewPage","NewMember"]}

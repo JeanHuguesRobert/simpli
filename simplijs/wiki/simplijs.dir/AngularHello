@@ -1,0 +1,30 @@
+Your name: <input type="text" name="yourname" value="World"/>
+
+<hr/>
+
+Hello {{yourname}}!
+
+<a href="http://www.angularjs.org/">
+  www.angularjs.org
+</a>
+
+
+<div class="hide">
+
+ -----
+
+!!!To "run" this Angular page, click on "run" in the top menu
+
+See also HelpAngular & HelpApi
+
+To learn more about Angular, visit the web site angularjs.org
+
+</div>
+
+---
+prefetched: true
+
+@jhr - 2011-03-21T18:45:31.736Z
+
+__ctx__
+{"name":"AngularHello","timeCreated":1295611408477,"visitor":"@jhr","timeVisited":1300733131723,"writer":"@jhr","creator":"jeanhuguesrobert@","timeModified":1300733131723,"hot":true,"inherited":true,"visits":111,"backlinks":["AboutWiki","HelpAngular"]}

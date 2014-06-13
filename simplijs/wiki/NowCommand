@@ -1,0 +1,16 @@
+"now commands" are useful only when editing a page.
+
+If you type a "now command" and then double-click on it... the command is executed.
+
+- TimeNow     - inserts a time stamp
+- DateNow     - insert the current date & time
+- SortNow     - sort the rest of the page
+- ReverseNow  - reverse order
+- SendNow     - send new content of page
+- CancelNow   - cancel edits
+
+CategoryHelp
+
+
+__ctx__
+{"name":"NowCommand","timeCreated":1295115828922,"visitor":"@jhr","timeVisited":1295117570867,"writer":"@jhr","creator":"@jhr","timeModified":1295117570867,"hot":true,"visits":3,"backlinks":["UserTestUser","TimeNow","SortNow","ReverseNow","SendNow","CancelNow","RecentStamps","CategoryHelp","TocHelpSimpliWiki"]}

@@ -1,0 +1,120 @@
+/*
+\*  Please help us get a decent style sheet!
+\*    See CssStyles
+\*
+\*  As a starter, here the great CSS from
+\*  nodejs.org, patched
+<code>
+*/
+
+body {
+  background: #22252a;
+  color: #eee;
+}
+
+#unfadder {
+  color: black;
+}
+
+#content_header { display: none; }
+
+h1, h2, h3, h4 {
+  color: #B0C4DE;
+  margin: 2em 0; 
+}
+
+code {
+  padding-left: 1em;
+  color: #eee0e0;
+  border-left: 1px solid #444;
+  font-size: 100%;
+
+}
+
+dd {
+  margin: 1em 0;
+  margin-left: 1em;
+}
+
+#content a { color: #cd5; text-decoration: none; }
+#content a:link           { color:#cd5;  }
+#content a:visited        { color:#cd5;  }
+#content a:link.hot       { color: #cd5; }
+#content a:link.hothot    { color: red;  }
+#content a:visited.hot    { color: #cd5; }
+#content a:visited.hothot { color: #cd5; }
+
+b { color: #FFF; }
+
+#content em { font-style: bold; color: #cd5; }
+
+strong {
+font-weight: bold;
+text-shadow: none;
+}
+
+cite {
+color: #AAA;
+font-style: italic;
+font-family: "Droid Sans Mono", Monaco, Consolas, "Lucida Console", monospace;
+}
+
+dfn {
+color: #BBB;
+}
+
+dfn:hover {
+color: #FFF;
+}
+
+var {
+font-size: 0px;
+color: transparent;
+}
+
+code {
+  font-family: monospace;
+}
+
+span.diff {
+background-color: yellow;
+color:black;
+}
+
+div.yaml { display: none; }
+
+time {
+color: #555;
+font-style: italic;
+text-transform: lowercase;
+}
+
+time > i {
+color: transparent;
+}
+
+time:hover { color: #BBB; }
+
+a:hover { text-decoration: underline; }
+
+.highlight {
+  background: #733;
+  padding: 0.2em 0;
+}
+
+.content {
+background-color: transparent;
+}
+
+
+/*
+</code>
+
+
+
+---
+prefetched: true
+
+
+__ctx__
+{"name":"SimpliJsStyle","timeCreated":1295614692069,"visitor":"@jhr","timeVisited":1295661856104,"writer":"@jhr","creator":"@jhr","timeModified":1295661856104,"hot":true,"visits":13,"backlinks":["HomePage"]}

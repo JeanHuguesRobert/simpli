@@ -1,0 +1,24 @@
+body {
+  background-image: url(/bg.png);
+}
+
+.content {
+  background-color: transparent;
+}
+
+div.yaml { display: none; }
+
+#unfadder {
+  border-bottom-left-radius: 1em 0.5em;
+  border-bottom-right-radius: 1em 3em;
+  border: 1px solid #CCC;
+  border-top-left-radius: 1em 3em;
+  border-top-right-radius: 1em 0.5em;
+}
+
+---
+cssStyle: SimpliWikiStyle
+
+
+__ctx__
+{"name":"SimpliWikiStyle","timeCreated":1295775311622,"visitor":"@jhr","timeVisited":1297594888069,"writer":"@jhr","creator":"@jhr","timeModified":1297594888069,"hot":true,"visits":52,"backlinks":["@jhrStamps","CssStyles","HomePage","RecentStamps"]}

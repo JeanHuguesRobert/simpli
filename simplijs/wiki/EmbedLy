@@ -1,0 +1,13 @@
+To embed external content in a wiki page, simply add a link to the content.
+
+eg: http://www.youtube.com/watch?v=-dnL00TdmLY
+
+Thanks to embed.ly
+
+Note: works also with content from qwiki.
+http://www.qwiki.com/q/#!/Wiki
+
+To add content to your wiki with ease, use the BookmarkLet
+
+__ctx__
+{"name":"EmbedLy","timeCreated":1294234317790,"visitor":"@jhr","timeVisited":1295905103508,"writer":"@jhr","creator":"@jhr","timeModified":1295905103508,"hot":true,"visits":29,"backlinks":["User@jhr","RecentStamps","ToDoList"]}

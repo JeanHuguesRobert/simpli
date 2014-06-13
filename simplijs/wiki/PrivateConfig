@@ -1,0 +1,9 @@
+See MetaConfig
+
+This is the default configuration.
+
+When a twitter user visit her wiki or when a mentor visit a wiki, the default configuration is changed into PrivateMentorConfig.
+
+---
+  veryOpen: true
+  lang: "en"

@@ -1,0 +1,11 @@
+SW is a global variable that holds the value of parameters that define the look & feel of the application.
+
+SW is created at startup and supposedly never changes after that.
+
+To change SW involves creating a HooksJs file.
+
+CategoryHelp
+jeanhuguesrobert@ - 2011-01-21T00:40:56.581Z
+
+__ctx__
+{"name":"SwConstant","timeCreated":1295570317365,"visitor":"jeanhuguesrobert@","timeVisited":1295570456563,"writer":"jeanhuguesrobert@","timeModified":1295570456563,"hot":true,"visits":1,"backlinks":["HooksJs"]}

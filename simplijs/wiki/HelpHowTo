@@ -1,0 +1,30 @@
+previous: HelpSimpliWiki > SimpliWikiDoc
+
+Hide secrets:
+  1) Create a "Map" page
+  2) List the invited users (including yourself)
+  3) Optionnal: list "Secret" pages
+  Send the invitation code (the name of the map)
+  Use "hard to guess" names for "Map" pages and "Secret" pages
+
+Send a message to someone:
+  Write the message on his/her page
+
+Send a private message to someone:
+  1) Create a "UserXxxxx" page
+  2) Add the recipient's name on the first line
+  3) Tell the recipient about the message
+
+Backup all my pages:
+  1) Add "DoHtmlPages" in one of your pages
+  2) Click on it
+  3) Use your browser to save the html page
+
+Ask for help: Ask a mentor. See LocalMentor.
+
+CategoryHelp
+
+@jhr - 2014-02-10T02:58:24.833Z
+
+__ctx__
+{"name":"HelpHowTo","timeCreated":1295006810302,"visitor":"@jhr","timeVisited":1392001104832,"writer":"@jhr","creator":"SimpliWiki","timeModified":1392001104832,"hot":true,"visits":819,"backlinks":["User@jhr","TocHelpSimpliWiki","CategoryHelp","SimpliWikiDoc","@jhrStamps","jeanhuguesrobert@Stamps"]}

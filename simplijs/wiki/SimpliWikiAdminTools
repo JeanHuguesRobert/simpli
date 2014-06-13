@@ -1,0 +1,49 @@
+HelpSimpliWiki > SimpliWikiDoc >
+
+Simpli Wiki has special pages built in:
+
+YourPage     - your personal page
+RecentStamps - recent changes
+DoDrafts       - draft changes
+YourStamps   - your changes
+DoMembers      - recent visiting members
+DoVisits       - recent visits
+
+DoListReferences - list links to pages
+DoHtmlPages  - export pages in HTML format
+DoHtmlPage   - idem, one single page
+DisplayModes - to change the page layout 
+
+AboutWiki - wiki customization
+PrivateCodes  - invitation codes & members
+DoConfig      - current session's config
+
+Debug/management mode only:
+
+DoHistory      - your recently visited pages
+DoClearHistory - forgets recently visited pages
+DoDebugDomains - about traces
+DoDebugInspector - about live data
+DoDumpSession  - about current session
+DoDumpSessions - about recent visitors
+DoHttpVisits   - idem, less cryptic
+DoDumpPages    - all visited pages and their content
+DoListPages    - list of most pages
+DoDumpProcess  - about running NodeJS server
+DoDumpEnv      - about environnment variables
+DoDumpErrors   - about errors in the wiki
+DoDumpAlarms   - about errors in sub wikis
+DoDumpCounters - statistics
+DoShutdown     - kill process
+
+-- obsolete --
+DoDebugOff  - turns off debug traces
+DoDebugOn   - turns on debug traces
+DoDebugTail - show last debug traces
+
+DoShellScripts -- runs ShellScripts
+
+CategoryHelp
+
+__ctx__
+{"name":"SimpliWikiAdminTools","timeCreated":1292601987001,"visitor":"@jhr","timeVisited":1295130655113,"writer":"@jhr","creator":"@jhr","timeModified":1295130655113,"hot":true,"visits":9,"backlinks":["CategoryHelp","TocHelpSimpliWiki","SimpliWikiDoc","JeanHuguesRobertStamps","User@jhr","SimpliWikiTools"]}

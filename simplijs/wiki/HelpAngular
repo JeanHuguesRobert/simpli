@@ -1,0 +1,18 @@
+simpliwiki.com/angular.png
+
+Angular is an amazing tool to build ajax applications.
+
+See AngularJs
+
+The "hello" example is AngularHello
+
+In an Angular page, one can use the SimpliWiki API to read/write pages in the wiki on behalf of the user, see HelpApi.
+
+To customize the CSS, see CssStyles.
+
+!Note! Please use a "prefetched: true" directive in Angular pages to make sure that the corresponding Do page doesn't render as a blank page when the wiki is restarted (applies to CSS pages too).
+
+Note2: use DoListPrefetch to list prefetched pages.
+
+__ctx__
+{"name":"HelpAngular","timeCreated":1295451286427,"visitor":"@jhr","timeVisited":1295654738274,"writer":"@jhr","creator":"@jhr","timeModified":1295654738274,"hot":true,"visits":19,"backlinks":["User@jhr","PrivateWiki","CategoryHelp","TocHelpSimpliWiki","AngularApiExample1","HelpApi","AngularHello"]}

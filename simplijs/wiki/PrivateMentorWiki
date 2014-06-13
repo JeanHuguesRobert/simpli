@@ -1,0 +1,14 @@
+See AboutWiki
+
+This page, when referenced by AboutWiki, sets the wiki in "Mentor" mode, a mode where only "members" can can make permanent changes. Turning a "guest" into a "member" requires the approval of a  mentor, see LocalMentor.
+
+Overall, this is like "locking" the door, making the place more private, whereas PrivateOpenWiki opens it
+
+If closing you wiki this way is what you want, please click: DoMentorWiki (make sure you are a mentor first!)
+
+Please note that PrivateClosedWiki closes a wiki even more
+
+---
+  open: true
+  veryOpen: false
+  lang: "en"

@@ -1,0 +1,121 @@
+
+http://simpliwiki.com/simplijs.png
+
+
+SimpliJs, RAD for NodeJs, using AngularJs & _jQuery.
+
++++++Note: SimpliJs is not affiliated to NodeJs. But we love it.
+
+version *Alpha* 0.12
+
+An example of a web page which responds with "Hello World!" !unless! you change your name...
+
+<code>
+  Your name:
+  <input type="text" name="yourname" value="World">
+  <hr>
+  Hello {{yourname}}!
+</code>
+
+Run it now: DoAngularHello
+
+Read some documentation in HelpApi & HelpAngular.
+
+++Download
+
+The source code is available on GitHub at https://github.com/JeanHuguesRobert/simpli
+
+Or get the OneBigFileFormat big file.
+
+You can also "explore" SimpliJs's source code, see simplijs.com/sections.html
+
+The javascript loader LoadFire source code is at simplijs.com/loadfire.js
+
+The jQuery plugin ScrollCue source code is at simplijs.com/scrollcue.js
+
+++Build
+
+It is not "ready" yet but it runs this wiki...
+See the OneBigFile and HooksJs.
+
+npm less
+npm dropbox
+npm prettyfy
+npm markdown
+node ../../simpli/main.js
+
+default port: http://127.0.0.1:1234
+
+++About
+
+SimpliJs is a "Javascript only" platform to develop *wiki like applications*. It uses NodeJs, _jQuery and AngularJs.
+
+simpliwiki.com/battery.png
+
+SimpliJs is a "batteries included" platform. It comes with "state of the art" modern components.
+
+simpliwiki.com/jQuery_logo_color_ondark.png
+In 2010 _jQuery has established itself as the dominant "low level" dom/ajax library.
+
+simpliwiki.com/angular.png
+Complex Javascript apps are made simple thanks to the very innovative <angular/> angularjs.org
+
+simpliwiki.com/facebook_ico.png simpliwiki.com/twitter_ico.png simpliwiki.com/linkedin_ico.png simpliwiki.com/dropbox_ico.png 
+Both FacebookConnect, TwitterAnywhere & LinkedIn sign in are provided. And also DropBox (to archive pages).
+
+Each wiki page has data associated to it, in addition to the page's content. This is "the simplest online database that could possibly work" (to paraphrase WarnCunningham)
+
+...with more to come:
+  - AmazonS3 - store pages in S3
+  - AmazonRDS - run SQL queries
+  - DatabaseDotCom - run SQL queries
+  - CloudAnt - store pages and/or run CouchDb queries
+  - MongoHQ - store pages and/or run queries
+
+
+CSS is customizable at the finest granularity. For "instant results", code pages (either CSS or Angular/Javascript) can be edited "online" using the [{}CodeMirror] editor.
+
+simpliwiki.com/lesscss.png
+
+Complex CSS can be simplified using "Less, the dynamic stylesheet language". lesscss.org
+
+Text content is written using the simplest markup language ever (see HelpStyles) or the well known MarkDown standard. Content is "fluid" and mobile friendly, font sizes change according to the window's size (try resizing this window).
+
+SimpliJs is the foundation of the SimpliWiki wiki hosting platform.
+
+++Links
+
+  simpliwiki.com
+  simplijs.com
+  nodejs.org
+  angularjs.org
+  jquery.com
+  codemirror.net
+
+++Contributing
+
+Our logo is too "simple", maybe.
+
+Our CSS needs some love (nodejs's one is great, but SimpliJs needs a distinct one). See SimpliJsStyle.
+
+Because SimpliJs is not "ready" yet, expect some  inconvenience (ie a lot of pain) if you try to install it. It should work... eventually (you are using it right now).
+
+++Sponsor
+
+Contact the main author, @jhr
+
+
+
+http://static.jsconf.us/promotejsh.gif
+NodeJs rocks!
+
+See CategoryHelp
+
+
++++++Copyright 2011 their respective owners@jhr - 2011-02-07T11:16:30.869Z
+@jhr - 2011-02-07T19:57:20.081Z
+@jhr - 2011-02-13T20:15:06.345Z
+jeanhuguesrobert@ - 2011-02-16T22:24:12.891Z
+jeanhuguesrobert@ - 2011-02-16T22:36:27.215Z
+@jhr - 2011-02-17T01:49:00.772Z
+@jhr - 2011-02-19T22:08:23.383Z

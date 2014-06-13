@@ -1,0 +1,283 @@
+Hi,
+
+My name is JeanHuguesRobert. I'm the software author behind SimpliWiki. In this short presentation I explain how SimpliWiki is a wiki processor that is not like the ones you know.
+
+SimpliWiki is not designed for power users, quite the contrary, it's goal is to be easy to use by everybody (kids & grand parents included) with a strong focus on individuals and small groups (up to 200 active participants). Long is the road, simplicity is not easy to achieve.
+
+Security and privacy on the Internet is a matter of debates. As a social tool, SimpliWiki favors flexibility and tolerate "plausible deniability". Most other wikis promote (an often false sense of) security.
+
+Simplicity brings usability, but "simple" does not mean "simplistic". SimpliWiki is young, it's a work in progress, yet the most important features are there today and some innovative features may surprise you.
+
+++Innovative features
+
++++"Click to edit"
+
+Wikis, by nature, promote a "read/write web" over a "read only web". To make it easier to "write", I have chosen to make it so that clicking in a page turns the "edit mode" on (use double-click to save).
+
+This may be disturbing at first, typically when "edit mode" is turned on accidentally.
+
+So the current solution is not perfect, but I believe it goes in the right direction. My goal is to totally avoid any "edit mode", ie pages should always be in "edit mode" (I'm working on that).
+
++++Accessibility
+
+Long lines and small characters don't improve readability. This is specially true for kids, older people and people with small screens or using TV screens.
+
+That's why SimpliWiki uses short lines (50 characters) and provide "Aa" options in the top menu to zoom in & zoom out (???See DisplayModes???).
+
++++"easy links", "soft urls", wikiwords...
+
+Wikis are made of pages. These pages are easy to create and change. It's should also be easy to link pages together.
+
+That's why SimpliWiki detects things like sample.com or LikeThat. Sometimes there will be "false positive". It's a trade-off (???See WikiWord???)
+
+Links to embeddable content (like pictures & videos for example) are also detected (???See EmbedLy???)
+
++++No "cryptic" markup language
+
+And no WYSIWYG either. SimpliWiki adheres to the principle that says "Simple things should be simple". It leverages plain old typography rules about "quotes", (parenthesis) and common *patterns* to /handle/ _underlined text_ in a -complex- simple way !simple! (???See HelpStyles???)
+
+A nice consequence is that it is possible to copy/paste the content of a page without losing the formatting (use of a mono spaced font helps too).
+
++++"Drafts" for change control
+
+Drafts by visitors, stamps by members. A wiki is like a house, pages are places to visit. Sometimes a visitor will leave a nice note. Sometimes a spammer will leave a graffiti.
+
+SimpliWiki deals with this using some classic solutions and a less classic one too.
+
+The classic solutions are about "access control". In SimpliWiki, some places (ie pages) are public, some other ones are less public and still other ones are either locked or hidden (or both) (???See HelpPublicPages and AboutWiki???)
+
+The less classic solution is about "drafts". When a visitor leaves a note, that note is easy to remove, because it is considered a "draft".
+
+A wiki is a place, it is also a community, with "members". When a member flags a note (ie a draft) it can decide to either remove it (ie restore the previous content of the page) or "stamp" it.
+
+
++++Security by obscurity, Maps & Secrets
+
+SimpliWiki is not a "grade A" security solution (and you're probably not James Bond either). If something needs to be kept really secret, don't use SimpliWiki for that.
+
+What SimpliWiki provides is an easy way to mimic the kind of security "normal people" use in "real life".
+
+Social interactions are complex and subtle, it's not an "either/or" situation, there is a need for "gray areas".
+
+Sometimes someone will lie, sometimes someone will pretend to be someone else, sometimes someone will make a mistake and regret it. SimpliWiki makes no attempts to change these behaviours (it does not promote them either).
+
+Instead, SimpliWiki provide "mechanisms" and let's you use them the way you want.
+
+Much like in "real life", there no easy way to track what someone is doing using SimpliWiki. There is no such thing as "the list of all wikis" or "the wikis that person contributed to".
+
+Even inside a wiki, it is not possible to get the list of all the pages, some pages are hidden. If you hide something in someone's wiki, that person has no easy way to discover it (much like if you hide something in their house), but she may find it by accident sometimes.
+
+An interesting way to hide things is to make them  secret and build a map (like a treasure map) to find them (???See HelpMaps & HelpSecrets???)
+
++++Express yourself!
+
+Internet is a jungle. Some places are "safe", some other places are not so safe. Most wikis trade creativity for safety.
+
+It's different with SimpliWiki where tools like HTML, CSS and Javascript are available to the authors, with the visitor's permission.
+
+When you visit a wiki anonymously, you are safe. 
+
+If you identify yourself and visit a wiki with HTML, CSS or Javascript in it... you are entering the jungle, because code in that wiki can do "things" on your behalf ("good" or "bad" things).
+
+You can then either accept that and visit the jungle as a lion or visit that jungle in "safe" mode like in a zoo, with all HTML, CSS and Javascript automatically disabled. It's your choice.
+
++++Backups with easy duplication
+
+The best easy way to not lose content is to make copies of it.
+
+With SimpliWiki, it's easy to send the content of a page by mail (to yourself for archiving or to anybody else).
+
+Thanks to DropBox, it's also easy to archive pages "in the cloud".
+
+++One last word: Wiki
+
+I'm a strong believer in so called "free speech" and wikis are becoming commodities, something that I like and contribute to.
+
+As a noun "Wiki" entered the Oxford dictionary in 2007. The next step is "Wiki" becoming a verb. The "wikification" of the Internet is becoming obvious, wikis are everywhere nowadays.
+
+But they are too complex to use. SimpliWiki intends to fix that. If you are a software developer, you may contribute, see SimpliJs.
+
+Thanks for reading!
+
+    Jean Hugues, aka @jhr -- simpliwiki.com
+    Feb 22 2011
+    Follow us on twitter.com/simpliwiki
+
+
+ -----
+
+
+www.wikimatrix.org is the most comprehensive web site to compare wiki solutions. Please find below the informations about SimpliWiki:
+
++++General Features
+Version: alpha 0.13 (feb 19 2011)
+Author: JeanHuguesRobert
+url: http://simpliwiki.com
+Free and Open Source: Yes
+License: MIT, LGPL, BSD, etc, basically WTFPL
+Programming language: Javascript
+Data storage: text files
+License cost/Fee: 0
+Development status: alpha
+Intented audience: individuals & groups with up to 200 active participants
+
++++Hosting Features
+Storage Quota: no
+Bandwidth Quota: no
+Other Limits: 100Ko per page
+Topic Restrictions: no
+Corporate Branding: yes, premium
+Own Domain: yes, premium
+Ads allowed: yes, premium
+
++++System Requirements
+Operating System: Linux, Debian, Ubuntu
+Root Access: no
+Webserver: standalone, optional ngix
+Datastorage: text files
+Database: no
+
++++Security/Anti-Spam
+Page Permissions: yes (HelpPublicPages)
+ACL: yes (HelpMaps)
+Authentication Backends: TwitterConnect, FacebookConnect, LinkedInConnect, SSL (soon)
+Host Blocking: no. auto detect SpamPage & drafts
+Mail encryption: yes (no mail at all)
+nofollow: no (robots detection instead)
+Blacklist: no
+CAPTCHA: no (not necessary, spam goes to SpamPage)
+Delayed Indexing: no (robots are excluded)
+Development/Support: yes
+Preconfigured Hosting: yes
+Code repository: github.com/JeanHuguesRobert/simplijs
+Issue Tracker: ToDoList
+Mailing List: no, @simpliwiki on twitter
+Support Forum: yes, UserVoice
+IRC Channel: no
+
+++Common Features
+Preview: no (no markup)
+Minor Changes: yes (major changes require a comment)
+Change Summary: yes
+Page History: yes
+Page Revisions: yes (on demand, see HelpArchive)
+Revision Diffs: no (planned)
+Page Index: no (use "search" instead)
+Plugin System: yes
+
+++Special Features
+Unicode Support: yes
+Right-to-Left Support: no
+Interface Languages: english, french
+Email notification: no
+Comments: discution page, Facebook
+Categories: yes (see HelpCategory)
+Namespaces: yes (clone wikis inherit parent's pages)
+Page Redirection: no
+Search: full text
+Wiki Farming: yes
+Structured Data: yes (API)
+
++++Links
+CamelCase: yes
+Freelinks: yes
+Backlinks: yes
+InterWiki: yes
+SisterWiki: no
+Image Links: yes
+Page Redirects: no
+
++++Syntax Features
+HTML Tags: yes, premium
+Math formulas: no
+Tables: no
+CREOLE support: no (planned)
+Markdown Support: yes
+Textile Support: no
+BBCode Support: no
+Emoticon Images: no
+Syntax Highlighting: no
+Footnotes: no
+Quoting: no
+Internal Comments: yes (via CSS style)
+Custom styles: yes, premium
+FAQ Tags: no
+Scripting: yes (API Javascript, HTTP)
+Content Includes: yes ("TOC" pages)
+Feed Aggregation: no
+
++++Usability
+Section Editing: no
+Page Templates: no
+Double-Click Edit: yes (simple-click actually)
+Toolbar: no
+WYSIWYG Editing: no (no markup language)
+Access Keys: no (Ctrl-S to save, Esc to cancel)
+Auto Signature: yes ("stamping")
+
++++Statistics
+Recent Changes: yes
+Wanted Pages: no
+Orphaned Pages: no
+Most/Least Popular: yes (see HelpCloud)
+Recent Visitors: yes
+Analysis: no
+
++++Output
+HTML: HTML5
+Printer Friendly: no (planned)
+Mobile Friendly: yes (iphone)
+Themes & Skins: no
+RSS Feeds: no
+ATOM Feeds: no
+Abbreviations: no
+Auto-TOC: no
+Raw Export: yes (see DoExportToDropbox)
+HTML Export: yes (see DoExportHtmlPages)
+XML export: no
+PDF Export: no
+
++++Media and Files
+File Attachments: no
+Media Revisions: no
+Embedded Flash: yes (via EmbedLy)
+Embedded Video: yes (via EmbedLy)
+Image Editing: no
+SVG Editing: no
+MindMap Editing: no
+Media Search: N/A
+
++++Extras
+no
+
++++Syntax Examples
+Internal Link:  InternalLink, [Internal link]
+External Link: example.com, http://example.com, [link](Http://example.com)
+Headlines: +Level 1, ++Level2, etc
+Bold Format: *bold*
+Italics Format: /italic/
+Underline Format: _underline format_
+Monospace Format: by default
+Strikethrough Format: -strike- -through-
+Superscript Format: no
+Subscript Format: no
+Images: example.com/image.pug, ![image](Http://example.com/image.png)
+Aligning Text: < centered >, right aligned > .
+Text Indentation: spaces
+Bulleted Lists: yes (see HelpStyles)
+Numbered Lists: yes (see HelpStyles)
+Definition Lists: no
+Horizontal Rule: ----, -----, etc
+
+---
+Code: Atjhr5417
+rows: 30
+cols: 50
+twoPanes: true
+oneTrueFan: true
+code: Atjhr5417
+
+@jhr - 2014-02-10T08:52:41.887Z
+
+__ctx__
+{"name":"SimpliWikiDifference","timeCreated":1298071200614,"visitor":"@jhr","timeVisited":1392022361886,"writer":"@jhr","creator":"jeanhuguesrobert@","timeModified":1392022361886,"hot":true,"visits":7379,"backlinks":["User@jhr","SimpliWikiPitch","HomePage","SimpliWiki","@jhrStamps","jeanhuguesrobert@Stamps","RecentStamps"]}

@@ -1,0 +1,39 @@
+DoDisplayCurrent - display current settings
+
+DoDisplayMedium  - 30 lines of 50 characters
+
+DoDisplayNarrow  - lines of 40 characters
+DoDisplayNarrower
+DoDisplayWide    - lines of 60 characters
+DoDisplayWider
+
+DoDisplayShort   - 20 lines
+DoDisplayShorter - less lines
+DoDisplayTall    - 60 lines
+DoDisplayTaller  - more lines
+
+DoDisplayPhone   - 10 lines of 30 characters
+DoDisplayTv      - 20 lines of 40 characters
+DoDisplayHdTv    - 40 lines of 50 characters
+
+DoDisplayThiner
+DoDisplayStronger
+
+DoDisplayRfc          - 58 lines of 72 characters
+DoDisplayCustom25_80  - Vt100
+DoDisplayCustom43_80  - IBM PC
+DoDisplayCustom23_22  - Vic 20
+
+DoDisplayFluid
+
+See also CssStyles, OnePane & TwoPanes
+
+Note: When there is spare space on the screen, SimpliWiki automaticaly zoom the page (but only if OnePane is displayed)
+
+---
+notify: DoDisplayShort. DoDisplayMedium. DoDisplayTall. DoDisplayHdTv. OnePane. TwoPanes
+
+@jhr - 2011-03-29T20:05:36.039Z
+
+__ctx__
+{"name":"DisplayModes","timeCreated":1294512140022,"visitor":"@jhr","timeVisited":1301429136038,"writer":"@jhr","creator":"jeanhuguesrobert@","timeModified":1301429136038,"hot":true,"visits":23,"backlinks":["SimpliWikiDifference","HelpSimpliWiki"]}

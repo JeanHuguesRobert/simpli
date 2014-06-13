@@ -1,0 +1,18 @@
+*Maps* are special pages whose name starts with "Map". Maps may contain "secrets" (like a treasure map).
+
+Maps are visible only for some visitors whose names are listed on the map (or on some other related maps also listed in the map). The other visitors cannot read the map.
+
+Inside the map page, there can be normal content and also lists of "Secret" pages (whose name starts with Secret)
+
+*Secret* pages are accessible only from a map. Even if you know the secret name of the page, you must read the map first.
+
+With maps, it's easy to define "groups" (and sub-groups) of visitors who can access pages that other visitors cannot read. When you want a secret page to be visible by members of a group, simply add that page on the group's map.
+
+See also HelpSecrets & HelpPublicPages
+
+CategoryHelp
+
+
+
+__ctx__
+{"name":"HelpMaps","timeCreated":1298066244803,"visitor":"@jhr","timeVisited":1298068462911,"writer":"@jhr","timeModified":1298068462911,"hot":true,"visits":1,"backlinks":["SimpliWiki","HelpPublicPages"]}

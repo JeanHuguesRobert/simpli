@@ -1,0 +1,47 @@
+PrivateWiki
+
+To "close" this wiki, please click DoClosedWiki. This will change "PrivateMentorWiki" (by default) into "PrivateClosedWiki" in the text above
+
+ -----
+
+You control the "openess" or "closeness" of your wiki. This is specially important when the name of your wiki is not a secret. See HelpPublicPages
+
+
+Use of DoOpenWiki
+  PrivateOpenWiki -- very open wikis
+
+  In "very open" wikis, changes from both guests and members are "drafts" only if sent this way by the author, else the changes are permanent
+
+  Beware: this means that *anybody* can change *anything* in open wikis!
+
+
+Use of DoMentorWiki
+  PrivateMentorWiki -- less open wikis 
+
+  "less open" wikis require mentor approval to validate members and guest's changes
+
+  Until their invitation code is stamped by a mentor, changes from visitors are just "drafts". See InvitationCode and DraftCode
+
+  Don't lock yourself out! Remember to register yourself as a mentor before closing the door. See SimpliWikiDoc
+
+
+Use of DoClosedWiki
+  PrivateClosedWiki -- very closed wikis 
+
+  If you want to close a wiki even more, mention PrivateClosedWiki. On such wikis, guests can mainly visit "Public" and "Guest" pages only, ie regular pages can be visited by members of the wiki only
+
+
+Valid content (all optional):
+
+Openness:
+- open: false for very closed wikis only
+- veryOpen: true or false
+- mentors: @abc @efg -- list mentors
+
+Look:
+- rows: less rows means bigger characters, try 20
+- cols: number of columns, default is 50
+- lang: either "en" or "fr" (english or french)
+- title: turn Anonymous into a nice title
+
+CategoryHelp

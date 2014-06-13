@@ -1,0 +1,26 @@
+SimpliWikiDoc > HelpPublicPages >
+
+In this wiki, every page has a name. Instead of using a page number, the page is identified thanks to its name.
+
+That name can be almost anything, but with a special "look".
+
+Here are some simple guidelines:
+
+- at least two words put together, each word capitalized, LikeThis
+- or [two words] or more (free links)
+
+Such names are valid WikiWords.
+
+There are some "special" pages whose name starts with a special first word, see HelpPublicPages.
+
+Note: if you prefer pages with "numbers" instead of names, you can use Page#1, Page#2, etc
+
+Note2: #2010_01_17 is a valid wiki name, useful for tagging by date. Page2010_01_17 works too, for diaries maybe.
+
+See also WikiNameForUsers
+
+CategoryHelp
+
+
+__ctx__
+{"name":"WikiNameForPages","timeCreated":1294310517826,"visitor":"@jhr","timeVisited":1295301034985,"writer":"@jhr","creator":"@jhr","timeModified":1295301034985,"hot":true,"visits":58,"backlinks":["NewPage","WikiNameForUsers","HelpPublicPages","CategoryHelp","TocHelpSimpliWiki"]}

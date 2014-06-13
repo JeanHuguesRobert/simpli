@@ -1,0 +1,9 @@
+Please zoom in to switch to single pane mode now ('A' in the top menu, before 'a').
+
+See also TwoPanes and DisplayModes
+
+---
+twoPanes: false
+
+__ctx__
+{"name":"OnePane","visitor":"@jhr","timeVisited":1294168574785,"writer":"@jhr","timeModified":1294168574785,"hot":true,"visits":2}

@@ -1,0 +1,39 @@
+
+
+Restart
+
+
+Restart
+2014-06-13T19:28:54.458Z context: invalid, name: PrivateContext-, err: -{ [Error: ENOENT, open '/home/ubuntu/workspace/simplijs/wiki/@jhr.dir/PrivateContext']
+  errno: 34,
+  code: 'ENOENT',
+  path: '/home/ubuntu/workspace/simplijs/wiki/@jhr.dir/PrivateContext' }
+2014-06-13T19:28:54.458Z malformed context:-PrivateContext
+2014-06-13T19:28:54.458Z context: invalid, name: PrivateContextBackup-, err: -{ [Error: ENOENT, open '/home/ubuntu/workspace/simplijs/wiki/@jhr.dir/PrivateContextBackup']
+  errno: 34,
+  code: 'ENOENT',
+  path: '/home/ubuntu/workspace/simplijs/wiki/@jhr.dir/PrivateContextBackup' }
+2014-06-13T19:28:54.458Z malformed context:-PrivateContextBackup
+2014-06-13T19:28:54.458Z context: No counters, name: -PrivateContext
+2014-06-13T19:28:54.713Z context: invalid, name: PrivateContext-, err: -{ [Error: ENOENT, open '/home/ubuntu/workspace/simplijs/wiki/user.dir/PrivateContext']
+  errno: 34,
+  code: 'ENOENT',
+  path: '/home/ubuntu/workspace/simplijs/wiki/user.dir/PrivateContext' }
+2014-06-13T19:28:54.713Z malformed context:-PrivateContext
+2014-06-13T19:28:54.713Z context: invalid, name: PrivateContext-, err: -{ [Error: ENOENT, open '/home/ubuntu/workspace/simplijs/wiki/user.dir/f3se6yj2ya.dir/PrivateContext']
+  errno: 34,
+  code: 'ENOENT',
+  path: '/home/ubuntu/workspace/simplijs/wiki/user.dir/f3se6yj2ya.dir/PrivateContext' }
+2014-06-13T19:28:54.713Z malformed context:-PrivateContext
+2014-06-13T19:28:54.713Z context: invalid, name: PrivateContextBackup-, err: -{ [Error: ENOENT, open '/home/ubuntu/workspace/simplijs/wiki/user.dir/PrivateContextBackup']
+  errno: 34,
+  code: 'ENOENT',
+  path: '/home/ubuntu/workspace/simplijs/wiki/user.dir/PrivateContextBackup' }
+2014-06-13T19:28:54.713Z malformed context:-PrivateContextBackup
+2014-06-13T19:28:54.713Z context: invalid, name: PrivateContextBackup-, err: -{ [Error: ENOENT, open '/home/ubuntu/workspace/simplijs/wiki/user.dir/f3se6yj2ya.dir/PrivateContextBackup']
+  errno: 34,
+  code: 'ENOENT',
+  path: '/home/ubuntu/workspace/simplijs/wiki/user.dir/f3se6yj2ya.dir/PrivateContextBackup' }
+2014-06-13T19:28:54.713Z malformed context:-PrivateContextBackup
+2014-06-13T19:28:54.713Z context: No counters, name: -PrivateContext
+2014-06-13T19:28:54.713Z context: No counters, name: -PrivateContext

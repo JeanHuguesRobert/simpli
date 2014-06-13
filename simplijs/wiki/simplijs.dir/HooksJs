@@ -1,0 +1,27 @@
+"hooks.js" is a file in your "root" directory.
+
+It is included by MainJs at startup.
+
+It can redefine some properties of SwConstant that impact the way the application looks and behaves.
+
+Example:
+
+<code>
+SW.name              = "SimpliWiki"
+SW.domain            = "simpliwiki.com"
+SW.static            = "simplywiki.com"
+SW.dir               =  "wiki"
+SW.config.mentorUser = "@simpliwiki"
+SW.mentorCode        = "Mentor"
+SW.meeboBar          = ""
+SW.fbid              = "115811123456789"
+SW.shortcutIcon      = "yanugred16.png"
+</code>
+
+CategoryHelp
+
+jeanhuguesrobert@ - 2011-01-22T17:39:47.680Z
+@jhr - 2011-02-08T07:06:15.146Z
+
+__ctx__
+{"name":"HooksJs","timeCreated":1295570206759,"visitor":"@jhr","timeVisited":1297148775123,"writer":"@jhr","creator":"jeanhuguesrobert@","timeModified":1297148775123,"hot":true,"visits":7,"backlinks":["RecentStamps","OneBigFile","SimpliJs","HomePage"]}

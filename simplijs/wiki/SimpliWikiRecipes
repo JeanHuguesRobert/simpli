@@ -1,0 +1,23 @@
+There are many ways to do things using SimpliWiki. Here are some recipes.
+
+++Blogs
+
+To build a blog, create a page for it and then add blog entry pages in inverse chronological order.
+
+If needed, add a ThisComments mention to direct comments to another, sister, page.
+
+See TimeNow & DateNow to insert a date more easely.
+
+This wiki's blog is maybe BlogHere.
+
+++To do lists
+
+To build a "simple" to do list, create a page and list items as you would on paper. See also SortNow & ReverseNow to help you sort by priority.
+
+To build a more complex to do list, create a TocXxxx page for it and then add an entry for each task.
+
+This's wiki's to do list is maybe there: ToDoList.
+Your to do list in this wiki is maybe there: YourToDoList.
+
+__ctx__
+{"name":"SimpliWikiRecipes","timeCreated":1292605343161,"visitor":"@jhr","timeVisited":1295117224092,"writer":"@jhr","creator":"@jhr","timeModified":1295117224092,"hot":true,"visits":3,"backlinks":["CategoryHelp","TocHelpSimpliWiki","UserJhr","JeanHuguesRobertStamps","User@jhr","ToDoList","@jhrStamps"]}

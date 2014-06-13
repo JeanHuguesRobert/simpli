@@ -1,0 +1,26 @@
+HelpSimpliWiki > SimpliWikiDoc >
+
+A "wiki word" is a special looking "word" that is useful to link pages together. Every "page" in this wiki has a unique "name", that name is a wiki word.
+
+A Wiki Word can be:
+- at least two words put together, each word capitalized, LikeThis
+- _ around a single word (_language_)
+- [two words] or more (free links)
+- either @ or # and a word (twitter style)
+- an email address
+- ...
+
+See also WikiNameForPages and WikiNameForUsers
+
+--- examples ---
+
+#topic
+SomePage
+@jhr
+jeanhuguesrobert@
+jeanhuguesrobertIn
+info@simpliwiki.com
+
+
+__ctx__
+{"name":"WikiWords","timeCreated":1294310433529,"visitor":"@jhr","timeVisited":1297327651575,"writer":"@jhr","creator":"@jhr","timeModified":1297327651575,"hot":true,"visits":75,"backlinks":["User@jhr","HelpPublicPages","@jhrStamps","WikiNameForPages","SimpliWikiDoc","WikiNameForUsers"]}

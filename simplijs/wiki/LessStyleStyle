@@ -1,0 +1,96 @@
+/* this is a "less" css page */
+/* See http://lesscss.org */
+/*
+
+This directive, "isLess", it all it takes to trigger "less" rendering on a page.
+
+The processed page is ThisStyle (the name of this page + Style)
+
+In your wiki, use the cssStyle directive with either the "less" or the "processed" page, both solutions work. In the former case the rendering is done "client side" whereas in the later case it is done "server side".
+
+See below the rendering of the examples from the lesscss.org home page.
+
+*/
+#header {
+  color: #4d926f;
+}
+h2 {
+  color: #4d926f;
+}
+/* Compiled CSS */
+#header {
+  color: #4D926F;
+}
+h2 {
+  color: #4D926F;
+}
+#header {
+  border-radius: 5px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+}
+#footer {
+  border-radius: 10px;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+}
+/* Compiled CSS */
+#header {
+  border-radius: 5px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+}
+#footer {
+  border-radius: 10px;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+}
+#header h1 {
+  font-size: 26px;
+  font-weight: bold;
+}
+#header p {
+  font-size: 12px;
+}
+#header p a {
+  text-decoration: none;
+}
+#header p a:hover {
+  border-width: 1px;
+}
+/* Compiled CSS */
+#header h1 {
+  font-size: 26px;
+  font-weight: bold;
+}
+#header p {
+  font-size: 12px;
+}
+#header p a {
+  text-decoration: none;
+}
+#header p a:hover {
+  border-width: 1px;
+}
+#header {
+  color: #333333;
+  border-left: 1px;
+  border-right: 2px;
+}
+#footer {
+  color: #114411;
+  border-color: #7d2717;
+}
+/* Compiled CSS */
+#header {
+  color: #333;
+  border-left: 1px;
+  border-right: 2px;
+}
+#footer {
+  color: #114411;
+  border-color: #7d2717;
+}
+
+__ctx__
+{"name":"LessStyleStyle","timeCreated":1296538044645,"visitor":"SomeOne","timeVisited":1296539662446,"writer":"SomeOne","creator":"SomeOne","timeModified":1296539662446,"hot":true,"visits":1,"backlinks":["LessStyle"]}

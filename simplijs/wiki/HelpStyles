@@ -1,0 +1,57 @@
+With SimpliWiki, what you type is what you see, with some style applied sometimes.
+
+There are few "hidden codes". This makes it easier to "learn by example"
+
+*Bold*       - makes something more visible
+!more!       - even more visible !!!
+(details)    - less visible
+/italic/     - / leans the way italics do
+_under line_ - _ is called "the underscore"
+"a quote"    - self explanatory
+-strike-     - one word at a time -not two-
+
+ -----
+
+Slightly less easy to learn:
++ Big title
+++ title
++++ small title
+++++ even smaller
++++++ no so much visible
+!!! makes a difference
+
+ -----
+
+For gurus:
+
+ 1# ordered (space hash prefix)
+ 2# list
+
+ - Some paragraph (space dash prefix)
+with content
+on multiple lines
+
+ 1. nested (works with star, dash & dot)
+   1# with
+   2# numbered
+   3# items
+     - and more
+ maybe right aligned > >
+ < < or centered > >
+   4# maybe
+ 2. with nested content
+over
+and over
+
+For extreme gurus: CssStyles
+
+ -----
+
+And that's enough! You may want to practice in the SandBox
+
+CategoryHelp
+
+@jhr - 2011-02-01T14:03:55.049Z
+
+__ctx__
+{"name":"HelpStyles","timeCreated":1294770302077,"visitor":"@jhr","timeVisited":1296569073805,"writer":"@jhr","creator":"jeanhuguesrobert@","timeModified":1296569073805,"hot":true,"visits":52,"backlinks":["SimpliWikiTools","CategoryHelp","RecentStamps","SimpliWikiDoc","HelpSimpliWiki"]}

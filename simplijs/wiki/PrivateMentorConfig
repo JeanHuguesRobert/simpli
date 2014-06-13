@@ -1,0 +1,12 @@
+See MetaConfig
+
+This page, when referenced by MetaConfig, sets the wiki in "Closed" mode, a mode where only registered members can make permanent changes.
+
+This is like "locking" the door, whereas PrivateOpenConfig opens it.
+
+To close a wiki even more, see PrivateClosedConfig.
+
+---
+  open: true
+  veryOpen: false
+  lang: "en"

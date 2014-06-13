@@ -1,0 +1,13 @@
+See NowCommand
+
+If, while editing a page, you add SortNow and double click that word... the rest of the page gets reordered in reverse alphabetical order. This is useful with lists. See also ReverseNow
+
+C - Low
+B - Medium
+A - Top priority
+27 jan - hollidays
+15 jan - deadline 2
+01 jan - dealine
+
+__ctx__
+{"name":"ReverseNow","timeCreated":1295111853163,"visitor":"@jhr","timeVisited":1295324519887,"writer":"@jhr","creator":"SimpliWiki","timeModified":1295324519887,"hot":true,"visits":1,"backlinks":["NowCommand","SimpliWikiRecipes","SortNow","UserTestUser"]}

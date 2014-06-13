@@ -1,0 +1,21 @@
+Here is a list of some common RFCs, please add some.
+
+RFC 1700: 
+  Assigned Numbers. Obsolete. There is a database now.
+
+RFC 2616:
+  Hypertext Transfer Protocol -- HTTP/1.1
+  See also rfc2616.com
+
+RFC 2617:
+  HTTP Authentication: Basic and Digest Access Authentication
+
+See also tools.ietf.org/html & www.rfc-editor.org
+
+Note: RFCs are designed to be displayed using lines of 72 characters.
+---
+cols: 72
+rows: 58
+
+@jhr - 2010-10-12T20:13:24.686Z
+@jhr - 2010-10-12T20:13:40.642Z

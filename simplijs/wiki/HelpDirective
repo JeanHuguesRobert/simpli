@@ -1,0 +1,17 @@
+"directives" are special phrases that change the way things happen in your wiki.
+
+Each page can have "directives" in it. The directives are sometimes shown in a section that starts with "---" (3 dashes).
+
+For example, this page includes a "seeAlso" directive (and an empty cssStyle directive to make sure directives are shown).
+
+The "meaning" of a directive depends on it's name (that comes before :) and it's value (that comes after :).
+
+You can add directives and/or change a directive's value. Just edit the page as usual.
+
+---
+seeAlso: HelpDirectives
+cssStyle: no
+
+
+__ctx__
+{"name":"HelpDirective","timeCreated":1296070466038,"visitor":"@jhr","timeVisited":1297778526045,"writer":"@jhr","creator":"@jhr","timeModified":1297778526045,"hot":true,"visits":10,"backlinks":["@jhrStamps","HelpDirectives","HelpYourOwnDropBox","RecentStamps"]}

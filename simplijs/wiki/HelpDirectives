@@ -1,0 +1,27 @@
+Some pages include "directives", see HelpDirective.
+
+Although their meaning can vary, here are general guidelines about some of the more frequent directives. Together with some pages that use them.
+
++++notify
+This directive is a list of messages to display in the "notification" area of the page. Messages are separated with a dot + a space. This can be useful to provide links for navigation.
+
++++cssStyle
+Either the name of a page with CSS code in it or the url (web address) of an external css file.
+
+When specified in a page, this directive defines what style to apply to pages from now on. Note: use "cssStyle: no" to revert to the original style.
+
+When specified in AboutWiki, it defines what style to apply to all pages (until some page says otherwise, if ever).
+
+See also CssStyles
+ 
++++email
+an email address. ToDoExportToDropBox
+
++++password
+a password. ToDoExportToDropBox
+
+
+@jhr - 2011-02-14T08:16:16.160Z
+
+__ctx__
+{"name":"HelpDirectives","timeCreated":1296070769017,"visitor":"@jhr","timeVisited":1297671450944,"writer":"@jhr","creator":"@jhr","timeModified":1297671450944,"hot":true,"visits":5,"backlinks":["HelpDirective","@jhrStamps","RecentStamps","DropBox","CategoryHelp"]}

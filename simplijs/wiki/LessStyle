@@ -1,0 +1,211 @@
+/* this is a "less" css page */
+/* See http://lesscss.org */
+
+/*
+
+This directive, "isLess", it all it takes to trigger "less" rendering on a page.
+
+---
+isLess: true
+
+
+The processed page is ThisStyle (the name of this page + Style)
+
+In your wiki, use the cssStyle directive with either the "less" or the "processed" page, both solutions work. In the former case the rendering is done "client side" whereas in the later case it is done "server side".
+
+See below the rendering of the examples from the lesscss.org home page.
+
+*/
+
+
+// ------------------------------
+// LESS
+
+@color: #4D926F;
+
+#header {
+  color: @color;
+}
+h2 {
+  color: @color;
+}
+
+/* Compiled CSS */
+
+#header {
+  color: #4D926F;
+}
+h2 {
+  color: #4D926F;
+}
+
+
+// ------------------------------
+// LESS
+
+.rounded-corners (@radius: 5px) {
+  border-radius: @radius;
+  -webkit-border-radius: @radius;
+  -moz-border-radius: @radius;
+}
+
+#header {
+  .rounded-corners;
+}
+#footer {
+  .rounded-corners(10px);
+}
+
+/* Compiled CSS */
+
+#header {
+  border-radius: 5px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+}
+#footer {
+  border-radius: 10px;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+}
+
+
+// ------------------------------
+// LESS
+
+#header {
+  h1 {
+    font-size: 26px;
+    font-weight: bold;
+  }
+  p { font-size: 12px;
+    a { text-decoration: none;
+      &:hover { border-width: 1px }
+    }
+  }
+}
+
+/* Compiled CSS */
+
+#header h1 {
+  font-size: 26px;
+  font-weight: bold;
+}
+#header p {
+  font-size: 12px;
+}
+#header p a {
+  text-decoration: none;
+}
+#header p a:hover {
+  border-width: 1px;
+}
+
+
+// ------------------------------
+// LESS
+
+@the-border: 1px;
+@base-color: #111;
+@red:        #842210;
+
+#header {
+  color: @base-color * 3;
+  border-left: @the-border;
+  border-right: @the-border * 2;
+}
+#footer { 
+  color: @base-color + #003300;
+  border-color: desaturate(@red, 10%);
+}
+
+/* Compiled CSS */
+
+#header {
+  color: #333;
+  border-left: 1px;
+  border-right: 2px;
+}
+#footer { 
+  color: #114411;
+  border-color: #7d2717;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+__ctx__
+{"name":"LessStyle","timeCreated":1296537885066,"visitor":"SomeOne","timeVisited":1296539662446,"writer":"SomeOne","creator":"SomeOne","timeModified":1296539662446,"hot":true,"visits":4,"backlinks":["CssStyles"]}

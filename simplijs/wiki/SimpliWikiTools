@@ -1,0 +1,66 @@
+YourPage
+YourStamps
+DoProfile
+DisplayModes
+RecentStamps
+DoDrafts
+DoVisits
+DoMembers
+DoHistory
+DoListReferences
+DoSearchDoSearch
+DoHtmlPage
+DoHtmlPages
+
+These pages are "special pages", what they display is the result of some computation, not directly what someone typed.
+
+For help regarding editing, see HelpStyles & NowCommand.
+If mentor, see also SimpliWikiAdminTools
+
++++YourPage
+This is your "personal" page. Only you and mentors can see it. See also HelpPages
+
++++YourStamps
+List pages you modified
+
++++RecentStamps
+List recently changed pages
+
++++DoDrafts
+List "draft" pages
+
++++DoListReferences
+Lists references to pages
+
++++DoProfile
+Lists your wikis
+
++++DisplayMode
+Sets how big pages look
+See also CssStyle, OnePage & TwoPanes
+
++++DoVisits
+Some informations about recent visitors
+
++++DoMembers
+Some information about recent member visitors
+
++++DoHistory
+Some pages you visited recently
+
++++DoDrafts
+List "draft" pages
+
++++DoHtmlPage
+Export a page in HTML format, for backup maybe
+
++++DoHtmlPages
+Export most pages, whereas DoHtmlPage exports one page at a time.
+
+
+CategoryHelp
+jeanhuguesrobert@ - 2011-01-15T22:53:15.604Z
+@jhr - 2011-01-18T19:25:45.257Z
+
+__ctx__
+{"name":"SimpliWikiTools","timeCreated":1295129736172,"visitor":"@jhr","timeVisited":1295378745235,"writer":"@jhr","creator":"jeanhuguesrobert@","timeModified":1295378745235,"hot":true,"visits":7,"backlinks":["SimpliWikiDoc","TocHelpSimpliWiki","RecentStamps","CategoryHelp"]}

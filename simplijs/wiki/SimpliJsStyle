@@ -1,0 +1,99 @@
+body {
+  background: #22252a;
+  color: #eee;
+}
+
+#unfadder {
+  color: black;
+}
+
+#content_header { display: none; }
+
+h1, h2, h3, h4 {
+  color: #B0C4DE;
+  margin: 2em 0; 
+}
+
+code {
+  padding-left: 1em;
+  color: #eee0e0;
+  border-left: 1px solid #444;
+  font-size: 100%;
+  font-family: monospace;
+}
+
+#content a { color: #cd5; text-decoration: none; }
+#content a:link           { color:#cd5;  }
+#content a:visited        { color:#cd5;  }
+#content a:link.hot       { color: #cd5; }
+#content a:link.hothot    { color: red;  }
+#content a:visited.hot    { color: #cd5; }
+#content a:visited.hothot { color: #cd5; }
+
+b { color: #FFF; }
+
+#content em { font-style: bold; color: #cd5; }
+
+strong {
+font-weight: bold;
+text-shadow: none;
+}
+
+cite {
+color: #AAA;
+font-style: italic;
+font-family: "Droid Sans Mono", Monaco, Consolas, "Lucida Console", monospace;
+}
+
+dfn {
+color: #BBB;
+}
+
+dfn:hover {
+color: #FFF;
+}
+
+var {
+font-size: 0px;
+color: transparent;
+}
+
+span.diff {
+background-color: yellow;
+color:black;
+}
+
+div.yaml { display: none; }
+
+time {
+color: #555;
+font-style: italic;
+text-transform: lowercase;
+}
+
+time > i {
+color: transparent;
+}
+
+time:hover { color: #BBB; }
+
+a:hover { text-decoration: underline; }
+
+.highlight {
+  background: #733;
+  padding: 0.2em 0;
+}
+
+.content {
+background-color: transparent;
+}
+
+
+
+---
+cssStyle: SimpliJsStyle
+seeAlso: CssStyles
+
+
+__ctx__
+{"name":"SimpliJsStyle","timeCreated":1295804312720,"timeVisited":1295805050789,"writer":"@jhr","timeModified":1295805050789,"hot":true,"backlinks":["CssStyles"]}

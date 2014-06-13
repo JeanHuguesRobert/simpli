@@ -1,0 +1,18 @@
+dropbox.com simpliwiki.com/dropbox.png
+
+*Dropbox* is a place to store your files "in the cloud" (ie somewhere on the net).
+
+SimpliWiki and Dropbox work together well.
+
+You can:
+- Copy pages from this wiki to your dropbox
+  see how ToDoExportToDropbox
+- Archive a page when you change it
+  use "Archive" (first, visit ToDoDropboxArchive)
+- Synchronize specific pages
+  use the "dropbox" directive, see HelpDirectives
+!!!not ready yet
+
+
+__ctx__
+{"name":"DropBox","timeCreated":1296067580939,"visitor":"@jhr","timeVisited":1296445834306,"writer":"@jhr","creator":"@jhr","timeModified":1296445834306,"hot":true,"visits":26,"backlinks":["HelpExportToDropBox","ToDoExportToDropBox","ToDoDropBoxToDoExportToDropBox","ToDoList","RecentStamps","SimpliWikiDoc","ToDoDropBoxjeanhuguesrobert@","User@jhr","ToDoDropBoxPages","HelpDropBoxArchive","ToDoDropBox@jhr","SignIn","ToDoDropboxArchive"]}

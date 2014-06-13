@@ -1,0 +1,15 @@
+To display a list of pages as a "cloud":
+
+DoCloud             -- no order, by references
+DoCloudPages        -- alphabetically ordered
+DoCloudFrequencies  -- frequent pages first
+DoCloudTags         -- "tag" related pages
+DoCloudVisits       -- by popularity/visits
+
+
+See also DoListReferences
+
+CategoryHelp
+
+__ctx__
+{"name":"HelpDoCloud","timeCreated":1295296808361,"visitor":"@jhr","timeVisited":1295758281471,"writer":"@jhr","creator":"@jhr","timeModified":1295758281471,"hot":true,"visits":3,"backlinks":["CategoryHelp","ToDoList","RecentStamps"]}

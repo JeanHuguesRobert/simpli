@@ -1,0 +1,15 @@
+This page is about "advanced wiki customization" using CssStyles & HelpAngular.
+
+When a wiki is "customized" using either CSS pages or Angular pages, these pages needs to be listed using the "fetch" directive in the AboutWiki page.
+
+As a convenience, one may add/remove a "prefetched: true" or "notPrefetched: true" directive to the pages individually.
+
+CSS and Angular pages that are used without an explicit "fetch" will render as empty pages the "first time" they are used. ie: style revert to be the default one and "DoAngularXxxx" page will be empty ; this happens rarely and is generally not the desired behaviour.
+
+Note: "first time" means "after a wiki is restarted". Wikis are started and stopped automatically, this is mostly invisible in general. See HelpApi & HelpAngular.
+
+CategoryHelp
+
+
+__ctx__
+{"name":"HelpPrefetch","timeCreated":1295660108003,"timeVisited":1295660775406,"writer":"@jhr","timeModified":1295660775406,"hot":true,"backlinks":["AboutWiki"]}

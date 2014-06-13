@@ -1,0 +1,15 @@
+To install a SimpliWiki "bookmarketlet" in your web browser, drag this to your browser bar:
+WikifyIt
+
+"bookmarklets" are small pieces of code that do something with the current page when you click on them.
+
+SimpliWiki comes with a bookmarklet that makes it super easy to add content to your wikis.
+
+When you visit a page and see some content that you want in a wiki, click on the "Wikify" bookmarklet for that wiki in your browser bar.
+
+Note: you can install many SimpliWiki bookmarklets, to add content easely to many wikis. Add "WikifyIt" on any page to create a bookmarklet that will add content to that page versus adding content to YourPage.
+
+Note2: too many bookmarklets in your browser bar? try marklets.com
+
+__ctx__
+{"name":"BookmarkLet","timeCreated":1295011898253,"visitor":"@jhr","timeVisited":1295060604006,"writer":"@jhr","creator":"@jhr","timeModified":1295060604006,"hot":true,"visits":36,"backlinks":["SimpliWikiDoc","RecentStamps"]}

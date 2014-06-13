@@ -1,0 +1,37 @@
+If you are a css expert, you can customize your wiki's look.
+
+This works using the "cssStyle" directive.
+
+That directive specifies either the name of a wiki page with CSS code in it or the url to some external CSS file.
+
+This wiki "default" CSS code is in simpliwiki.com/simpliwiki.css
+
+The "bare minimum" style of MinimumStyle is in simpliwiki.com/minimum.css
+
+See SimpliWikiStyle, SimpliJsStyle, MatrixStyle & VirtealStyle for examples of customization.
+
+Test your style with TestCss.
+
+Find nice colors & patterns on colourlovers.com and experiment with alternative styles now using stylebot.com
+
+See also DisplayModes
+
+!note! Mentors, please use a "prefetched: true" directive in CSS pages to make sure that the first page displayed does render using it when the wiki is restarted (applies to Angular pages too). See also "fetch" in AboutWiki
+
+For CSS gurus: lesscss.org is OK, either use a .less url or the isLess directive. See LessStyle.
+
+
+---
+isNotCss: true
+isNotAngular: true
+cssStyle: noStyle
+notify: SimpliWikiStyle. MatrixStyle. VirtealStyle. SimpliJsStyle
+
+@jhr - 2011-02-01T01:43:30.144Z
+SomeOne - 2011-02-01T05:24:44.713Z
+@jhr - 2011-02-04T07:40:29.509Z
+@jhr - 2011-02-07T04:58:17.736Z
+@jhr - 2011-02-13T08:40:36.919Z
+
+__ctx__
+{"name":"CssStyles","timeCreated":1294585042024,"visitor":"@jhr","timeVisited":1297586436900,"writer":"@jhr","creator":"@jhr","timeModified":1297586436900,"hot":true,"visits":47,"backlinks":["AboutWiki","HelpAngular","HelpPrefetch","DisplayModes","HelpDirectives","User@jhr","ToDoList","@jhrStamps","HelpStyles","RecentStamps","VirtealStyle","TestCss"]}

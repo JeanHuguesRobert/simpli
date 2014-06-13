@@ -1,0 +1,74 @@
++++++"Simple things should be easy, complex things should be possible" -- Alan Key
+
+To make "complex things" possible, SimpliWiki comes with an API.
+
+To make complex things easy, SimpliWiki uses AngularJs.
+
+To let the world enjoy this, the software platform of SimpliWiki is "open source". See SimpliJs.com
+
+ -----
+
+The javascript API provides a few functions:
+
++++sw_api( cid, url, _$ )
+
+"cid" specifies the client id.
+-----
+
+Use "anonymous" to visit the wiki as a guest.
+
+Use null to visit using the current session (this works for local applications only).
+
+Use some other valid id to visit on behalf of that client.
+
+"url" specifies the url to use.
+-----
+
+It is utilized for HTTP GET requests. It defaults to "/rest".
+
+You need to change that if you use the API in a client on a different domain or in a NodeJs server for example.
+
+"_$" overrides the default $ from jQuery
+----
+
+The API's implementation relies on "_$.get( url, data, callback)" behaving like it does with jQuery.
+
+Return:
+-------
+sw_api() returns an object with the following members:
+
++++.getSession()
+
+Provides informations about the current session.
+
++++.getPage( page, cb )
+
+Reads a page from the wiki, cached.
+
++++.clearPageCache( page )
+
+Removes cached data about a page. If no page is provided, the whole cache is cleared.
+
++++.putPage( page, body, data, cb )
+
+Writes a page in the wiki.
+
++++.appendPage( page, body, cb )
+
+Adds content to a page in the wiki.
+
+ -----
+
+The API is implemented using HTTP GET requests. See simpliwiki.com/sw_api.js
+
+ -----
+
+There is a basic example, using Angular, see AngularApiExample1
+
+See also HelpAngular
+
+CategoryHelp
+
+
+__ctx__
+{"name":"HelpApi","timeCreated":1295608413302,"visitor":"jeanhuguesrobert@","timeVisited":1295637036843,"writer":"jeanhuguesrobert@","timeModified":1295637036843,"hot":true,"inherited":true,"visits":2,"backlinks":["OneBigFile","HelpAngular","AngularApiExample1","AngularHello","ParentCategoryHelp","TocHelpSimpliWiki","HomePage"]}

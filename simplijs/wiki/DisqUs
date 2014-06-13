@@ -1,0 +1,18 @@
+To add a wiki to your site, add
+<code>
+  <script href="http://simpliwiki.com/embed.js"></script>
+</code>
+
+-----
+
+disqus.com/features -- "the very best comment system"
+
+See docs.disqus.com/developers/universal
+
+You may use "simpliwiki_" prefixed variables instead of the "disqus_" prefixed ones.
+
+See also EmbedJs & simpliwiki.com/embed.js
+
+
+__ctx__
+{"name":"DisqUs","timeCreated":1294870338168,"visitor":"jeanhuguesrobert@","timeVisited":1295093275686,"writer":"jeanhuguesrobert@","creator":"@jhr","timeModified":1295093275686,"hot":true,"visits":5,"backlinks":["RecentStamps","EmbedJs"]}

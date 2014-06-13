@@ -1,0 +1,167 @@
+body {
+  background-color: #000;
+  color: lightgreen;
+}
+
+#tooltip {
+  background: white;
+  color: #444;
+  border: 2px solid lightgray;
+}
+
+#header {
+  border-bottom: 1px solid #0B0;
+  background-color: green;
+  color: #000;
+}
+
+#header a {
+  color: #000;
+}
+
+#header a:hover {
+  color: #000;
+  background-color: lightgreen;
+}
+
+.content {
+  background-color: #000;
+}
+
+.content a {
+  color: lightgreen;
+}
+
+#content_edit {
+  background-color: #F0F0F0;
+}
+
+#content_editable {
+  background-color: #F0F0F0;
+}
+
+textarea {
+  background-color: transparent;
+}
+
+#footer {
+  line-height: inherit;
+  background-color: #000;
+  color: lightgreen;
+}
+
+#footer_content a {
+  color: lightgreen;
+}
+
+#footer_content a:hover {
+  color: lightgreen;
+  background-color: #000;
+}
+
+input {
+  color: #555;
+}
+
+input:hover {
+  color:#942;
+  background-color: #FFBABA;
+}
+
+input:focus {
+  background-color: transparent;
+}
+
+#send {
+  color: red;
+}
+
+a:link {
+  background-color: green;
+  color: black;
+}
+
+a:visited {
+  background-color: green;
+  color: black;
+}
+
+a:link.hot {
+  color: lightgreen;
+}
+
+a:link.hothot {
+  font-style: bold;
+  color: #0F0;
+}
+
+a:visited.hot {
+  color: lightgreen;
+}
+
+a:visited.hothot {
+  font-style: bold;
+  color: #0F0;
+}
+
+b {
+  font-style: bold;
+  color: #090;
+}
+
+em {
+  color: darkgreen;
+}
+
+strong {
+  text-shadow: #666 0px 0px 0.05em;
+}
+
+cite {
+  color: #090;
+}
+
+dfn {
+  color: #BBB;
+}
+
+dfn:hover {
+  color: #555;
+}
+
+var {
+  color: #000;
+}
+
+code {
+  color: green;
+}
+
+span.twitter {
+  color: #9AE4E8;
+}
+
+span.diff {
+  background-color: black;
+  color: yellow;
+}
+
+time {
+  color: #0B0;
+}
+
+time > i {
+  color: #000;
+}
+
+time:hover {
+  color: #AAA;
+}
+
+
+---
+cssStyle: MatrixStyle
+seeAlso: CssStyles
+
+__ctx__
+{"name":"MatrixStyle","visitor":"@jhr","timeVisited":1294519378288,"writer":"@jhr","timeModified":1294519378288,"hot":true,"visits":5}

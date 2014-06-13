@@ -1,0 +1,56 @@
+body {
+  color: #444;
+  font-family: monospace;
+  background-image:   url(http://simpliwiki.com/bckgrnd.png);
+  background-repeat: repeat-x;
+}
+
+#container {
+  font-family: monospace;
+}
+
+.content {
+  background-color: transparent;
+}
+
+div.yaml { display: none; }
+
+h5 {
+  font-weight: bold;
+}
+
+dfn {
+  font-size: 0px;
+  color: transparent;
+}
+
+a {
+  color:#F50;
+  text-decoration:none;
+}
+
+a:visited {
+  color:#820;
+  text-decoration:none;
+}
+
+a:hover {
+  color:#942;
+  text-decoration:underline
+}
+
+
+ReadAboutSimpliWikiGuest - 2011-01-23T19:26:44.363Z
+
+
+@jhr - 2011-01-23T19:29:01.166Z
+
+
+
+---
+cssStyle: VirtealStyle
+seeAlso: CssStyles TestCss
+
+
+__ctx__
+{"name":"VirtealStyle","timeCreated":1295804175971,"visitor":"@jhr","timeVisited":1295810941125,"writer":"@jhr","creator":"@jhr","timeModified":1295810941125,"hot":true,"visits":5,"backlinks":["CssStyles","RecentStamps","User@jhr"]}

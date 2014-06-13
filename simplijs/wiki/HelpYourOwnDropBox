@@ -1,0 +1,10 @@
+Your Dropbox is like a safe. SimpliWiki too needs the key to access it's content.
+
+To give SimpliWiki the key of the safe, please add an "email" and a "password" directive to YourOwnDropBox page.
+
+Note: your password will be stored in that page, it is stored "encrypted", so that nobody but us (or a thief) can use it.
+
+See HelpDirective and HelpSecurity.
+
+__ctx__
+{"name":"HelpYourOwnDropBox","timeCreated":1296275460707,"visitor":"@jhr","timeVisited":1296276210422,"writer":"@jhr","timeModified":1296276210422,"hot":true,"visits":1,"backlinks":["DropBox"]}

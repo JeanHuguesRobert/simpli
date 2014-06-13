@@ -1,0 +1,107 @@
+The <a href="http://wiki.pageforest.com/#script-example">Pageforest Wiki</a> is an excellent way to write documentation for JavaScript programs and code snippets.<br><br>
+
+You can use MarkDown syntax for all the textual parts of your documentation, and also include **embedded `<script>`** tags to demonstrate code fragments.<br><br>
+
+*Click the Edit button above to view (and modify) the source of this file interactively.*<br><br>
+
+For example - you can have simple JavaScript statements in a `<script>` block:<br>
+
+<script>
+       function replaceKeys(st) {
+            var args = arguments;
+            st = st.toString();
+            re = /{([^}]+)}/g;
+            st = st.replace(re, function(whole, key) {
+               var n = parseInt(key);
+               if (!isNaN(n)) {
+                   return args[n];
+               } else {
+                   return args[1][key];
+               }
+            });
+            return st;
+        }
+
+        function print() {
+            var s = replaceKeys.apply(undefined, arguments);
+          window.document.write( "<br>" + s+ "<br>");
+        }
+
+</script>
+
+<script>
+1;
+1 + 1;
+"abc".indexOf('b');
+1;
+</script>
+
+<br>More than that, you can define whole function blocks within your code:<br>
+
+<script>
+function plusOne(a) {
+  return a + 1;
+}
+</script>
+
+<script>
+plusOne(1);
+plusOne(-1);
+</script>
+
+<br>You can also mix and match functional blocks with expressions to be evaluated.<br>
+
+<script>
+function middle(s) {
+   return s.slice(1, s.length - 1);
+}
+
+middle("abc");
+middle("hello");
+</script>
+
+<br>And finally, you can use the flexible print function to output lines to an output buffer that will be displayed immediately below your code block:<br>
+
+<script>
+function printPowers(n) {
+  for (var i = 0; i < n; i++) {
+    print("{1}, {2}, {3}", i, Math.pow(i, 2), Math.pow(i, 3));
+  }
+}
+
+printPowers(10);
+</script>
+
+<script>
+var year = new Date().getFullYear();
+var people = [
+  {person: "Mike",
+   age: year - 1960,
+   job: "programmer"},
+  {person: "Chris",
+   age: year - 1988,
+   job: "student"}
+  ];
+
+function printPeople(a) {
+  for (var i = 0; i < a.length; i++) {
+    print("{person}, who is now {age} years old, is working as a {job}.", a[i]);
+  }
+}
+
+printPeople(people);
+
+</script>
+
+<br>Warning: because script is being executed in the browser, it's possible to accidentally write infinite loops that will hang up the browser.<br><br>
+
+You should save frequently to avoid losing your work as your browser may crash.<br><br>
+
+Also, if you are currently signed in to this wiki, you may be warry of opening other people's wiki's as they could contain malicious code that will use your credentials to read or modify your own wiki documents (in a future version, I hope to sandbox `<script>` to minimize the potential impact.<br><br>
+
+---
+cols: 80
+
+
+__ctx__
+{"name":"AngularScriptExample","timeCreated":1296732933167,"visitor":"jeanhuguesrobert@","timeVisited":1298412059613,"writer":"jeanhuguesrobert@","creator":"@jhr","timeModified":1298412059613,"hot":true,"visits":12}

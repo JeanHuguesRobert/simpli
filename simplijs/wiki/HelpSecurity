@@ -1,0 +1,20 @@
+SimpliWiki is not ready yet. Please don't put any sensitive information in it.
+
+When it will be ready, SimpliWiki will provide multiple levels of security.
+
++++HTTPS
+
+Using HTTPS, all the bits and data (sent by SimpliWiki or to it) are "encrypted". This is a fairly strong barrier.
+
+Check your browser's address bar and look for "https" in it. If not present, it's not secure.
+
+!!!not available yet
+
++++Passwords
+
+When SimpliWiki stores a password, it stores it "encrypted". To decrypt the password, one needs a the "master key". The master key is stored in a protected file that nobody (but a thief) can access.
+
+!!!As of today (jan 29 2011) no password at all are ever stored -- when this will change, the way the password are stored will be described here.
+
+__ctx__
+{"name":"HelpSecurity","timeCreated":1296276154228,"visitor":"@jhr","timeVisited":1296276980906,"writer":"@jhr","timeModified":1296276980906,"hot":true,"visits":1,"backlinks":["HelpYourOwnDropBox"]}
