@@ -1,7 +1,8 @@
 {
   "name": "simpli",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A programmable liquid democracy Wiki",
+  "repository": "https://github.com/JeanHuguesRobert/simpli.git",
   "main": "lib/main.js",
   "files": [
     "lib",
@@ -18,15 +19,17 @@
     "l8": ">=0.3.0"
   },
   "devDependencies": {
+    "bower": "^1.3.5",
+    "karma": "~0.10",
     "coffee-script": "latest",
     "browserify": "latest",
     "uglify-js": "1",
     "mocha": "latest"
   },
-  "scripts": {},
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/JeanHuguesRobert/simpli.git"
+  "scripts": {
+    "postinstall": "bower install",
+    "prestart": "npm install",
+    "start": "node lib/main.js"
   },
   "keywords": [
     "wiki",
