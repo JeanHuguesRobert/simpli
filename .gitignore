@@ -43,6 +43,10 @@ lib/local_hooks.js
 hooks.js
 local_hooks.js
 
+# wiki backups
+simplijs/wiki/Backup
+simplijs/wiki/*Backup
+
 # git stuff
 .gitattributes
 
