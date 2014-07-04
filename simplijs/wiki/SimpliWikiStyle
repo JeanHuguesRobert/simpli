@@ -1,3 +1,4 @@
+/*
 body {
   background-image: url(/bg.png);
 }
@@ -5,6 +6,7 @@ body {
 .content {
   background-color: transparent;
 }
+*/
 
 div.yaml { display: none; }
 
@@ -19,6 +21,8 @@ div.yaml { display: none; }
 ---
 cssStyle: SimpliWikiStyle
 
+SomeGuest - 2014-07-04T14:13:01.200Z
+@jhr - 2014-07-04T14:14:42.230Z
 
 __ctx__
-{"name":"SimpliWikiStyle","timeCreated":1295775311622,"visitor":"@jhr","timeVisited":1297594888069,"writer":"@jhr","creator":"@jhr","timeModified":1297594888069,"hot":true,"visits":52,"backlinks":["@jhrStamps","CssStyles","HomePage","RecentStamps"]}
+{"name":"SimpliWikiStyle","timeCreated":1295775311622,"visitor":"@jhr","timeVisited":1404483282220,"writer":"@jhr","creator":"@jhr","timeModified":1404483282220,"hot":true,"visits":960,"backlinks":["CssStyles","@jhrStamps","RecentStamps","SimpliWiki","HomePage"]}
