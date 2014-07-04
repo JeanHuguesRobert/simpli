@@ -6,7 +6,7 @@ Rules about a page's name set who can read or change that page.
 
 *normal* pages are pages that everybody can read and change (but as a draft only, a registered users, ie a member, can stamp or clear the change).
 
-*Public* pages (whose name starts with "Public") are pages that everybody can change.
+*Public* pages (whose name starts with Public) are pages that everybody can change.
 
 *Guest* pages are pages that guests can read but cannot change.
 
@@ -16,7 +16,7 @@ Rules about a page's name set who can read or change that page.
 
 *Member* pages are for registered members only.
 
-*Private* pages are for mentors only.
+*Private* pages are for curators only.
 
 *Secret* pages are accessible only from a "map" page. Even if you know the secret name of the page, you must read the map first (??? See HelpSecrets???). 
 
@@ -26,11 +26,11 @@ In "closed" wikis, normal pages behave like member pages, ie only members can re
 
 In "very open" wikis, normal pages behave like public pages, ie everybody can change them.
 
-See also AboutWiki about "open" versus "closed" wikis (mentors only).
+See also AboutWiki about "open" versus "closed" wikis (curators only).
 
 --- special ---
 
-*Read* pages are read only, unless mentor.
+*Read* pages are read only, unless curator.
 
 *Toc* tables of content display many pages.
 
@@ -45,7 +45,7 @@ ReadExamplePage
 TocExamplePage
 UserExamplePage
 MemberExamplePage
-PrivateExamplePage -- Mentors only
+PrivateExamplePage -- curators only
 MapExamplePage
 SecretExamplePage
 
@@ -56,4 +56,4 @@ CategoryHelp
 @jhr - 2011-02-18T22:31:46.492Z
 
 __ctx__
-{"name":"HelpPublicPages","timeCreated":1294266701536,"visitor":"@jhr","timeVisited":1298068549686,"writer":"@jhr","creator":"@jhr","timeModified":1298068549686,"hot":true,"visits":7,"backlinks":["AboutWiki","MetaConfig","ToDoList","@jhrStamps","WikiNameForPages","NewPage","TocHelpSimpliWiki","SimpliWikiDoc","CategoryHelp","HelpMaps"]}
+{"name":"HelpPublicPages","timeCreated":1294266701536,"visitor":"SomeGuest","timeVisited":1402834531713,"writer":"@jhr","creator":"@jhr","timeModified":1402834531713,"hot":true,"visits":1624,"backlinks":["SimpliWikiDifference","HelpSecrets","CategoryHelp","ToDoList","HelpMaps","AboutWiki","SimpliWikiDoc","NewPage","WikiNameForPages","MetaConfig","@jhrStamps","TocHelpSimpliWiki","RecentStamps"]}

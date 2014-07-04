@@ -36,7 +36,7 @@ Done:
 - DoDebugInspector for debugging
 - some wikification is now done client side
 - scroll cue effect when scrolling pages
-- no draft code in drafts for non mentors
+- no draft code in drafts for non curators
 - "back button" after post is now ok
 - Invite/Block on draft code pages
 - Diff when viewing draft pages
@@ -59,7 +59,7 @@ Done:
 - improved readability, dynamic resizing
 - some context restore between reboots
 - faster "click to edit"
-- Got rid of "Mentor" pseudo user
+- Got rid of "curator" pseudo user
 - MyTweets "Tweet" page
 - PrivateTools
 - display original of "draft" pages
@@ -103,7 +103,7 @@ See also BlogHere
 @jhr diff - 2010-09-26T12:06:24.265Z
 @jhr invite/block - 2010-09-27T20:59:47.864Z
 @jhr "back" & POST - 2010-09-27T21:01:02.371Z
-@jhr mentors & draft codes - 2010-09-27T21:04:49.209Z
+@jhr curators & draft codes - 2010-09-27T21:04:49.209Z
 @jhr scroll cue - 2010-10-09T12:12:01.419Z
 @jhr - 2010-10-09T18:17:16.428Z
 @jhr client side wikify - 2010-10-15T08:34:52.540Z

@@ -2,7 +2,7 @@ See MetaConfig
 
 This page, when referenced by MetaConfig, sets the wiki in "Open" mode, a mode where every visitors can can make permanent changes.
 
-This is like "unlocking" the door, making the place public, whereas PrivateMentorConfig closes it and PrivateClosedConfig closes it even more.
+This is like "unlocking" the door, making the place public, whereas PrivatecuratorConfig closes it and PrivateClosedConfig closes it even more.
 
 ---
   open: true

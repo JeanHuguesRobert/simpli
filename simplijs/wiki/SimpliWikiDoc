@@ -9,12 +9,8 @@
   2- go to simpliwiki.com
   3- type the name and click "wiki!"
 
-or use a secret name
-  1- go to secret.simpliwiki.com
-  2- notice the "Web address" shown at the bottom, bookmark it to get back to your new secret wiki
 
-
-+++To keep a backup
++++To keep a backup (Jun 2014, this is broken)
   1- go to one of your wikis
   2- go to DropBox
 
@@ -23,9 +19,9 @@ or use a secret name
 There are 3 kinds of visitors:
 - guests, anonymous or not
 - members, aka "registered users"
-- mentors, who "own" wikis (aka administrators)
+- curators, who "own" wikis (aka administrators)
 
-As a twitter, facebook or linkedin user, you are automatically mentor/owner of the wikis you create.
+As a twitter user, you are automatically curator/owner of the wikis you create or whose name includes yours.
 
 Otherwise, to claim ownership, register yourself, go to NewMember.
 
@@ -34,14 +30,14 @@ Otherwise, to claim ownership, register yourself, go to NewMember.
 ++Guest visitors
 
 - edit and then click "Send". Other visitors will see the change as a "draft" until some registered member "stamps" it
-- use _some underline_ *strong* -strike- /italic/ !less! is "more".
+- use _some underline_ *strong* -strike- /italic/ !less! is "more"
 - feel free to try, you can't break anything, wikis are robust by nature
 
 +++To register 
   1- go to NewMember, edit to enter your name
   2- find your personal page (next to "bye")
   3- present yourself & ask for membership
-  4- wait for approval by a mentor
+  4- wait for approval by a curator
 
 See also see SignIn
 
@@ -58,32 +54,16 @@ See also SimpliWikiTools
 
  ---------
 
-++Mentors (owners)
+++curators (owners)
 
 +++To register a new member
   1- Go to NewMember, edit to enter the name
   2- write some welcome message on the member's "User" page (aka the member's personal page)
 
 
-If new member is not a twitter, facebook or linkedin user, an InvitationCode must be provided.
-  1- add "CodeSecret" to the member's "User" page
-  2- visit the "CodeSecret" page
-  3- send the web address of the invitation page to the new member
+Note: please use @twitter names, not real name.
 
-Note: maybe add "Mentor" before the member's name on the first line of the invitation code page.
-
-
-If member is a recent visitor:
-  1- find visit, maybe in draft pages (DoVisits, DoDrafts)
-  2- visit invitation code page (a DraftCode)
-  3- click on "invite" in top menu
-
-
-+++To cancel an invitation code
-  1- find member in PrivateCodes
-  2- visit invitation code page
-  3- click on "block" in top menu
-
+If member is a recent visitor, find visit, maybe in draft pages (DoVisits, DoDrafts).
 
 See also SimpliWikiAdminTools
 
@@ -97,6 +77,7 @@ CategoryHelp
 notify: NewPage. NewMember. NewWiki. CategoryHelp. HelpHowTo
 
 jeanhuguesrobert@ - 2011-12-11T18:15:41.777Z
+@jhr - 2014-06-14T18:27:32.742Z
 
 __ctx__
-{"name":"SimpliWikiDoc","timeCreated":1294884657230,"visitor":"jeanhuguesrobert@","timeVisited":1323627341773,"writer":"jeanhuguesrobert@","creator":"@jhr","timeModified":1323627341773,"hot":true,"visits":562,"backlinks":["User@jhr","SimpliWikiAdminTools","HelpHelpSimpliWiki","WikiNameForPages","HelpSimpliWiki"]}
+{"name":"SimpliWikiDoc","timeCreated":1294884657230,"visitor":"@jhr","timeVisited":1402832065793,"writer":"@jhr","creator":"@jhr","timeModified":1402832065793,"hot":true,"visits":1915,"backlinks":["User@jhr","HelpHelpSimpliWiki","HelpPublicPages","CategoryHelp","SimpliWikiAdminTools","AboutWiki","WikiNameForUsers","WikiNameForPages","HelpHowTo","JeanHuguesRobertStamps","jeanhuguesrobert@Stamps","Helpcurator","MetaConfig","@jhrStamps","TocHelpSimpliWiki","RecentStamps","HelpSimpliWiki","UserSome","WikiWords","SomeOne"]}

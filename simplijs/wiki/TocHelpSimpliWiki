@@ -2,7 +2,7 @@ SimpliWiki
 SimpliWikiDoc
   NewPage
   SignIn
-    LocalMentor
+    Localcurator
     NewMember
     InvitationCode
     DraftCode
@@ -17,7 +17,7 @@ SimpliWikiDoc
     HelpMaps
     About
       PrivateWiki
-      PrivateMentorWiki
+      PrivatecuratorWiki
       PrivateClosedWiki
     SimpliWikiAdminTools
       HelpApi, HelpAngular

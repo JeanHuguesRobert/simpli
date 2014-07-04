@@ -3,24 +3,15 @@
 DisplayModes
 http://mashable.com/2010/07/22/web-design-feedback-tools/
 
-http://jacquesmattheij.com/handbook-freemium/moving-freemium
-
-http://tinychat.com/chatbar/admin?room=bfba51ed3ff68b91041ed26cb9821469&p=c80d6540c8c2c5d13af5017bc6121554
-
-<script type="text/javascript" src="http://tinychat.com/chatbar/bar.js"></script>
-<script type="text/javascript">
-chatbar.embed({ room: "bfba51ed3ff68b91041ed26cb9821469", theme: "white", facebook_like: true, tweet_button: true, urls: {facebook: "jeanhuguesrobert", twitter: "jhr"}, width: "fluid", align: "right", position: "bottom"});
-</script>
-
 * SimpliWikiDifference, HelpHelpSimpliWiki, HelpMarkdown, MarkDown
 * PrivateRootWiki PrivateRootConfig
 
 * NewPage, JoinMe, DropBox, ToDoDropboxArchive
-* CodeAtjhr5417, Userjeanhuguesrobert@ ProxySimpliWikiCom
+* CodeAtjhr5417, ProxySimpliWikiCom
 * ToDoExportToDropbox, ToDoDropbox@jhr
 * SimpliWikiSlides EmbedLy
 * AngularHello HelpApi HelpAngular
-* jean.vincent@ CodePage
+* CodePage
 * TestCss, CssStyles, VirtealStyle
 * UserTestUser, DoListReferences, NowCommand, NowCommands
 * OnePane, TwoPanes
@@ -33,10 +24,10 @@ chatbar.embed({ room: "bfba51ed3ff68b91041ed26cb9821469", theme: "white", facebo
 * NoSuchEmail
 * AboutWiki MetaConfig
 * PrivateWiki
-* PrivateMentorWiki
+* PrivatecuratorWiki
 * UserSomeGuest
 * ZorroSan
-* SimpliWikiMentor
+* SimpliWikicurator
 * SignIn
 * SomeGuest
 * NoSuchUser
@@ -77,15 +68,8 @@ chatbar.embed({ room: "bfba51ed3ff68b91041ed26cb9821469", theme: "white", facebo
 * @jhr
 
 ---
-Code: Atjhr5417
-rows: 30
 cols: 50
 twoPanes: true
-oneTrueFan: true
-code: F376c8vvph
-
-
-
 
 @jhr - 2011-01-30T21:56:04.466Z
 @jhr - 2011-02-04T10:02:48.207Z
@@ -93,6 +77,7 @@ code: F376c8vvph
 @jhr - 2011-02-16T19:30:46.739Z
 @jhr - 2011-02-22T14:14:40.936Z
 @jhr - 2011-04-02T20:14:56.239Z
+@jhr - 2014-06-14T19:33:11.379Z
 
 __ctx__
-{"name":"User@jhr","timeCreated":1294699323943,"visitor":"@jhr","timeVisited":1301777764285,"writer":"@jhr","creator":"@jhr","timeModified":1301777764285,"hot":true,"visits":3511}
+{"name":"User@jhr","timeCreated":1294699323943,"visitor":"@jhr","timeVisited":1402774617018,"writer":"@jhr","creator":"@jhr","timeModified":1402774617018,"hot":true,"visits":6995,"backlinks":["@jhrStamps","WikiNameForUsers","TwoPanes","NewMember","SimpliWikiAdminTools","InvitationCode"]}

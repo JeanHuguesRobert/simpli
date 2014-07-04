@@ -1,6 +1,6 @@
 PrivateWiki
 
-To "close" this wiki, please click DoClosedWiki. This will change "PrivateMentorWiki" (by default) into "PrivateClosedWiki" in the text above
+To "close" this wiki, please click DoClosedWiki. This will change "PrivatecuratorWiki" (by default) into "PrivateClosedWiki" in the text above
 
  -----
 
@@ -15,14 +15,14 @@ Use of DoOpenWiki
   Beware: this means that *anybody* can change *anything* in open wikis!
 
 
-Use of DoMentorWiki
-  PrivateMentorWiki -- less open wikis 
+Use of DocuratorWiki
+  PrivatecuratorWiki -- less open wikis 
 
-  "less open" wikis require mentor approval to validate members and guest's changes
+  "less open" wikis require curator approval to validate members and guest's changes
 
-  Until their invitation code is stamped by a mentor, changes from visitors are just "drafts". See InvitationCode and DraftCode
+  Until their invitation code is stamped by a curator, changes from visitors are just "drafts". See InvitationCode and DraftCode
 
-  Don't lock yourself out! Remember to register yourself as a mentor before closing the door. See SimpliWikiDoc
+  Don't lock yourself out! Remember to register yourself as a curator before closing the door. See SimpliWikiDoc
 
 
 Use of DoClosedWiki
@@ -36,7 +36,7 @@ Valid content (all optional):
 Openness:
 - open: false for very closed wikis only
 - veryOpen: true or false
-- mentors: @abc @efg -- list mentors
+- curators: @abc @efg -- list curators
 
 Look:
 - rows: less rows means bigger characters, try 20

@@ -16,7 +16,7 @@ Find nice colors & patterns on colourlovers.com and experiment with alternative 
 
 See also DisplayModes
 
-!note! Mentors, please use a "prefetched: true" directive in CSS pages to make sure that the first page displayed does render using it when the wiki is restarted (applies to Angular pages too). See also "fetch" in AboutWiki
+!note! curators, please use a "prefetched: true" directive in CSS pages to make sure that the first page displayed does render using it when the wiki is restarted (applies to Angular pages too). See also "fetch" in AboutWiki
 
 For CSS gurus: lesscss.org is OK, either use a .less url or the isLess directive. See LessStyle.
 

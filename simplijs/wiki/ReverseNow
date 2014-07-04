@@ -1,6 +1,6 @@
 See NowCommand
 
-If, while editing a page, you add SortNow and double click that word... the rest of the page gets reordered in reverse alphabetical order. This is useful with lists. See also ReverseNow
+If, while editing a page, you add ReverseNow and double click that word... the rest of the page gets reordered in reverse alphabetical order. This is useful with lists. See also SortNow.
 
 C - Low
 B - Medium
@@ -10,4 +10,4 @@ A - Top priority
 01 jan - dealine
 
 __ctx__
-{"name":"ReverseNow","timeCreated":1295111853163,"visitor":"@jhr","timeVisited":1295324519887,"writer":"@jhr","creator":"SimpliWiki","timeModified":1295324519887,"hot":true,"visits":1,"backlinks":["NowCommand","SimpliWikiRecipes","SortNow","UserTestUser"]}
+{"name":"ReverseNow","timeCreated":1295111853163,"visitor":"@jhr","timeVisited":1402772949623,"writer":"@jhr","creator":"SimpliWiki","timeModified":1402772949623,"hot":true,"visits":190,"backlinks":["NowCommand","SimpliWikiRecipes","SortNow","@jhrStamps"]}

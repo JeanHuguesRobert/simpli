@@ -6,7 +6,7 @@ SimpliWikiDoc TocHelpSimpliWiki (all in one)
   NewPage
   SignIn
   NewMember
-    LocalMentor
+    Localcurator
     InvitationCode
     DraftCode
     WikiNameForUsers
@@ -20,12 +20,12 @@ SimpliWikiDoc TocHelpSimpliWiki (all in one)
     HelpSecrets
     AboutWiki
       PrivateWiki
-      PrivateMentorWiki
+      PrivatecuratorWiki
       PrivateClosedWiki
   HelpStyles
     HelpDirectives
     NowCommand
-  HelpMentor
+  HelpCurator
     HelpArchive
     SimpliWikiAdminTools
   HelpApi, HelpAngular
@@ -37,4 +37,4 @@ CategoryCategory
 
 
 __ctx__
-{"name":"CategoryHelp","timeCreated":1294135552240,"visitor":"@jhr","timeVisited":1299418517500,"writer":"@jhr","creator":"@jhr","timeModified":1299418517500,"hot":true,"visits":112,"backlinks":["HelpDoCloud","NowCommand","AdvancedWikis","HelpMentor","SpamPage","HelpApi","RecentStamps","HelpSimpliWiki","SimpliWikiDoc","NewPage","NewMember"]}
+{"name":"CategoryHelp","timeCreated":1294135552240,"visitor":"@jhr","timeVisited":1402834875405,"writer":"@jhr","creator":"@jhr","timeModified":1402834875405,"hot":true,"visits":3690,"backlinks":["AdvancedWikis","HelpSecrets","HelpPublicPages","HelpMaps","SimpliWikiAdminTools","AboutWiki","SimpliWikiDoc","NewPage","NewMember","DraftCode","WikiNameForUsers","HelpSearch","HelpDoCloud","WikiNameForPages","HelpApi","HelpStyles","NowCommand","HelpHowTo","CategoryCategory","Helpcurator","SpamPage","#help","HelpPrefetch","TwoPanes","jeanhuguesrobert@Stamps","HelpRestore","MetaConfig","@jhrStamps","TocHelpSimpliWiki","RecentStamps","InvitationCode","SimpliWikiTools","HelpSimpliWiki","SignIn"]}

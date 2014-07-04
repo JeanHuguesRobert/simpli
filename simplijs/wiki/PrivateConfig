@@ -2,7 +2,7 @@ See MetaConfig
 
 This is the default configuration.
 
-When a twitter user visit her wiki or when a mentor visit a wiki, the default configuration is changed into PrivateMentorConfig.
+When a twitter user visit her wiki or when a curator visit a wiki, the default configuration is changed into PrivatecuratorConfig.
 
 ---
   veryOpen: true

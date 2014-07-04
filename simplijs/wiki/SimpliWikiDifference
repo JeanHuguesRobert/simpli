@@ -26,9 +26,9 @@ That's why SimpliWiki uses short lines (50 characters) and provide "Aa" options 
 
 +++"easy links", "soft urls", wikiwords...
 
-Wikis are made of pages. These pages are easy to create and change. It's should also be easy to link pages together.
+Wikis are made of pages. These pages are easy to create and change. It should also be easy to link pages together.
 
-That's why SimpliWiki detects things like sample.com or LikeThat. Sometimes there will be "false positive". It's a trade-off (???See WikiWord???)
+That's why SimpliWiki detects things like sample.com, LikeThat or #likethis. Sometimes there will be "false positive". It's a trade-off (???See WikiWord???)
 
 Links to embeddable content (like pictures & videos for example) are also detected (???See EmbedLy???)
 
@@ -53,7 +53,7 @@ A wiki is a place, it is also a community, with "members". When a member flags a
 
 +++Security by obscurity, Maps & Secrets
 
-SimpliWiki is not a "grade A" security solution (and you're probably not James Bond either). If something needs to be kept really secret, don't use SimpliWiki for that.
+SimpliWiki is not a "grade A" security solution (and you're probably not James Bond either). If something needs to be kept secret, don't use SimpliWiki for that (don't expect much privacy on Internet anyways...).
 
 What SimpliWiki provides is an easy way to mimic the kind of security "normal people" use in "real life".
 
@@ -63,7 +63,7 @@ Sometimes someone will lie, sometimes someone will pretend to be someone else, s
 
 Instead, SimpliWiki provide "mechanisms" and let's you use them the way you want.
 
-Much like in "real life", there no easy way to track what someone is doing using SimpliWiki. There is no such thing as "the list of all wikis" or "the wikis that person contributed to".
+Much like in "real life", there no easy way to track what someone is doing using SimpliWiki. There is no such thing as "the list of all wikis" or "the wikis that a person contributed to".
 
 Even inside a wiki, it is not possible to get the list of all the pages, some pages are hidden. If you hide something in someone's wiki, that person has no easy way to discover it (much like if you hide something in their house), but she may find it by accident sometimes.
 
@@ -101,7 +101,7 @@ Thanks for reading!
 
     Jean Hugues, aka @jhr -- simpliwiki.com
     Feb 22 2011
-    Follow us on twitter.com/simpliwiki
+    twitter.com/simpliwiki
 
 
  -----
@@ -110,11 +110,11 @@ Thanks for reading!
 www.wikimatrix.org is the most comprehensive web site to compare wiki solutions. Please find below the informations about SimpliWiki:
 
 +++General Features
-Version: alpha 0.13 (feb 19 2011)
+Version: alpha 0.20 (june 2014)
 Author: JeanHuguesRobert
 url: http://simpliwiki.com
 Free and Open Source: Yes
-License: MIT, LGPL, BSD, etc, basically WTFPL
+License: MIT, mostly
 Programming language: Javascript
 Data storage: text files
 License cost/Fee: 0
@@ -126,9 +126,9 @@ Storage Quota: no
 Bandwidth Quota: no
 Other Limits: 100Ko per page
 Topic Restrictions: no
-Corporate Branding: yes, premium
-Own Domain: yes, premium
-Ads allowed: yes, premium
+Corporate Branding: no
+Own Domain: no
+Ads allowed: no
 
 +++System Requirements
 Operating System: Linux, Debian, Ubuntu
@@ -140,7 +140,7 @@ Database: no
 +++Security/Anti-Spam
 Page Permissions: yes (HelpPublicPages)
 ACL: yes (HelpMaps)
-Authentication Backends: TwitterConnect, FacebookConnect, LinkedInConnect, SSL (soon)
+Authentication Backends: Twitter
 Host Blocking: no. auto detect SpamPage & drafts
 Mail encryption: yes (no mail at all)
 nofollow: no (robots detection instead)
@@ -163,7 +163,7 @@ Page History: yes
 Page Revisions: yes (on demand, see HelpArchive)
 Revision Diffs: no (planned)
 Page Index: no (use "search" instead)
-Plugin System: yes
+Plugin System: no
 
 ++Special Features
 Unicode Support: yes
@@ -188,10 +188,10 @@ Image Links: yes
 Page Redirects: no
 
 +++Syntax Features
-HTML Tags: yes, premium
+HTML Tags: yes
 Math formulas: no
 Tables: no
-CREOLE support: no (planned)
+CREOLE support: no
 Markdown Support: yes
 Textile Support: no
 BBCode Support: no
@@ -200,10 +200,10 @@ Syntax Highlighting: no
 Footnotes: no
 Quoting: no
 Internal Comments: yes (via CSS style)
-Custom styles: yes, premium
+Custom styles: yes
 FAQ Tags: no
 Scripting: yes (API Javascript, HTTP)
-Content Includes: yes ("TOC" pages)
+Content Includes: yes (TOC pages)
 Feed Aggregation: no
 
 +++Usability
@@ -225,9 +225,9 @@ Analysis: no
 
 +++Output
 HTML: HTML5
-Printer Friendly: no (planned)
-Mobile Friendly: yes (iphone)
-Themes & Skins: no
+Printer Friendly: no
+Mobile Friendly: yes
+Themes & Skins: yes
 RSS Feeds: no
 ATOM Feeds: no
 Abbreviations: no
@@ -270,14 +270,12 @@ Definition Lists: no
 Horizontal Rule: ----, -----, etc
 
 ---
-Code: Atjhr5417
 rows: 30
 cols: 50
 twoPanes: true
-oneTrueFan: true
-code: Atjhr5417
 
 @jhr - 2014-02-10T08:52:41.887Z
+@jhr - 2014-06-14T17:56:37.309Z
 
 __ctx__
-{"name":"SimpliWikiDifference","timeCreated":1298071200614,"visitor":"@jhr","timeVisited":1392022361886,"writer":"@jhr","creator":"jeanhuguesrobert@","timeModified":1392022361886,"hot":true,"visits":7379,"backlinks":["User@jhr","SimpliWikiPitch","HomePage","SimpliWiki","@jhrStamps","jeanhuguesrobert@Stamps","RecentStamps"]}
+{"name":"SimpliWikiDifference","timeCreated":1298071200614,"visitor":"@jhr","timeVisited":1402776394454,"writer":"@jhr","creator":"jeanhuguesrobert@","timeModified":1402776394454,"hot":true,"visits":7564,"backlinks":["User@jhr","jeanhuguesrobert@Stamps","@jhrStamps","RecentStamps","SimpliWikiPitch","SimpliWiki","HomePage"]}
