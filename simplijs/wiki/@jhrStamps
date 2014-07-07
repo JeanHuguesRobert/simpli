@@ -1,3 +1,18 @@
+* SimpliWikiStyle
+ - 2014-07-04T14:14:42.230Z
+
+* AboutWiki
+ - 2014-06-15T12:26:03.394Z
+
+* HelpHowTo
+ - 2014-06-15T11:36:14.508Z
+
+* SimpliWikiDoc
+ - 2014-06-15T11:34:25.796Z
+
+* WikiNameForUsers
+ - 2014-06-15T09:45:30.841Z
+
 * SimpliWikiDifference
  - 2014-06-14T20:06:34.457Z
 
@@ -9,10 +24,6 @@
 
 * ReverseNow
  - 2014-06-14T19:09:09.625Z
-
-* SimpliWikiDoc
- - 2014-06-15T11:34:25.796Z
- - 2014-06-14T18:32:37.463Z
 
 * info@simpliwiki.com
  - 2014-06-14T18:20:28.731Z
@@ -35,19 +46,11 @@
 * SignIn
  - 2014-06-13T23:51:40.425Z
 
-* AboutWiki
- - 2014-06-15T12:26:03.394Z
- - 2014-06-13T22:49:11.244Z
-
 * NewMember
  - 2014-06-13T22:47:55.256Z
 
 * ReadAboutSimpliWiki
  - 2014-06-04T02:09:36.488Z
-
-* HelpHowTo
- - 2014-06-15T11:36:14.508Z
- - 2014-02-10T02:58:24.833Z
 
 * AdvancedWikis
  - 2011-04-02T21:00:28.386Z
@@ -121,10 +124,6 @@
 * NewWiki
  - 2011-02-13T11:10:04.418Z
 
-* SimpliWikiStyle
- - 2014-07-04T14:14:42.230Z
- - 2011-02-13T11:01:28.087Z
-
 * SimpliWikiSlide8
  - 2011-02-13T09:25:09.731Z
 
@@ -178,11 +177,6 @@
 
 * SimpliWikicurator
  - 2011-02-10T08:49:57.714Z
-
-* WikiNameForUsers
- - 2014-06-15T09:45:30.841Z
- - 2014-06-15T09:42:57.074Z
- - 2011-02-10T08:48:59.140Z
 
 * WikiWords
  - 2011-02-10T08:47:31.591Z
@@ -528,10 +522,9 @@
 
 
 * RecentStamps
- compress RecentStamps - 2014-07-04T14:14:23.504Z
 
 This are my changes
 
 
 __ctx__
-{"name":"@jhrStamps","timeCreated":1294884657230,"visitor":"@jhr","timeVisited":1404483282220,"writer":"@jhr","creator":"@jhr","timeModified":1404483282220,"hot":true,"visits":8572,"backlinks":["User@jhr","SomeGuestStamps","SimpliWikiAdminTools","SimpliWikiTools"]}
+{"name":"@jhrStamps","timeCreated":1294884657230,"visitor":"@jhr","timeVisited":1404491153581,"writer":"@jhr","creator":"@jhr","timeModified":1404491153581,"hot":true,"visits":8573,"backlinks":["User@jhr","SomeGuestStamps","SimpliWikiAdminTools","SimpliWikiTools"]}
