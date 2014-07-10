@@ -19,7 +19,7 @@
     "l8": ">=0.3.0"
   },
   "devDependencies": {
-    "bower": "^1.3.5",
+    "bower": ">=1.3.",
     "karma": "~0.10",
     "coffee-script": "latest",
     "browserify": "latest",
