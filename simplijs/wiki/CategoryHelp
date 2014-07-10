@@ -1,4 +1,4 @@
-This is the category of help pages.
+This is the category for help pages.
 
 Some help pages:
 
@@ -6,8 +6,7 @@ SimpliWikiDoc TocHelpSimpliWiki (all in one)
   NewPage
   SignIn
   NewMember
-    Localcurator
-    InvitationCode
+    LocalCurator
     DraftCode
     WikiNameForUsers
   SimpliWikiTools
@@ -15,13 +14,13 @@ SimpliWikiDoc TocHelpSimpliWiki (all in one)
     DisplayModes
     HelpDoCloud
   HelpPublicPages
+    AboutWiki
+      PrivateWiki
+      PrivateCuratorWiki
+      PrivateClosedWiki
     WikiNameForPages
     HelpMaps
     HelpSecrets
-    AboutWiki
-      PrivateWiki
-      PrivatecuratorWiki
-      PrivateClosedWiki
   HelpStyles
     HelpDirectives
     NowCommand
@@ -35,6 +34,7 @@ SimpliWikiRecipes
 
 CategoryCategory
 
+@jhr - 2014-07-10T12:27:24.673Z
 
 __ctx__
-{"name":"CategoryHelp","timeCreated":1294135552240,"visitor":"@jhr","timeVisited":1402834875405,"writer":"@jhr","creator":"@jhr","timeModified":1402834875405,"hot":true,"visits":3690,"backlinks":["AdvancedWikis","HelpSecrets","HelpPublicPages","HelpMaps","SimpliWikiAdminTools","AboutWiki","SimpliWikiDoc","NewPage","NewMember","DraftCode","WikiNameForUsers","HelpSearch","HelpDoCloud","WikiNameForPages","HelpApi","HelpStyles","NowCommand","HelpHowTo","CategoryCategory","Helpcurator","SpamPage","#help","HelpPrefetch","TwoPanes","jeanhuguesrobert@Stamps","HelpRestore","MetaConfig","@jhrStamps","TocHelpSimpliWiki","RecentStamps","InvitationCode","SimpliWikiTools","HelpSimpliWiki","SignIn"]}
+{"name":"CategoryHelp","timeCreated":1294135552240,"visitor":"@jhr","timeVisited":1404995404626,"writer":"@jhr","creator":"@jhr","timeModified":1404995404626,"hot":true,"visits":3735,"backlinks":["AdvancedWikis","HelpSecrets","HelpPublicPages","HelpMaps","SimpliWikiAdminTools","AboutWiki","SimpliWikiDoc","NewPage","NewMember","DraftCode","WikiNameForUsers","HelpSearch","HelpDoCloud","WikiNameForPages","HelpApi","HelpStyles","NowCommand","HelpHowTo","CategoryCategory","Helpcurator","SpamPage","#help","HelpPrefetch","HelpRestore","MetaConfig","@jhrStamps","TocHelpSimpliWiki","InvitationCode","SimpliWikiTools","HelpCurator","HelpMentor","TwoPanes","RecentStamps","HelpSimpliWiki","SignIn"]}

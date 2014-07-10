@@ -1,18 +1,16 @@
 +++Sign in with twitter
 This is currently broken due to security issues, a solution is coming soon. Until that time, you can use any name (this is Alpha code!).
 
-+++Sign in with a "code"
-If you know a code, use it in the "Go to page" box below. Codes usually starts with the word "code", sometimes its "Map" instead.
-
 +++Trouble to sign in?
-Ask your Localcurator or check your DoListLogin. If this wiki is not the wiki you expected, please go to simpliwiki.com
+Ask your LocalCurator or check your DoListLogin. If this wiki is not the wiki you expected, please go to simpliwiki.com
 
 +++Register
-To register as a member of a wiki, please ask the owner for an invitation. See Localcurator.
+To register as a member of a wiki, please ask the owner for an invitation. See LocalCurator.
 
 CategoryHelp
 
 @jhr - 2014-06-13T23:51:40.425Z
+@jhr - 2014-07-09T18:54:52.210Z
 
 __ctx__
-{"name":"SignIn","timeCreated":1294356959539,"visitor":"@jhr","timeVisited":1402703500423,"writer":"@jhr","creator":"@jhr","timeModified":1402703500423,"hot":true,"visits":9467,"backlinks":["User@jhr","HelpPublicPages","CategoryHelp","SimpliWikiDoc","DraftCode","WikiNameForUsers","PublicSandBox","jeanhuguesrobert@Stamps","NoSuchUser","UserSomeGuest","ToDoExportToDropbox","@jhrStamps","TocHelpSimpliWiki","RecentStamps","InvitationCode","UserSome","HomePage","SomeGuest"]}
+{"name":"SignIn","timeCreated":1294356959539,"visitor":"@jhr","timeVisited":1404932092207,"writer":"@jhr","creator":"@jhr","timeModified":1404932092207,"hot":true,"visits":9502,"backlinks":["User@jhr","HelpPublicPages","SimpliWikiDoc","DraftCode","WikiNameForUsers","jeanhuguesrobert@Stamps","NoSuchUser","UserSomeGuest","ToDoExportToDropbox","@jhrStamps","TocHelpSimpliWiki","InvitationCode","UserSome","SomeGuest","RecentStamps","HomePage","CategoryHelp"]}

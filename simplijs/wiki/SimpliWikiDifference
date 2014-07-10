@@ -95,8 +95,6 @@ I'm a strong believer in so called "free speech" and wikis are becoming commodit
 
 As a noun "Wiki" entered the Oxford dictionary in 2007. The next step is "Wiki" becoming a verb. The "wikification" of the Internet is becoming obvious, wikis are everywhere nowadays.
 
-But they are too complex to use. SimpliWiki intends to fix that. If you are a software developer, you may contribute, see SimpliJs.
-
 Thanks for reading!
 
     Jean Hugues, aka @jhr -- simpliwiki.com
@@ -110,7 +108,7 @@ Thanks for reading!
 www.wikimatrix.org is the most comprehensive web site to compare wiki solutions. Please find below the informations about SimpliWiki:
 
 +++General Features
-Version: alpha 0.20 (june 2014)
+Version: alpha 0.30 (july 2014)
 Author: JeanHuguesRobert
 url: http://simpliwiki.com
 Free and Open Source: Yes
@@ -124,7 +122,7 @@ Intented audience: individuals & groups with up to 200 active participants
 +++Hosting Features
 Storage Quota: no
 Bandwidth Quota: no
-Other Limits: 100Ko per page
+Other Limits: 100 Kb per page
 Topic Restrictions: no
 Corporate Branding: no
 Own Domain: no
@@ -147,7 +145,7 @@ nofollow: no (robots detection instead)
 Blacklist: no
 CAPTCHA: no (not necessary, spam goes to SpamPage)
 Delayed Indexing: no (robots are excluded)
-Development/Support: yes
+Development/Support: no
 Preconfigured Hosting: yes
 Code repository: github.com/JeanHuguesRobert/simplijs
 Issue Tracker: ToDoList
@@ -276,6 +274,7 @@ twoPanes: true
 
 @jhr - 2014-02-10T08:52:41.887Z
 @jhr - 2014-06-14T17:56:37.309Z
+@jhr - 2014-07-10T12:24:46.040Z
 
 __ctx__
-{"name":"SimpliWikiDifference","timeCreated":1298071200614,"visitor":"@jhr","timeVisited":1402776394454,"writer":"@jhr","creator":"jeanhuguesrobert@","timeModified":1402776394454,"hot":true,"visits":7564,"backlinks":["User@jhr","jeanhuguesrobert@Stamps","@jhrStamps","RecentStamps","SimpliWikiPitch","SimpliWiki","HomePage"]}
+{"name":"SimpliWikiDifference","timeCreated":1298071200614,"visitor":"@jhr","timeVisited":1404995086037,"writer":"@jhr","creator":"jeanhuguesrobert@","timeModified":1404995086037,"hot":true,"visits":7583,"backlinks":["User@jhr","@jhrStamps","SimpliWikiPitch","RecentStamps","SimpliWiki","HomePage"]}

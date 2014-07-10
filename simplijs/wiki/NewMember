@@ -1,18 +1,19 @@
 To add a member to your wiki, please edit this page and provide the member's name where asked below.
 
-Remember to add @. The name shall look like a valid WikiNameForUsers.
+Remember to add @.
 
 A new "User" page will then automatically be created. It is the "personal" page of the new member in your wiki, much like your own YourPage personal page. Only the new member (and you) can access this page.
 
 Note: if the new member should be a co-owner, please add "curator" before the name.
 
 ++To claim ownership
-Edit this page and provide your name where asked below. Then visit YourPage and bookmark the "SECRET!" link at the bottom. You can now visit AboutWiki (only owners can).
+Edit this page and provide your name where asked below. Then visit YourPage. You can now visit AboutWiki (only owners can).
 
 
 CategoryHelp
 
 
+@jhr - 2014-07-10T12:34:28.161Z
 
 __ctx__
-{"name":"NewMember","timeCreated":1294686250737,"visitor":"@jhr","timeVisited":1402699675253,"writer":"@jhr","creator":"@jhr","timeModified":1402699675253,"hot":true,"visits":1876,"backlinks":["CategoryHelp","ToDoList","SimpliWikiDoc","@jhrStamps","TocHelpSimpliWiki","RecentStamps"]}
+{"name":"NewMember","timeCreated":1294686250737,"visitor":"@jhr","timeVisited":1404995668158,"writer":"@jhr","creator":"@jhr","timeModified":1404995668158,"hot":true,"visits":1879,"backlinks":["ToDoList","SimpliWikiDoc","@jhrStamps","TocHelpSimpliWiki","RecentStamps","CategoryHelp"]}

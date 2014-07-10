@@ -1,29 +1,25 @@
-++"SimpliWiki, micro wikis"
+++"SimpliWiki, just wikis"
+
+SimpliWiki is a simplified wiki for everybody.
 
 +++features
- - micro wikis, tons of them
- - privacy (secrets, treasure maps)(???See HelpSecrets & HelpMaps???)
+ - *dead* /simple/ "markup" _language_ -wysiwyg-
+ - some privacy (secrets, treasure maps)(???See HelpSecrets & HelpMaps???)
  - change control (stamps on drafts, history)
  - backups (periodic, on demand, dropbox)
- - *dead* /simple/ "markup" _language_ -wysiwyg-
-
-
+ 
 +++mottos (???See SimpliWikiDifference???)
  - wikis are there to stay
  - wiki is a verb
  - usability is simplicity (less is more & worse is better)(??? en.wikipedia.org/wiki/Minimalism#Minimalist_design  en.wikipedia.org/wiki/Worse_is_better ???) 
  - simple things should be easy (complex things should be possible, Alan Key)
 
- -----
-
-SimpliWiki is "just" a simple wiki for everybody about everything. "Power users": see AdvancedWikis
-
-
 ---
 cssStyle: SimpliWikiStyle
 notify: HelpSimpliWiki. ReadAboutSimpliWiki. simpliwiki.com
 
 @jhr - 2014-06-14T18:18:06.909Z
+@jhr - 2014-07-10T11:52:49.754Z
 
 __ctx__
-{"name":"SimpliWiki","timeCreated":1294407004707,"visitor":"@jhr","timeVisited":1402769904872,"writer":"@jhr","creator":"@jhr","timeModified":1402769904872,"hot":true,"visits":8324,"backlinks":["HomePage","DropBox","HelpSimpliWiki","AdvancedWikis","@jhrStamps","ReadAboutSimpliWiki","SimpliWikiPitch","SimpliWikiDifference","RecentStamps","HelpStyles","ReadAboutPlans","FacebookPrivacyPolicy","HelpAngular","ToDoList","BookmarkLet","DisplayModes","HelpApi","EmbedJs","SimpliWikicurator","GoogleBotStamps","User@jhr","ReadAboutPremiumServices","TocToc","FacebookTermsOfService","TocHelpSimpliWiki","SimpliWikiRecipes","SimpliWikiSlide3","FacebookConnect","TwoPanes","JeanHuguesRobertStamps","WikiPedia","HelpYourOwnDropBox","SimpliWikiSlides","AngularApiExample1","LireSurLesServicesPremium","HelpSecurity","LireSurSimpliWiki","jeanhuguesrobert@Stamps","SimpliWikiAbout","JeanHuguesRobert"]}
+{"name":"SimpliWiki","timeCreated":1294407004707,"visitor":"@jhr","timeVisited":1404994705175,"writer":"@jhr","creator":"@jhr","timeModified":1404994705175,"hot":true,"visits":8347,"backlinks":["HomePage","DropBox","HelpSimpliWiki","AdvancedWikis","@jhrStamps","ReadAboutSimpliWiki","SimpliWikiPitch","SimpliWikiDifference","RecentStamps","HelpStyles","ReadAboutPlans","FacebookPrivacyPolicy","HelpAngular","ToDoList","BookmarkLet","DisplayModes","HelpApi","EmbedJs","SimpliWikicurator","GoogleBotStamps","User@jhr","ReadAboutPremiumServices","TocToc","FacebookTermsOfService","TocHelpSimpliWiki","SimpliWikiRecipes","SimpliWikiSlide3","FacebookConnect","TwoPanes","JeanHuguesRobertStamps","WikiPedia","HelpYourOwnDropBox","SimpliWikiSlides","AngularApiExample1","LireSurLesServicesPremium","HelpSecurity","LireSurSimpliWiki","SimpliWikiAbout","JeanHuguesRobert","HelpHelpSimpliWiki","SimpliWikiMentor","PublicSandBox"]}

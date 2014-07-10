@@ -6,8 +6,8 @@ http://mashable.com/2010/07/22/web-design-feedback-tools/
 * SimpliWikiDifference, HelpHelpSimpliWiki, HelpMarkdown, MarkDown
 * PrivateRootWiki PrivateRootConfig
 
-* NewPage, JoinMe, DropBox, ToDoDropboxArchive
-* CodeAtjhr5417, ProxySimpliWikiCom
+* NewPage, DropBox, ToDoDropboxArchive
+* ProxySimpliWikiCom
 * ToDoExportToDropbox, ToDoDropbox@jhr
 * SimpliWikiSlides EmbedLy
 * AngularHello HelpApi HelpAngular
@@ -78,6 +78,7 @@ twoPanes: true
 @jhr - 2011-02-22T14:14:40.936Z
 @jhr - 2011-04-02T20:14:56.239Z
 @jhr - 2014-06-14T19:33:11.379Z
+@jhr - 2014-07-10T12:35:52.537Z
 
 __ctx__
-{"name":"User@jhr","timeCreated":1294699323943,"visitor":"@jhr","timeVisited":1402774617018,"writer":"@jhr","creator":"@jhr","timeModified":1402774617018,"hot":true,"visits":6995,"backlinks":["@jhrStamps","WikiNameForUsers","TwoPanes","NewMember","SimpliWikiAdminTools","InvitationCode"]}
+{"name":"User@jhr","timeCreated":1294699323943,"visitor":"@jhr","timeVisited":1404995752535,"writer":"@jhr","creator":"@jhr","timeModified":1404995752535,"hot":true,"visits":7019,"backlinks":["@jhrStamps","HelpCurator","SimpliWikiTools","WikiNameForUsers","InvitationCode","NewMember"]}

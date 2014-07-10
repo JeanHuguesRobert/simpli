@@ -21,7 +21,7 @@ There are 3 kinds of visitors:
 - members, aka "registered users"
 - curators, who "own" wikis (aka administrators)
 
-As a twitter user, you are automatically curator/owner of the wikis you create or whose name includes yours.
+As a twitter user, you are automatically curator/owner of the wikis you create or whose name includes your name (your twitter name).
 
 Otherwise, to claim ownership, register yourself, go to NewMember.
 
@@ -76,8 +76,9 @@ CategoryHelp
 ---
 notify: NewPage. NewMember. NewWiki. CategoryHelp. HelpHowTo
 
-jeanhuguesrobert@ - 2011-12-11T18:15:41.777Z
+@jhr - 2011-12-11T18:15:41.777Z
 @jhr - 2014-06-14T18:27:32.742Z
+@jhr - 2014-07-10T12:32:13.360Z
 
 __ctx__
-{"name":"SimpliWikiDoc","timeCreated":1294884657230,"visitor":"@jhr","timeVisited":1402832065793,"writer":"@jhr","creator":"@jhr","timeModified":1402832065793,"hot":true,"visits":1915,"backlinks":["User@jhr","HelpHelpSimpliWiki","HelpPublicPages","CategoryHelp","SimpliWikiAdminTools","AboutWiki","WikiNameForUsers","WikiNameForPages","HelpHowTo","JeanHuguesRobertStamps","jeanhuguesrobert@Stamps","Helpcurator","MetaConfig","@jhrStamps","TocHelpSimpliWiki","RecentStamps","HelpSimpliWiki","UserSome","WikiWords","SomeOne"]}
+{"name":"SimpliWikiDoc","timeCreated":1294884657230,"visitor":"@jhr","timeVisited":1404995569137,"writer":"@jhr","creator":"@jhr","timeModified":1404995569137,"hot":true,"visits":1917,"backlinks":["User@jhr","HelpPublicPages","SimpliWikiAdminTools","WikiNameForUsers","WikiNameForPages","HelpHowTo","JeanHuguesRobertStamps","Helpcurator","MetaConfig","@jhrStamps","TocHelpSimpliWiki","UserSome","WikiWords","SomeOne","HelpCurator","HelpMentor","RecentStamps","HelpSimpliWiki","CategoryHelp"]}
