@@ -1,38 +1,47 @@
+* User@jhr
+ - 2014-07-10T12:35:52.537Z
+
+* NewMember
+ - 2014-07-10T12:34:28.161Z
+
+* SimpliWikiDoc
+ - 2014-07-10T12:32:49.139Z
+
+* CategoryHelp
+ - 2014-07-10T12:30:04.627Z
+
+* HelpHowTo
+ - 2014-07-10T12:26:55.477Z
+
+* SimpliWikiDifference
+ - 2014-07-10T12:24:46.040Z
+
+* SimpliWiki
+ - 2014-07-10T12:18:25.176Z
+
+* WikiWords
+ - 2014-07-10T11:55:55.477Z
+
+* AboutWiki
+ - 2014-07-10T07:06:57.618Z
+
 * PrivateCuratorWiki
  - 2014-07-10T07:03:11.515Z
- - 2014-07-10T07:02:35.834Z
- - 2014-07-10T07:02:16.397Z
+
+* HomePage
+ - 2014-07-10T06:59:42.405Z
+
+* NewWiki
+ - 2014-07-10T06:49:50.841Z
+
+* SignIn
+ - 2014-07-09T18:54:52.210Z
 
 * SimpliWikiStyle
  - 2014-07-04T14:14:42.230Z
 
-* AboutWiki
- - 2014-07-10T07:06:57.618Z
- - 2014-07-10T07:01:59.347Z
- - 2014-07-10T06:56:03.567Z
- - 2014-07-10T06:54:48.213Z
- - 2014-07-10T06:54:22.600Z
- - 2014-06-15T12:26:03.394Z
-
-* HelpHowTo
- - 2014-07-10T12:26:55.477Z
- - 2014-06-15T11:36:14.508Z
-
-* SimpliWikiDoc
- - 2014-07-10T12:32:49.139Z
- - 2014-07-10T12:32:13.360Z
- - 2014-06-15T11:34:25.796Z
-
 * WikiNameForUsers
  - 2014-06-15T09:45:30.841Z
-
-* SimpliWikiDifference
- - 2014-07-10T12:24:46.040Z
- - 2014-06-14T20:06:34.457Z
-
-* User@jhr
- - 2014-07-10T12:35:52.537Z
- - 2014-06-14T19:36:57.020Z
 
 * SimpliWikiPitch
  - 2014-06-14T19:28:27.071Z
@@ -43,16 +52,6 @@
 * info@simpliwiki.com
  - 2014-06-14T18:20:28.731Z
 
-* SimpliWiki
- - 2014-07-10T12:18:25.176Z
- - 2014-07-10T11:52:49.754Z
- - 2014-06-14T18:18:24.874Z
-
-* HomePage
- - 2014-07-10T06:59:42.405Z
- - 2014-07-09T18:53:54.080Z
- - 2014-06-14T17:52:02.209Z
-
 * RestPage
  - 2014-06-14T02:04:52.884Z
 
@@ -62,14 +61,6 @@
 * AngularHello
  - 2014-06-14T01:03:36.600Z
 
-* SignIn
- - 2014-07-09T18:54:52.210Z
- - 2014-06-13T23:51:40.425Z
-
-* NewMember
- - 2014-07-10T12:34:28.161Z
- - 2014-06-13T22:47:55.256Z
-
 * ReadAboutSimpliWiki
  - 2014-06-04T02:09:36.488Z
 
@@ -78,14 +69,6 @@
 
 * DisplayModes
  - 2011-03-29T20:05:36.039Z
-
-* CategoryHelp
- - 2014-07-10T12:30:04.627Z
- - 2014-07-10T12:29:12.495Z
- - 2014-07-10T12:28:38.877Z
- - 2014-07-10T12:27:58.797Z
- - 2014-07-10T12:27:24.673Z
- - 2011-03-06T13:35:17.513Z
 
 * NewPage
  @jhr - 2011-03-06T12:35:28.090Z
@@ -147,10 +130,6 @@
 * HelpSimpliWiki
  - 2011-02-13T17:55:24.013Z
 
-* NewWiki
- - 2014-07-10T06:49:50.841Z
- - 2011-02-13T11:10:04.418Z
-
 * SimpliWikiSlide8
  - 2011-02-13T09:25:09.731Z
 
@@ -204,11 +183,6 @@
 
 * SimpliWikicurator
  - 2011-02-10T08:49:57.714Z
-
-* WikiWords
- - 2014-07-10T11:55:55.477Z
- - 2014-07-10T11:55:18.773Z
- - 2011-02-10T08:47:31.591Z
 
 * HelpHelpSimpliWiki
  - 2011-02-09T18:19:13.296Z
@@ -551,12 +525,10 @@
 
 
 * RecentStamps
- compress RecentStamps - 2014-07-10T12:25:29.371Z
- compress RecentStamps - 2014-07-10T06:56:52.590Z
- compress RecentStamps - 2014-07-09T22:09:44.066Z
+ compress RecentStamps - 2014-08-30T17:04:13.893Z
 
 This are my changes
 
 
 __ctx__
-{"name":"@jhrStamps","timeCreated":1294884657230,"visitor":"@jhr","timeVisited":1404995752535,"writer":"@jhr","creator":"@jhr","timeModified":1404995752535,"hot":true,"visits":8595,"backlinks":["User@jhr","SomeGuestStamps","SimpliWikiTools"]}
+{"name":"@jhrStamps","timeCreated":1294884657230,"visitor":"SomeGuest","timeVisited":1409418253893,"writer":"@jhr","creator":"@jhr","timeModified":1409418253893,"hot":true,"visits":9902,"backlinks":["User@jhr","SomeGuestStamps"]}
