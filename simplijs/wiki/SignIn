@@ -1,5 +1,5 @@
 +++Sign in with twitter
-This is currently broken due to security issues, a solution is coming soon. Until that time, you can use any name (this is Alpha code!).
+This is done via kudocracy.com
 
 +++Trouble to sign in?
 Ask your LocalCurator or check your DoListLogin. If this wiki is not the wiki you expected, please go to simpliwiki.com
@@ -11,6 +11,7 @@ CategoryHelp
 
 @jhr - 2014-06-13T23:51:40.425Z
 @jhr - 2014-07-09T18:54:52.210Z
+@jhr - 2014-12-18T11:18:06.806Z
 
 __ctx__
-{"name":"SignIn","timeCreated":1294356959539,"visitor":"@jhr","timeVisited":1404932092207,"writer":"@jhr","creator":"@jhr","timeModified":1404932092207,"hot":true,"visits":9502,"backlinks":["User@jhr","HelpPublicPages","SimpliWikiDoc","DraftCode","WikiNameForUsers","jeanhuguesrobert@Stamps","NoSuchUser","UserSomeGuest","ToDoExportToDropbox","@jhrStamps","TocHelpSimpliWiki","InvitationCode","UserSome","SomeGuest","RecentStamps","HomePage","CategoryHelp"]}
+{"name":"SignIn","timeCreated":1294356959539,"visitor":"@jhr","timeVisited":1418901486803,"writer":"@jhr","creator":"@jhr","timeModified":1418901486803,"hot":true,"visits":9942,"backlinks":["User@jhr","UserSignIn","ToDoExportToDropbox","InvitationCode","RecentStamps","SimpliWikiDoc","CategoryHelp","HelpPublicPages","WikiNameForUsers","NoSuchUser","HomePage","@jhrStamps"]}
