@@ -1,17 +1,12 @@
 SimpliJs
 ========
 
-This is the Wiki CMS that powers [SimpliWiki](http://simpliwiki.com).
+This is the Wiki CMS that powers [SimpliWiki](http://virteal.com/simpliwiki).
 
-ToDo: See [live](http://simplijs.simpliwiki.com).
+ToDo: See [live](http://virteal.com).
 
-Roadmap
-=======
+Roadmap, april 2016
+===================
 
-* Split legacy code into nodejs modules
-* Installable npm package
-* Migration of legacy web site
-* Twitter authentication
-* Focus on hashtags
 * Integration of [Kudocracy](https://github.com/virteal/kudocracy)
-* Upgrade to lastest Angular lib and Ace editor
+* Simplification of inheritance of pages
