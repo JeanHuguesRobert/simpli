@@ -13,23 +13,16 @@
     "test": "test"
   },
   "engines": {
-    "node": ">=0.10.0"
+    "node": ">=18.0.0"
   },
   "dependencies": {
-    "l8": ">=0.3.0"
+    "l8": ">=0.3.0",
+    "dotenv": "^16.0.0"
   },
-  "devDependencies": {
-    "bower": ">=1.3.",
-    "karma": "~0.10",
-    "coffee-script": "latest",
-    "browserify": "latest",
-    "uglify-js": "1",
-    "mocha": "latest"
-  },
+  "devDependencies": {},
   "scripts": {
-    "postinstall": "bower install",
-    "prestart": "npm install",
-    "start": "node lib/main.js"
+    "start": "node lib/main.js",
+    "dev": "node lib/main.js debug"
   },
   "keywords": [
     "wiki",
