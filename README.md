@@ -1,9 +1,9 @@
 SimpliJs
 ========
 
-This is the Wiki CMS that powers [SimpliWiki](http://virteal.com/simpliwiki).
+This is the Wiki CMS that powers [SimpliWiki](https://simpliwiki.fractavolta.com).
 
-ToDo: See [live](http://virteal.com).
+ToDo: See [live](https://simplijs.fractavolta.com).
 
 Roadmap, april 2016
 ===================
