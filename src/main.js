@@ -25370,7 +25370,7 @@ Sw.handler = function handler( req, res ){
           data = '<!DOCTYPE HTML>'
           + '<html><body style="font-family: monospace;">'
           + '<script type="text/javascript"'
-          + 'src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js">'
+          + 'src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js">'
           + '</' + 'script>'
           + '<script type="text/javascript" src="sw_load.js"></script>'
           //+ 'id=' + SW.twid + '&v=1" type="text/javascript"></script>')
