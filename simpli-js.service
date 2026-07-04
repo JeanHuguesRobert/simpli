@@ -1,0 +1,17 @@
+[Unit]
+Description=SimpliJs Wiki Engine
+Documentation=https://github.com/JeanHuguesRobert/simpli
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/srv/simpli
+Environment="NODE_ENV=production"
+EnvironmentFile=/srv/simpli/.env.production
+ExecStart=/usr/bin/node src/main.js
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

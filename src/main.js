@@ -1368,6 +1368,18 @@ SW.config =
 // This is where one want to define secret constants, ids, etc...
 // ToDo: JHR 2014, issue with search path
 $include( "../local-config.js" )
+
+// Allow override via environment variables
+if( process.env.SIMPLIWIKI_DIR ){
+  SW.dir = process.env.SIMPLIWIKI_DIR
+}
+if( process.env.SIMPLIWIKI_NAME ){
+  SW.name = process.env.SIMPLIWIKI_NAME
+}
+if( process.env.SIMPLIWIKI_DOMAIN ){
+  SW.domain = process.env.SIMPLIWIKI_DOMAIN
+}
+
 SW.debug = true;
 if( SW.name != "SimpliJs" ){
   trace( "Congratulations, SimpliJs is now " + SW.name)
