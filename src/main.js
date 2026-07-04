@@ -24153,7 +24153,7 @@ Sw.minimumStyle = "\
 #unfadder {position:fixed;top:0;background-color:white;}\n\
 #header {position:fixed;top:0;z-index:+1;background-color:white;}\n\
 #header_content>div{display:inline;}\n\
-#container {margin:2em auto;font-family: 'Roboto Mono', 'Fira Code', 'Consolas', 'Monaco', 'Lucida Console', 'Courier New', monospace; font-size: 14px; line-height: 1.4;}\n\
+#container {margin:2em auto;font-family: monospace;}\n\
 #sizer {font-family:monospace;position:absolute;}\n\
 .content {text-wrap:unrestricted;word-wrap:break-word;white-space:pre-wrap;}\n\
 #content_editable {display:none;}\n\
@@ -25368,7 +25368,7 @@ Sw.handler = function handler( req, res ){
           mimetype = "text/html"
           // Minimal valid operational index.html
           data = '<!DOCTYPE HTML>'
-          + '<html><body style="font-family: 'Roboto Mono', 'Fira Code', 'Consolas', 'Monaco', 'Lucida Console', 'Courier New', monospace; font-size: 14px; line-height: 1.4;">'
+          + '<html><body style="font-family: monospace;">'
           + '<script type="text/javascript"'
           + 'src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js">'
           + '</' + 'script>'
