@@ -2,7 +2,7 @@
 // This configures the wiki to use simplijs as the root wiki
 
 // Configure wiki directory
-SW.dir = "simplijs/wiki";
+SW.dir = "simplijs/wiki/simplijs.dir";
 
 // Set wiki name
 SW.name = "SimpliJs";
