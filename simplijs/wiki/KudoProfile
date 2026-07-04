@@ -1,0 +1,34 @@
+KudoProfile is the page where you configure your Kudocracy identity for SimpliWiki.
+
+Your KudoProfile contains:
+
+GitHub Identity: Your authenticated GitHub login (e.g., @jhr)
+Kudocracy Name: The name used in Kudocracy contexts (e.g., @jhr)
+
+Why two names?
+GitHub provides secure authentication via OAuth.
+Kudocracy Name provides identity when embedding SimpliWiki via ?kudocracy= parameter.
+
+The Kudocracy Name is configurable and separate from GitHub, but traceable to your GitHub account for accountability.
+
+How to change your Kudocracy Name:
+Visit /kudo-profile in your SimpliWiki installation.
+Enter your desired name (must start with @, 1-15 alphanumeric characters).
+Click "Set Kudocracy Name".
+
+The name will be stored in a cookie and used when generating Kudocracy contexts for embedded SimpliWiki instances.
+
+Technical Details:
+Context generation uses lib/kudocracy.js
+Cookie: sw_kudo_twitter_name
+Session property: session.kudoTwitterName
+
+See also:
+GitHub OAuth integration
+Kudocracy context format
+InvitationCode (historical)
+
+CategoryHelp
+
+__ctx__
+{"name":"KudoProfile","timeCreated":1735620123456,"visitor":"@jhr","writer":"@jhr","creator":"@jhr"}

@@ -3517,7 +3517,7 @@ WikiProto.processHttpRequest = function( req ){
 WikiProto.processOembedRequest = function( path, query, req ){
 // As per http://www.oembed.com/
 // URL scheme: http://*.simpliwiki.com/*
-// API endpoint: http://simpliwiki.com/oembed/
+// API endpoint: https://simpliwiki.fractavolta.com/oembed/
 // We got here from processHttpRequest() because path is /oembed
   var that = this
   this.de&&bug( "oembed, query:", Sys.inspect( query))
@@ -5447,7 +5447,7 @@ WikiProto.interwiki = function( moniker ){
     return SW.protocol + this.host() + (SW.test ? ":" + SW.port : "") + "/"
   }
   if( moniker == "SimpliWiki" ){
-    return "http://simpliwiki.com/"
+    return "https://simpliwiki.fractavolta.com/"
   }
   var map = Sw.interwikiMap
   if( map ){
@@ -6348,7 +6348,7 @@ var ScrollCue = {
   maxHeight: "3px",	// "px" preferred (see ToDo)
   
   // optional image, can be null
-  image: "http://virteal.com/yanugred16.png",
+  image: "/simpliwiki-logo.svg",
   
   // optional zIndex (if you want the effect to not obscure some content)
   zIndex: null,
@@ -16415,7 +16415,7 @@ function loadfire( src, not_async ){
     me.doesing = false
 
     // CDN sources
-    me.jQueryGoogle    = "http://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js"
+    me.jQueryGoogle    = "https://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js"
     me.jQueryMicrosoft = "http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.5.min.js"
 
     // Bonus, my de&&bug darling, see http://virteal.com/DebugDarling
@@ -17773,7 +17773,7 @@ Session.onloadScript = function sw_onload(){
                 // console.log( "self " + loc + " == " + url)
                 return
               }
-              var embed  = /http:\/\/(embed.simpliwiki.com\/.+)/.test( url)
+              var embed  = /http:\/\/(simpliwiki.fractavolta.com\/.+)/.test( url)
               var iframe = /http:\/\/(.*simpliwiki.com\/.+)/    .test( url)
               var qwiki  = /http:\/\/(.*qwiki.com\/q\/#!\/.+)/  .test( url)
               if( !(embed || iframe || qwiki) )return
@@ -17791,7 +17791,7 @@ Session.onloadScript = function sw_onload(){
                 return
               }
               $.ajax({
-                url: "http://simpliwiki.com/oembed",
+                url: "https://simpliwiki.fractavolta.com/oembed",
                 dataType: 'jsonp',
                 data: {
                   url:      url,
@@ -18350,7 +18350,7 @@ Session.viewForm = function( req, loop ){
 
   // Get rid of bots (there is actually some code to filter them elsewhere)
   if( that.loginName.includes( "BotGuest") ){
-    data = "http://simpliwiki.com, SimpliWiki rocks!"
+    data = "https://simpliwiki.fractavolta.com, SimpliWiki rocks!"
   }
   var inherited = page.wasInherited()
 
@@ -18358,7 +18358,7 @@ Session.viewForm = function( req, loop ){
   // Why: bots are stupid, they will follow links at infinitum, never
   // noticing similarities ; it's better to avoid that
   if( that.isBot && inherited ){
-    that.respond( req, "http://simpliwiki.com", "text/plain", true)
+    that.respond( req, "https://simpliwiki.fractavolta.com", "text/plain", true)
     return
   }
 
@@ -19725,7 +19725,7 @@ Session.footerForm = function( page, tools ){
         + '\n/* ]]> */\n'
         + "</script>"
       }
-      // ToDo: http://simpliwiki.com/jeanhuguesrobert@ should open my wiki
+      // ToDo: https://simpliwiki.fractavolta.com/jeanhuguesrobert@ should open my wiki
       // versus SimpliWiki root wiki as of today.
       //plink = plink.replace( "/HomePage", "/")
       // ToDo: compute a better width
@@ -19834,15 +19834,15 @@ Session.footerForm = function( page, tools ){
     foot.push(
       '<div id="powered">'
       // + that.i18n( "powered by ")
-      + '<a href="http://simpliwiki.com">'
-      +   '<img src="/yanugred16.png"/>'
+      + '<a href="https://simpliwiki.fractavolta.com">'
+      +   '<img src="/simpliwiki-logo.svg"/>'
       +   ' <strong>Simpl<em>i</em>Wiki</strong>'
       + '</a>'
       //+ '<a href="http://chartaca.com/c5e0f38e-a3e2-427f-9d4b-654865bd6300">'
       //+ '<img src="http://chartaca.com/point/c5e0f38e-a3e2-427f-9d4b-654865bd6300/s.gif"/>'
       //+ '</a>'
       + cpu
-      //+ ' <a href="http://simpliwiki.com/with.google">'
+      //+ ' <a href="https://simpliwiki.fractavolta.com/with.google">'
       //+   "Google"
       + "</a>"
       + "</div>"
@@ -20642,7 +20642,7 @@ Session.toolForm = function( page, view ){
     var label = it.getPlausibleName()
     tools.push( it.linkPage(
       "DoProfile",
-      conflict +  (this.isWii ? "wikis" : '<img src="/yanugred16.png" alt="wikis" />'),
+      conflict +  (this.isWii ? "wikis" : '<img src="/simpliwiki-logo.svg" alt="wikis" />'),
       it.i18n( "Your wikis") + " (" +  label + ")"
     ))
   }
@@ -20924,7 +20924,7 @@ Session.processPost = function( req, page ){
 }
 
 
-// -- Wikify with http://simpliwiki.com --
+// -- Wikify with https://simpliwiki.fractavolta.com --
 // Instapaper loader is:
 //javascript:function iprl5(){
 //var d=document,
@@ -20958,7 +20958,7 @@ Session.wikifyItScript =  function SimpliWiki(){
       : null)
     )
   );
-  var query = "http://simpliwiki.com";
+  var query = "https://simpliwiki.fractavolta.com";
   form.innerHTML = '<form'
   + ' action="' + query + '"'
   + ' method="POST"'
@@ -22206,7 +22206,7 @@ window.update_sw_login =  window.update_tw_login = function(){
     sw_set_id_cookies( "twitter" )
     $("#sw-login").html(
       '<div id="sw-login-box" class="sw_boxed">'
-      //+'<img src="/yanugred16.png" width="16"/> '
+      //+'<img src="/simpliwiki-logo.svg" width="16"/> '
       +'Connect with Simpl<em>i</em>Wiki</div>'
     )
     $('#sw-login-box').one( "click", function( event ){
@@ -23308,7 +23308,7 @@ Session.html = function( page, title, body, editclosure ){
   // Styles
   if( !ishtml ){
     head && buf.push(
-      '<link rel="shortcut icon" href="/yanugred16.png" type="image/png"/>'
+      '<link rel="shortcut icon" href="/simpliwiki-logo.svg" type="image/png"/>'
     )
     // Google fonts (commented out, not worth the delay)
     false && head && stylesheets.push(
@@ -23512,7 +23512,7 @@ Session.html = function( page, title, body, editclosure ){
     buf.push(
       '<link rel="alternate"'
       + ' type="application/json+oembed"'
-      + ' href=http://simpliwiki.com/oembed?url='
+      + ' href=https://simpliwiki.fractavolta.com/oembed?url='
         + encodeURIComponent( this.permalinkTo( page))
       + '&format=json"'
       + ' title="' + ogtitle + '" />'
@@ -24153,7 +24153,7 @@ Sw.minimumStyle = "\
 #unfadder {position:fixed;top:0;background-color:white;}\n\
 #header {position:fixed;top:0;z-index:+1;background-color:white;}\n\
 #header_content>div{display:inline;}\n\
-#container {margin:2em auto;font-family: monospace;}\n\
+#container {margin:2em auto;font-family: 'Roboto Mono', 'Fira Code', 'Consolas', 'Monaco', 'Lucida Console', 'Courier New', monospace; font-size: 14px; line-height: 1.4;}\n\
 #sizer {font-family:monospace;position:absolute;}\n\
 .content {text-wrap:unrestricted;word-wrap:break-word;white-space:pre-wrap;}\n\
 #content_editable {display:none;}\n\
@@ -24473,7 +24473,7 @@ Sw.style = [
   'width: auto;',
   'background-color: #99CCFF;',
   'color: #444;',
-  'font-family: monospace;',
+  'font-family: 'Roboto Mono', 'Fira Code', 'Consolas', 'Monaco', 'Lucida Console', 'Courier New', monospace; font-size: 14px; line-height: 1.4;',
   'font-size: small;',
   'padding: 0 0.5em;',
 '}',
@@ -24658,14 +24658,14 @@ Sw.style = [
 '}',
 
 'code {',
-  'font-family: monospace;',
+  'font-family: 'Roboto Mono', 'Fira Code', 'Consolas', 'Monaco', 'Lucida Console', 'Courier New', monospace; font-size: 14px; line-height: 1.4;',
   'font-size: 80%;',
   'line-height: 1.4em;',
   'color: #004600;',
 '}',
 
 'code.sw_markdown {',
-  'font-family: monospace;',
+  'font-family: 'Roboto Mono', 'Fira Code', 'Consolas', 'Monaco', 'Lucida Console', 'Courier New', monospace; font-size: 14px; line-height: 1.4;',
   'font-size: 100%;',
   'line-height: 1.35em;',
   'color: #004600;',
@@ -25006,7 +25006,7 @@ try{
 Sw.cacheFile(
   "prettyfy.css",
   "text/css",'\
-body { font-family: monospace; }\n\
+body { font-family: "Roboto Mono", "Fira Code", "Consolas", "Monaco", "Lucida Console", "Courier New", monospace; font-size: 14px; line-height: 1.4; }\n\
 /* google code prettyfy classes */\n\
 .str{color:#008}\
 .kwd{color:#800}\
@@ -25033,7 +25033,7 @@ Sw.cacheJsFile(  "onebig.js",  Section.oneBigBody)
 Sw.buildSectionsHtml = function(){
   var all_src_files =
   '<html><head><title>OneBigFile sections</title>\n\
-  <link rel="shortcut icon" href="/yanugred16.png" type="image/png" />\n\
+  <link rel="shortcut icon" href="/simpliwiki-logo.svg" type="image/png" />\n\
   </head><body><a href="onebig.js">onebig.js</a><ol>\n'
   // Walk all sections, two visitors: 1/ a collector 2/ a consumer
   Section.rootSection.build( true).collect(
@@ -25188,7 +25188,7 @@ Sw.cacheHtmlFile( "with.google",
   '<html>'
 + '<head>'
 + '<title>' + SW.name + '</title>'
-+ '<link rel="shortcut icon" href="/yanugred16.png" type="image/png" />'
++ '<link rel="shortcut icon" href="/simpliwiki-logo.svg" type="image/png" />'
 + '</head>'
 + '  <frameset cols="25%,*"> '
 + '    <frame src="comeback"/>'
@@ -25202,11 +25202,11 @@ Sw.cacheHtmlFile( "simpliwiki.html",
   '<html>'
 + '<head>'
 + '<title>' + SW.name + '</title>'
-+ '<link rel="shortcut icon" href="/yanugred16.png" type="image/png" />'
++ '<link rel="shortcut icon" href="/simpliwiki-logo.svg" type="image/png" />'
 + '</head>'
 + '  <frameset cols="*,*"> '
 + '    <frame src="comeback"/>'
-+ '    <frame src="http://simpliwiki.com"/>'
++ '    <frame src="https://simpliwiki.fractavolta.com"/>'
 + '  </frameset>'
 + '</html>'
 )
@@ -25286,7 +25286,7 @@ Sw.handler = function handler( req, res ){
     var cache_control = (De ? "300" : "" + 30 * 24 * 3600)
     // Some hand tuning
     if( De
-    && "/1.png /2.png /yanugred64.png /yanugred16.png".includes( pathname)
+    && "/1.png /2.png /yanugred64.png /simpliwiki-logo.svg".includes( pathname)
     ){
       cache_control = "" + 30 * 24 * 3600
     }
@@ -25368,7 +25368,7 @@ Sw.handler = function handler( req, res ){
           mimetype = "text/html"
           // Minimal valid operational index.html
           data = '<!DOCTYPE HTML>'
-          + '<html><body style="font-family: monospace;">'
+          + '<html><body style="font-family: 'Roboto Mono', 'Fira Code', 'Consolas', 'Monaco', 'Lucida Console', 'Courier New', monospace; font-size: 14px; line-height: 1.4;">'
           + '<script type="text/javascript"'
           + 'src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js">'
           + '</' + 'script>'
@@ -25393,8 +25393,8 @@ Sw.handler = function handler( req, res ){
           + '</div>'
           + '<div id="sw_comeback"></div>'
           + '<a href="/HomePage">' + SW.name + '</a>'
-          + '<hr><a href="http://simpliwiki.com">'
-          +   '<img src="http://simpliwiki.com/yanugred16.png"/>'
+          + '<hr><a href="https://simpliwiki.fractavolta.com">'
+          +   '<img src="https://simpliwiki.fractavolta.com/simpliwiki-logo.svg"/>'
           +   " <strong>Simpl<em>i</em>Wiki</strong>"
           + "</a>"
           + '</body></html>'
