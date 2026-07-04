@@ -1120,7 +1120,7 @@ var SW = {
   debug:    true,		// Debug mode means lots of traces
   test:     false,		// Test mode
   dir:      "",		        // Local to cwd, where files are, must exist
-  port:     1234,		// 80 default, something else if behind a proxy
+  port:     process.env.PORT || 1234,		// 80 default, something else if behind a proxy
   domain:   "",			// To build permalinks, empty => no virtual hosting
   static:   "",			// To serve static files, optionnal, ToDo: ?
   protocol: "http://",		// Idem, https requires a reverse proxy
