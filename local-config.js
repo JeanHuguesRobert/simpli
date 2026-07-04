@@ -8,7 +8,7 @@ SW.dir = "simplijs/wiki/simplijs.dir";
 SW.name = "SimpliJs";
 
 // Production settings
-SW.debug = false;
+SW.debug = true;
 SW.test = false;
 SW.domain = "simpliwiki.fractavolta.com";
 SW.protocol = "https://";
