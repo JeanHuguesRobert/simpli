@@ -1367,7 +1367,7 @@ SW.config =
 // Local hooks makes it possible to change (ie hack) things on a local install
 // This is where one want to define secret constants, ids, etc...
 // ToDo: JHR 2014, issue with search path
-$include( "local-config.js" )
+$include( "../local-config.js" )
 SW.debug = true;
 if( SW.name != "SimpliJs" ){
   trace( "Congratulations, SimpliJs is now " + SW.name)
