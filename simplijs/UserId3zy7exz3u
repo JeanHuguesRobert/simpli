@@ -1,0 +1,9 @@
+User 2026-07-03T21:43:19.449Z
+
+---
+Ids: "{\"User\":[\"3zy7exz3u\"],\"Twitter\":[\"testuser=testuser\"]}"
+Visits: "{\"simplijs/User@testuser\":{\"wiki\":\"simplijs/\",\"title\":\"\",\"login\":\"User@testuser\",\"name\":\"@testuser\",\"time\":\"2026-07-03T21:43:19.449Z\"}}"
+
+
+__ctx__
+{"name":"UserId3zy7exz3u","timeCreated":1783114124705,"timeVisited":1783114999449,"hot":true}
