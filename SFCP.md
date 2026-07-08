@@ -356,16 +356,16 @@ CREATE TABLE sfc_proposals (
 
 ## Implementation Phases
 
-### Phase 1: Node Discovery (v0.1)
-- [ ] GET /_sfc/v0/node
-- [ ] GET /_sfc/v0/health
-- [ ] SQLite cache tables
+### ✅ Phase 1: Node Discovery (COMPLETE)
+- [x] GET /_sfc/v0/node
+- [x] GET /_sfc/v0/health
+- [x] SQLite cache tables
 
-### Phase 2: Treaty Formation (v0.2)
-- [ ] GET /_sfc/v0/treaties
-- [ ] POST /_sfc/v0/treaties/propose
-- [ ] POST /_sfc/v0/treaties/{id}/accept
-- [ ] POST /_sfc/v0/treaties/{id}/revoke
+### ✅ Phase 2: Treaty Formation (COMPLETE)
+- [x] GET /_sfc/v0/treaties
+- [x] POST /_sfc/v0/treaties/propose
+- [x] POST /_sfc/v0/treaties/{id}/accept
+- [x] POST /_sfc/v0/treaties/{id}/revoke
 
 ### Phase 3: Content Federation (v0.3)
 - [ ] GET /_sfc/v0/pages/{node}/{page}
