@@ -72,6 +72,11 @@
   // Helper: Send JSON response
   function sendJson( res, code, data ){
     var json = JSON.stringify( data, null, 2 );
+    // Check if headers already sent
+    if( res.headersSent ){
+      console.error( "SFCP: Headers already sent, cannot send response" );
+      return;
+    }
     var headers = [
       ["Server", "SimpliWiki"],
       ["Content-Type", "application/json"],
