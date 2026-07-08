@@ -257,7 +257,8 @@
   function handleProposeTreaty( wiki, req, res ){
     var database = initDb();
     if( !database ){
-      return sendError( res, 500, "database_error", "Failed to initialize database" );
+      sendError( res, 500, "database_error", "Failed to initialize database" );
+      return true;
     }
 
     var body = "";
@@ -267,12 +268,14 @@
         var proposal = JSON.parse( body );
 
         if( !proposal.from || !proposal.type ){
-          return sendError( res, 400, "invalid_request", "Missing required fields: from, type" );
+          sendError( res, 400, "invalid_request", "Missing required fields: from, type" );
+          return;
         }
 
         var validTypes = ["peer", "delegation", "read-only", "publish"];
         if( validTypes.indexOf( proposal.type ) < 0 ){
-          return sendError( res, 400, "invalid_treaty_type", "Valid types: peer, delegation, read-only, publish" );
+          sendError( res, 400, "invalid_treaty_type", "Valid types: peer, delegation, read-only, publish" );
+          return;
         }
 
         var treatyId = generateTreatyId();
@@ -293,6 +296,8 @@
         sendError( res, 400, "invalid_json", err.message );
       }
     });
+
+    return true; // Signal that we're handling the request (async)
   }
 
   // POST /_sfc/v0/treaties/{id}/accept - Accept treaty
@@ -334,7 +339,8 @@
   function handleRevokeTreaty( wiki, req, res, treatyId ){
     var database = initDb();
     if( !database ){
-      return sendError( res, 500, "database_error", "Failed to initialize database" );
+      sendError( res, 500, "database_error", "Failed to initialize database" );
+      return true;
     }
 
     var body = "";
@@ -349,11 +355,13 @@
         ).get( treatyId );
 
         if( !row ){
-          return sendError( res, 404, "treaty_not_found", "Treaty not found" );
+          sendError( res, 404, "treaty_not_found", "Treaty not found" );
+          return;
         }
 
         if( row.status === "revoked" ){
-          return sendError( res, 400, "already_revoked", "Treaty is already revoked" );
+          sendError( res, 400, "already_revoked", "Treaty is already revoked" );
+          return;
         }
 
         database.prepare(
@@ -371,13 +379,16 @@
         sendError( res, 400, "invalid_json", err.message );
       }
     });
+
+    return true; // Signal that we're handling the request (async)
   }
 
   // GET /_sfc/v0/pages/{nodeName}/{pageName} - Fetch remote page
   function handleFetchPage( wiki, req, res, nodeName, pageName ){
     var database = initDb();
     if( !database ){
-      return sendError( res, 500, "database_error", "Failed to initialize database" );
+      sendError( res, 500, "database_error", "Failed to initialize database" );
+      return true; // Signal that we're handling the request
     }
 
     // Check query params for cache preference
@@ -395,7 +406,7 @@
     // If cacheMode is "only", return cached or error
     if( cacheMode === "only" ){
       if( cached ){
-        return sendJson( res, 200, {
+        sendJson( res, 200, {
           pageName: pageName,
           fromNode: nodeName,
           fetchedAt: cached.fetched_at,
@@ -408,15 +419,17 @@
           authority: cached.authority,
           warning: "Serving from cache only"
         });
+        return true;
       }
-      return sendError( res, 404, "page_not_found", "Page not found in cache" );
+      sendError( res, 404, "page_not_found", "Page not found in cache" );
+      return true;
     }
 
-    // Check if remote node is healthy
+    // Check if remote node is healthy (async callback)
     checkNodeHealth( nodeName, function( isHealthy ){
       if( !isHealthy ){
         if( cached && cacheMode !== "never" ){
-          return sendJson( res, 200, {
+          sendJson( res, 200, {
             pageName: pageName,
             fromNode: nodeName,
             fetchedAt: cached.fetched_at,
@@ -429,8 +442,10 @@
             authority: cached.authority,
             warning: "Remote node unavailable, serving cached version"
           });
+          return;
         }
-        return sendError( res, 503, "node_unavailable", "Remote node is unavailable" );
+        sendError( res, 503, "node_unavailable", "Remote node is unavailable" );
+        return;
       }
 
       // Fetch from remote node
@@ -443,7 +458,7 @@
         remoteRes.on( "end", function(){
           if( remoteRes.statusCode !== 200 ){
             if( cached && cacheMode !== "never" ){
-              return sendJson( res, 200, {
+              sendJson( res, 200, {
                 pageName: pageName,
                 fromNode: nodeName,
                 fetchedAt: cached.fetched_at,
@@ -456,8 +471,10 @@
                 authority: cached.authority,
                 warning: "Remote fetch failed, serving cached version"
               });
+              return;
             }
-            return sendError( res, remoteRes.statusCode, "remote_error", "Failed to fetch from remote node" );
+            sendError( res, remoteRes.statusCode, "remote_error", "Failed to fetch from remote node" );
+            return;
           }
 
           try {
@@ -489,7 +506,7 @@
 
       remoteReq.on( "error", function(){
         if( cached && cacheMode !== "never" ){
-          return sendJson( res, 200, {
+          sendJson( res, 200, {
             pageName: pageName,
             fromNode: nodeName,
             fetchedAt: cached.fetched_at,
@@ -502,6 +519,7 @@
             authority: cached.authority,
             warning: "Remote error, serving cached version"
           });
+          return;
         }
         sendError( res, 503, "node_unavailable", "Failed to connect to remote node" );
       });
@@ -509,7 +527,7 @@
       remoteReq.setTimeout( 10000, function(){
         remoteReq.destroy();
         if( cached && cacheMode !== "never" ){
-          return sendJson( res, 200, {
+          sendJson( res, 200, {
             pageName: pageName,
             fromNode: nodeName,
             fetchedAt: cached.fetched_at,
@@ -522,10 +540,13 @@
             authority: cached.authority,
             warning: "Request timeout, serving cached version"
           });
+          return;
         }
         sendError( res, 504, "timeout", "Request to remote node timed out" );
       });
     });
+
+    return true; // Signal that we're handling the request (async)
   }
 
   // GET /_sfc/v0/pages/local/{pageName} - Serve local page for federation
@@ -557,7 +578,8 @@
   function handleProposeChange( wiki, req, res, nodeName, pageName ){
     var database = initDb();
     if( !database ){
-      return sendError( res, 500, "database_error", "Failed to initialize database" );
+      sendError( res, 500, "database_error", "Failed to initialize database" );
+      return true;
     }
 
     var body = "";
@@ -567,7 +589,8 @@
         var data = JSON.parse( body );
 
         if( !data.change || !data.change.content ){
-          return sendError( res, 400, "invalid_request", "Missing change.content" );
+          sendError( res, 400, "invalid_request", "Missing change.content" );
+          return;
         }
 
         var proposalId = generateProposalId();
@@ -587,6 +610,8 @@
         sendError( res, 400, "invalid_json", err.message );
       }
     });
+
+    return true; // Signal that we're handling the request (async)
   }
 
   // GET /_sfc/v0/pages/{pageName}/proposals - List change proposals
