@@ -1,5 +1,5 @@
 // SFCP - Simple Fractal Confederation Protocol
-// Version 0.1 - Phase 2: Treaty Formation
+// Version 0.1 - Phase 3: Content Federation
 // Enables sovereign nodes to form voluntary, treaty-based relationships
 
 (function(){
@@ -8,6 +8,8 @@
   var VERSION = "0.1";
   var DB_PATH = ".sfc.db";
   var db = null;
+  var Https = require( 'https' );
+  var Http = require( 'http' );
 
   // Initialize SQLite database
   function initDb(){
@@ -37,6 +39,27 @@
           change_json TEXT NOT NULL,
           status TEXT NOT NULL
         );
+
+        CREATE TABLE IF NOT EXISTS sfc_page_cache (
+          cache_id TEXT PRIMARY KEY,
+          from_node TEXT NOT NULL,
+          page_name TEXT NOT NULL,
+          content TEXT NOT NULL,
+          format TEXT NOT NULL,
+          fetched_at TEXT NOT NULL,
+          last_modified TEXT NOT NULL,
+          authority TEXT NOT NULL
+        );
+
+        CREATE TABLE IF NOT EXISTS sfc_node_health (
+          node_id TEXT PRIMARY KEY,
+          status TEXT NOT NULL,
+          last_check TEXT NOT NULL,
+          cache_ttl INTEGER NOT NULL
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_page_cache_node_page ON sfc_page_cache(from_node, page_name);
+        CREATE INDEX IF NOT EXISTS idx_proposals_page ON sfc_proposals(page_name);
       `);
 
       return db;
@@ -83,14 +106,79 @@
     };
   }
 
-  // Generate random treaty ID
+  // Generate random IDs
   function generateTreatyId(){
     return "treaty-" + Math.random().toString( 36 ).substr( 2, 9 );
   }
 
-  // Generate random proposal ID
   function generateProposalId(){
     return "prop-" + Math.random().toString( 36 ).substr( 2, 9 );
+  }
+
+  function generateCacheId(){
+    return "cache-" + Math.random().toString( 36 ).substr( 2, 9 );
+  }
+
+  // Check if node is reachable (with caching)
+  function checkNodeHealth( nodeId, callback ){
+    var database = initDb();
+    if( !database ) return callback( null );
+
+    try {
+      var cached = database.prepare(
+        "SELECT status, last_check, cache_ttl FROM sfc_node_health WHERE node_id = ?"
+      ).get( nodeId );
+
+      var now = Date.now();
+      if( cached && cached.last_check && cached.cache_ttl ){
+        var lastCheck = new Date( cached.last_check ).getTime();
+        var ttl = cached.cache_ttl * 1000;
+        if( now - lastCheck < ttl ){
+          // Use cached health status
+          return callback( cached.status === "healthy" );
+        }
+      }
+    } catch( err ) {}
+
+    // Need to check actual node health
+    var url = (nodeId.includes( "localhost" ) ? "http://" : "https://") + nodeId + "/_sfc/v0/health";
+    var proto = nodeId.includes( "localhost" ) ? Http : Https;
+
+    var req = proto.get( url, function( res ){
+      var data = "";
+      res.on( "data", function( chunk ){ data += chunk; });
+      res.on( "end", function(){
+        try {
+          var health = JSON.parse( data );
+          var isHealthy = res.statusCode === 200 && health.status === "healthy";
+
+          // Cache the result
+          if( database ){
+            database.prepare(
+              "INSERT OR REPLACE INTO sfc_node_health (node_id, status, last_check, cache_ttl) VALUES (?, ?, ?, ?)"
+            ).run( nodeId, isHealthy ? "healthy" : "unhealthy", new Date().toISOString(), health.cacheTTL || 300 );
+          }
+
+          callback( isHealthy );
+        } catch( err ) {
+          callback( false );
+        }
+      });
+    });
+
+    req.on( "error", function(){
+      if( database ){
+        database.prepare(
+          "INSERT OR REPLACE INTO sfc_node_health (node_id, status, last_check, cache_ttl) VALUES (?, ?, ?, ?)"
+        ).run( nodeId, "unhealthy", new Date().toISOString(), 300 );
+      }
+      callback( false );
+    });
+
+    req.setTimeout( 10000, function(){
+      req.destroy();
+      callback( false );
+    });
   }
 
   // GET /_sfc/v0/node - Node identity
@@ -120,7 +208,8 @@
         capabilities: {
           canServePages: true,
           canAcceptTreaties: true,
-          canInitiateTreaties: true
+          canInitiateTreaties: true,
+          canCachePages: true
         }
       });
     });
@@ -171,19 +260,16 @@
       return sendError( res, 500, "database_error", "Failed to initialize database" );
     }
 
-    // Read request body
     var body = "";
     req.on( "data", function( chunk ){ body += chunk; });
     req.on( "end", function(){
       try {
         var proposal = JSON.parse( body );
 
-        // Validate required fields
         if( !proposal.from || !proposal.type ){
           return sendError( res, 400, "invalid_request", "Missing required fields: from, type" );
         }
 
-        // Validate treaty type
         var validTypes = ["peer", "delegation", "read-only", "publish"];
         if( validTypes.indexOf( proposal.type ) < 0 ){
           return sendError( res, 400, "invalid_treaty_type", "Valid types: peer, delegation, read-only, publish" );
@@ -193,7 +279,6 @@
         var now = new Date().toISOString();
         var terms = proposal.terms || { syncDirection: "pull", pages: [] };
 
-        // Store treaty proposal
         database.prepare(
           "INSERT INTO sfc_treaties (treaty_id, with_node, treaty_type, status, created_at, terms_json) VALUES (?, ?, ?, ?, ?, ?)"
         ).run( treatyId, proposal.from, proposal.type, "proposed", now, JSON.stringify( terms ) );
@@ -252,7 +337,6 @@
       return sendError( res, 500, "database_error", "Failed to initialize database" );
     }
 
-    // Read request body
     var body = "";
     req.on( "data", function( chunk ){ body += chunk; });
     req.on( "end", function(){
@@ -289,6 +373,222 @@
     });
   }
 
+  // GET /_sfc/v0/pages/{nodeName}/{pageName} - Fetch remote page
+  function handleFetchPage( wiki, req, res, nodeName, pageName ){
+    var database = initDb();
+    if( !database ){
+      return sendError( res, 500, "database_error", "Failed to initialize database" );
+    }
+
+    // Check query params for cache preference
+    var query = Url.parse( req.url, true ).query;
+    var cacheMode = query.cached || "allow"; // allow, only, never
+
+    // First, check if we have a cached version
+    var cached = null;
+    try {
+      cached = database.prepare(
+        "SELECT * FROM sfc_page_cache WHERE from_node = ? AND page_name = ? ORDER BY fetched_at DESC LIMIT 1"
+      ).get( nodeName, pageName );
+    } catch( err ) {}
+
+    // If cacheMode is "only", return cached or error
+    if( cacheMode === "only" ){
+      if( cached ){
+        return sendJson( res, 200, {
+          pageName: pageName,
+          fromNode: nodeName,
+          fetchedAt: cached.fetched_at,
+          cachedAt: cached.fetched_at,
+          lastModified: cached.last_modified,
+          content: cached.content,
+          format: cached.format,
+          isCached: true,
+          cacheAge: Math.floor( (Date.now() - new Date( cached.fetched_at ).getTime()) / 1000 ),
+          authority: cached.authority,
+          warning: "Serving from cache only"
+        });
+      }
+      return sendError( res, 404, "page_not_found", "Page not found in cache" );
+    }
+
+    // Check if remote node is healthy
+    checkNodeHealth( nodeName, function( isHealthy ){
+      if( !isHealthy ){
+        if( cached && cacheMode !== "never" ){
+          return sendJson( res, 200, {
+            pageName: pageName,
+            fromNode: nodeName,
+            fetchedAt: cached.fetched_at,
+            cachedAt: cached.fetched_at,
+            lastModified: cached.last_modified,
+            content: cached.content,
+            format: cached.format,
+            isCached: true,
+            cacheAge: Math.floor( (Date.now() - new Date( cached.fetched_at ).getTime()) / 1000 ),
+            authority: cached.authority,
+            warning: "Remote node unavailable, serving cached version"
+          });
+        }
+        return sendError( res, 503, "node_unavailable", "Remote node is unavailable" );
+      }
+
+      // Fetch from remote node
+      var url = (nodeName.includes( "localhost" ) ? "http://" : "https://") + nodeName + "/_sfc/v0/pages/local/" + pageName;
+      var proto = nodeName.includes( "localhost" ) ? Http : Https;
+
+      var remoteReq = proto.get( url, function( remoteRes ){
+        var data = "";
+        remoteRes.on( "data", function( chunk ){ data += chunk; });
+        remoteRes.on( "end", function(){
+          if( remoteRes.statusCode !== 200 ){
+            if( cached && cacheMode !== "never" ){
+              return sendJson( res, 200, {
+                pageName: pageName,
+                fromNode: nodeName,
+                fetchedAt: cached.fetched_at,
+                cachedAt: cached.fetched_at,
+                lastModified: cached.last_modified,
+                content: cached.content,
+                format: cached.format,
+                isCached: true,
+                cacheAge: Math.floor( (Date.now() - new Date( cached.fetched_at ).getTime()) / 1000 ),
+                authority: cached.authority,
+                warning: "Remote fetch failed, serving cached version"
+              });
+            }
+            return sendError( res, remoteRes.statusCode, "remote_error", "Failed to fetch from remote node" );
+          }
+
+          try {
+            var pageData = JSON.parse( data );
+
+            // Cache the result
+            var cacheId = generateCacheId();
+            database.prepare(
+              "INSERT INTO sfc_page_cache (cache_id, from_node, page_name, content, format, fetched_at, last_modified, authority) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+            ).run( cacheId, nodeName, pageName, pageData.content, pageData.format || "markdown", new Date().toISOString(), pageData.lastModified || new Date().toISOString(), pageData.authority || nodeName );
+
+            // Return with cached=false since we just fetched it
+            sendJson( res, 200, {
+              pageName: pageName,
+              fromNode: nodeName,
+              fetchedAt: new Date().toISOString(),
+              lastModified: pageData.lastModified,
+              content: pageData.content,
+              format: pageData.format || "markdown",
+              isCached: false,
+              authority: pageData.authority || nodeName,
+              version: pageData.version
+            });
+          } catch( err ) {
+            sendError( res, 500, "parse_error", "Failed to parse remote response" );
+          }
+        });
+      });
+
+      remoteReq.on( "error", function(){
+        if( cached && cacheMode !== "never" ){
+          return sendJson( res, 200, {
+            pageName: pageName,
+            fromNode: nodeName,
+            fetchedAt: cached.fetched_at,
+            cachedAt: cached.fetched_at,
+            lastModified: cached.last_modified,
+            content: cached.content,
+            format: cached.format,
+            isCached: true,
+            cacheAge: Math.floor( (Date.now() - new Date( cached.fetched_at ).getTime()) / 1000 ),
+            authority: cached.authority,
+            warning: "Remote error, serving cached version"
+          });
+        }
+        sendError( res, 503, "node_unavailable", "Failed to connect to remote node" );
+      });
+
+      remoteReq.setTimeout( 10000, function(){
+        remoteReq.destroy();
+        if( cached && cacheMode !== "never" ){
+          return sendJson( res, 200, {
+            pageName: pageName,
+            fromNode: nodeName,
+            fetchedAt: cached.fetched_at,
+            cachedAt: cached.fetched_at,
+            lastModified: cached.last_modified,
+            content: cached.content,
+            format: cached.format,
+            isCached: true,
+            cacheAge: Math.floor( (Date.now() - new Date( cached.fetched_at ).getTime()) / 1000 ),
+            authority: cached.authority,
+            warning: "Request timeout, serving cached version"
+          });
+        }
+        sendError( res, 504, "timeout", "Request to remote node timed out" );
+      });
+    });
+  }
+
+  // GET /_sfc/v0/pages/local/{pageName} - Serve local page for federation
+  function handleServeLocalPage( wiki, req, res, pageName ){
+    var pageStore = wiki.pageStore;
+    pageStore.read( pageName, function( err, content ){
+      if( err || !content ){
+        return sendError( res, 404, "page_not_found", "Page not found" );
+      }
+
+      try {
+        var stat = Fs.statSync( pageStore.dir + "/" + pageName );
+
+        sendJson( res, 200, {
+          pageName: pageName,
+          authority: SW.domain || "localhost",
+          lastModified: stat.mtime.toISOString(),
+          content: content,
+          format: "markdown",
+          version: "1.0"
+        });
+      } catch( statErr ) {
+        sendError( res, 500, "file_error", "Failed to get page info" );
+      }
+    });
+  }
+
+  // POST /_sfc/v0/pages/{nodeName}/{pageName}/propose - Propose page change
+  function handleProposeChange( wiki, req, res, nodeName, pageName ){
+    var database = initDb();
+    if( !database ){
+      return sendError( res, 500, "database_error", "Failed to initialize database" );
+    }
+
+    var body = "";
+    req.on( "data", function( chunk ){ body += chunk; });
+    req.on( "end", function(){
+      try {
+        var data = JSON.parse( body );
+
+        if( !data.change || !data.change.content ){
+          return sendError( res, 400, "invalid_request", "Missing change.content" );
+        }
+
+        var proposalId = generateProposalId();
+        var now = new Date().toISOString();
+
+        database.prepare(
+          "INSERT INTO sfc_proposals (proposal_id, page_name, proposed_by, proposed_at, change_json, status) VALUES (?, ?, ?, ?, ?, ?)"
+        ).run( proposalId, pageName, SW.domain || "localhost", now, JSON.stringify( data.change ), "pending" );
+
+        sendJson( res, 202, {
+          status: "proposed",
+          proposalId: proposalId,
+          message: "Change proposed. Awaiting review by authority."
+        });
+
+      } catch( err ) {
+        sendError( res, 400, "invalid_json", err.message );
+      }
+    });
+  }
+
   // GET /_sfc/v0/pages/{pageName}/proposals - List change proposals
   function handleListProposals( wiki, req, res, pageName ){
     var database = initDb();
@@ -298,7 +598,7 @@
 
     try {
       var rows = database.prepare(
-        "SELECT proposal_id, page_name, proposed_by, proposed_at, change_json, status FROM sfc_proposals WHERE page_name = ?"
+        "SELECT proposal_id, page_name, proposed_by, proposed_at, change_json, status FROM sfc_proposals WHERE page_name = ? AND status = 'pending'"
       ).all( pageName );
 
       var proposals = rows.map( function( row ){
@@ -316,22 +616,6 @@
     } catch( err ) {
       sendError( res, 500, "database_error", err.message );
     }
-  }
-
-  // POST /_sfc/v0/pages/{nodeName}/{pageName}/propose - Propose page change (Phase 3)
-  function handleProposeChange( wiki, req, res, nodeName, pageName ){
-    sendJson( res, 501, {
-      error: "not_implemented",
-      message: "Page change proposals coming in Phase 3"
-    });
-  }
-
-  // GET /_sfc/v0/pages/{nodeName}/{pageName} - Fetch remote page (Phase 3)
-  function handleFetchPage( wiki, req, res, nodeName, pageName ){
-    sendJson( res, 501, {
-      error: "not_implemented",
-      message: "Page fetch coming in Phase 3"
-    });
   }
 
   // Main SFCP request handler
@@ -376,14 +660,21 @@
         return sendError( res, 405, "method_not_allowed", "Invalid method" );
 
       case "pages":
-        if( req.method === "GET" && path.remaining.length === 2 && path.remaining[1] === "proposals" ){
-          return handleListProposals( wiki, req, res, path.remaining[0] );
+        // GET /_sfc/v0/pages/local/{pageName} - Serve local page
+        if( req.method === "GET" && path.remaining[0] === "local" && path.remaining.length === 2 ){
+          return handleServeLocalPage( wiki, req, res, path.remaining[1] );
         }
+        // GET /_sfc/v0/pages/{nodeName}/{pageName} - Fetch remote page
+        if( req.method === "GET" && path.remaining.length === 2 ){
+          return handleFetchPage( wiki, req, res, path.remaining[0], path.remaining[1] );
+        }
+        // POST /_sfc/v0/pages/{nodeName}/{pageName}/propose - Propose change
         if( req.method === "POST" && path.remaining.length === 3 && path.remaining[2] === "propose" ){
           return handleProposeChange( wiki, req, res, path.remaining[0], path.remaining[1] );
         }
-        if( req.method === "GET" && path.remaining.length === 2 ){
-          return handleFetchPage( wiki, req, res, path.remaining[0], path.remaining[1] );
+        // GET /_sfc/v0/pages/{pageName}/proposals - List proposals
+        if( req.method === "GET" && path.remaining.length === 2 && path.remaining[1] === "proposals" ){
+          return handleListProposals( wiki, req, res, path.remaining[0] );
         }
         return sendError( res, 405, "method_not_allowed", "Invalid method" );
 
