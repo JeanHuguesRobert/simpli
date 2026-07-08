@@ -604,15 +604,117 @@
 
         var proposalId = generateProposalId();
         var now = new Date().toISOString();
+        var localAuthority = SW.domain || "localhost";
 
+        // Check if this node has authority for the page
+        wiki.lookupPage( pageName ).read( function( err, page ){
+          var hasAuthority = !err && page && page.body;
+
+          if( hasAuthority ){
+            // This node has authority, store proposal locally
+            database.prepare(
+              "INSERT INTO sfc_proposals (proposal_id, page_name, proposed_by, proposed_at, change_json, status) VALUES (?, ?, ?, ?, ?, ?)"
+            ).run( proposalId, pageName, nodeName, now, JSON.stringify( data.change ), "pending" );
+
+            sendJson( res, 202, {
+              status: "proposed",
+              proposalId: proposalId,
+              message: "Change proposed. Awaiting review by authority.",
+              sentTo: localAuthority
+            });
+          } else {
+            // This node doesn't have authority, forward to authority node
+            var authorityUrl = (nodeName.includes( "localhost" ) || nodeName.includes( "127.0.0.1" ) || nodeName.includes( ":" )) ? "http://" + nodeName : "https://" + nodeName;
+            var proto = (nodeName.includes( "localhost" ) || nodeName.includes( "127.0.0.1" ) || nodeName.includes( ":" )) ? Http : Https;
+
+            var forwardBody = JSON.stringify({
+              proposalId: proposalId,
+              pageName: pageName,
+              proposedBy: localAuthority,
+              proposedAt: now,
+              change: data.change
+            });
+
+            var forwardReq = proto.request( {
+              hostname: nodeName.split( ":" )[0],
+              port: nodeName.includes( ":" ) ? nodeName.split( ":" )[1] : 443,
+              path: "/_sfc/v0/proposals/receive",
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "Content-Length": Buffer.byteLength( forwardBody )
+              }
+            }, function( forwardRes ){
+              var responseData = "";
+              forwardRes.on( "data", function( chunk ){ responseData += chunk; });
+              forwardRes.on( "end", function(){
+                if( forwardRes.statusCode === 200 || forwardRes.statusCode === 202 ){
+                  try {
+                    var result = JSON.parse( responseData );
+                    sendJson( res, forwardRes.statusCode, result );
+                  } catch( parseErr ){
+                    sendJson( res, 200, {
+                      status: "proposed",
+                      proposalId: proposalId,
+                      message: "Change proposed to authority node.",
+                      sentTo: nodeName
+                    });
+                  }
+                } else {
+                  sendError( res, forwardRes.statusCode, "forward_error", "Failed to forward proposal to authority" );
+                }
+              });
+            });
+
+            forwardReq.on( "error", function(){
+              sendError( res, 503, "authority_unavailable", "Authority node unavailable" );
+            });
+
+            forwardReq.setTimeout( 10000, function(){
+              forwardReq.destroy();
+            });
+
+            forwardReq.write( forwardBody );
+            forwardReq.end();
+          }
+        });
+
+      } catch( err ) {
+        sendError( res, 400, "invalid_json", err.message );
+      }
+    });
+
+    return true; // Signal that we're handling the request (async)
+  }
+
+  // POST /_sfc/v0/proposals/receive - Receive proposal from another node
+  function handleReceiveProposal( wiki, req, res ){
+    var database = initDb();
+    if( !database ){
+      sendError( res, 500, "database_error", "Failed to initialize database" );
+      return true;
+    }
+
+    var body = "";
+    req.on( "data", function( chunk ){ body += chunk; });
+    req.on( "end", function(){
+      try {
+        var data = JSON.parse( body );
+
+        if( !data.proposalId || !data.pageName || !data.proposedBy || !data.change ){
+          sendError( res, 400, "invalid_request", "Missing required fields" );
+          return;
+        }
+
+        // Store the incoming proposal
         database.prepare(
           "INSERT INTO sfc_proposals (proposal_id, page_name, proposed_by, proposed_at, change_json, status) VALUES (?, ?, ?, ?, ?, ?)"
-        ).run( proposalId, pageName, SW.domain || "localhost", now, JSON.stringify( data.change ), "pending" );
+        ).run( data.proposalId, data.pageName, data.proposedBy, data.proposedAt || new Date().toISOString(), JSON.stringify( data.change ), "pending" );
 
         sendJson( res, 202, {
-          status: "proposed",
-          proposalId: proposalId,
-          message: "Change proposed. Awaiting review by authority."
+          status: "received",
+          proposalId: data.proposalId,
+          message: "Proposal received and awaiting review"
         });
 
       } catch( err ) {
@@ -650,6 +752,116 @@
     } catch( err ) {
       sendError( res, 500, "database_error", err.message );
     }
+  }
+
+  // POST /_sfc/v0/proposals/{id}/accept - Accept and apply a proposal
+  function handleAcceptProposal( wiki, req, res, proposalId ){
+    var database = initDb();
+    if( !database ){
+      sendError( res, 500, "database_error", "Failed to initialize database" );
+      return true;
+    }
+
+    var body = "";
+    req.on( "data", function( chunk ){ body += chunk; });
+    req.on( "end", function(){
+      try {
+        var data = JSON.parse( body );
+
+        // Get the proposal
+        var proposal = database.prepare(
+          "SELECT page_name, proposed_by, change_json FROM sfc_proposals WHERE proposal_id = ? AND status = 'pending'"
+        ).get( proposalId );
+
+        if( !proposal ){
+          sendError( res, 404, "proposal_not_found", "Proposal not found or not pending" );
+          return;
+        }
+
+        var pageName = proposal.page_name;
+        var change = JSON.parse( proposal.change_json );
+
+        // Apply the change to the page
+        wiki.lookupPage( pageName ).read( function( err, page ){
+          if( err || !page ){
+            sendError( res, 404, "page_not_found", "Page not found" );
+            return;
+          }
+
+          // Update the page content
+          var newContent = change.content || change;
+          page.store( data.commitMessage || "Accepted proposal from " + proposal.proposed_by, function( err ){
+            if( err ){
+              sendError( res, 500, "save_error", "Failed to save page: " + err.message );
+              return;
+            }
+
+            // Update proposal status
+            database.prepare(
+              "UPDATE sfc_proposals SET status = ? WHERE proposal_id = ?"
+            ).run( "accepted", proposalId );
+
+            sendJson( res, 200, {
+              status: "accepted",
+              proposalId: proposalId,
+              pageName: pageName,
+              acceptedAt: new Date().toISOString(),
+              message: "Proposal accepted and page updated"
+            });
+          });
+        });
+
+      } catch( err ) {
+        sendError( res, 400, "invalid_json", err.message );
+      }
+    });
+
+    return true; // Signal that we're handling the request (async)
+  }
+
+  // POST /_sfc/v0/proposals/{id}/reject - Reject a proposal
+  function handleRejectProposal( wiki, req, res, proposalId ){
+    var database = initDb();
+    if( !database ){
+      sendError( res, 500, "database_error", "Failed to initialize database" );
+      return true;
+    }
+
+    var body = "";
+    req.on( "data", function( chunk ){ body += chunk; });
+    req.on( "end", function(){
+      try {
+        var data = JSON.parse( body );
+        var reason = data.reason || "";
+
+        var proposal = database.prepare(
+          "SELECT page_name FROM sfc_proposals WHERE proposal_id = ? AND status = 'pending'"
+        ).get( proposalId );
+
+        if( !proposal ){
+          sendError( res, 404, "proposal_not_found", "Proposal not found or not pending" );
+          return;
+        }
+
+        // Update proposal status
+        database.prepare(
+          "UPDATE sfc_proposals SET status = ? WHERE proposal_id = ?"
+        ).run( "rejected", proposalId );
+
+        sendJson( res, 200, {
+          status: "rejected",
+          proposalId: proposalId,
+          pageName: proposal.page_name,
+          rejectedAt: new Date().toISOString(),
+          reason: reason
+        });
+
+      } catch( err ) {
+        sendError( res, 400, "invalid_json", err.message );
+      }
+    });
+
+    return true; // Signal that we're handling the request (async)
   }
 
   // Main SFCP request handler
@@ -709,6 +921,21 @@
         // POST /_sfc/v0/pages/{nodeName}/{pageName}/propose - Propose change
         if( req.method === "POST" && path.remaining.length === 3 && path.remaining[2] === "propose" ){
           return handleProposeChange( wiki, req, res, path.remaining[0], path.remaining[1] );
+        }
+        return sendError( res, 405, "method_not_allowed", "Invalid method" );
+
+      case "proposals":
+        // POST /_sfc/v0/proposals/receive - Receive proposal from another node
+        if( req.method === "POST" && path.remaining[0] === "receive" && path.remaining.length === 1 ){
+          return handleReceiveProposal( wiki, req, res );
+        }
+        // POST /_sfc/v0/proposals/{id}/accept - Accept proposal
+        if( req.method === "POST" && path.remaining.length === 2 && path.remaining[1] === "accept" ){
+          return handleAcceptProposal( wiki, req, res, path.remaining[0] );
+        }
+        // POST /_sfc/v0/proposals/{id}/reject - Reject proposal
+        if( req.method === "POST" && path.remaining.length === 2 && path.remaining[1] === "reject" ){
+          return handleRejectProposal( wiki, req, res, path.remaining[0] );
         }
         return sendError( res, 405, "method_not_allowed", "Invalid method" );
 
