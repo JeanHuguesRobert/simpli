@@ -606,78 +606,91 @@
         var now = new Date().toISOString();
         var localAuthority = SW.domain || "localhost";
 
-        // Check if this node has authority for the page
-        wiki.lookupPage( pageName ).read( function( err, page ){
-          var hasAuthority = !err && page && page.body;
+        // Normalize nodeName for comparison
+        // localhost:8080, 127.0.0.1:8080 → compare with local port
+        var isLocalNode = nodeName === "localhost" ||
+                          nodeName === "127.0.0.1" ||
+                          nodeName === localAuthority ||
+                          nodeName === "localhost:" + (SW.port || 80) ||
+                          nodeName === "127.0.0.1:" + (SW.port || 80);
 
-          if( hasAuthority ){
-            // This node has authority, store proposal locally
-            database.prepare(
-              "INSERT INTO sfc_proposals (proposal_id, page_name, proposed_by, proposed_at, change_json, status) VALUES (?, ?, ?, ?, ?, ?)"
-            ).run( proposalId, pageName, nodeName, now, JSON.stringify( data.change ), "pending" );
+        if( isLocalNode ){
+          // Proposing to this node - check authority and store locally
+          wiki.lookupPage( pageName ).read( function( err, page ){
+            var hasAuthority = !err && page && page.body;
 
-            sendJson( res, 202, {
-              status: "proposed",
-              proposalId: proposalId,
-              message: "Change proposed. Awaiting review by authority.",
-              sentTo: localAuthority
-            });
-          } else {
-            // This node doesn't have authority, forward to authority node
-            var authorityUrl = (nodeName.includes( "localhost" ) || nodeName.includes( "127.0.0.1" ) || nodeName.includes( ":" )) ? "http://" + nodeName : "https://" + nodeName;
-            var proto = (nodeName.includes( "localhost" ) || nodeName.includes( "127.0.0.1" ) || nodeName.includes( ":" )) ? Http : Https;
+            if( hasAuthority ){
+              // This node has authority, store proposal locally
+              database.prepare(
+                "INSERT INTO sfc_proposals (proposal_id, page_name, proposed_by, proposed_at, change_json, status) VALUES (?, ?, ?, ?, ?, ?)"
+              ).run( proposalId, pageName, localAuthority, now, JSON.stringify( data.change ), "pending" );
 
-            var forwardBody = JSON.stringify({
-              proposalId: proposalId,
-              pageName: pageName,
-              proposedBy: localAuthority,
-              proposedAt: now,
-              change: data.change
-            });
-
-            var forwardReq = proto.request( {
-              hostname: nodeName.split( ":" )[0],
-              port: nodeName.includes( ":" ) ? nodeName.split( ":" )[1] : 443,
-              path: "/_sfc/v0/proposals/receive",
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                "Content-Length": Buffer.byteLength( forwardBody )
-              }
-            }, function( forwardRes ){
-              var responseData = "";
-              forwardRes.on( "data", function( chunk ){ responseData += chunk; });
-              forwardRes.on( "end", function(){
-                if( forwardRes.statusCode === 200 || forwardRes.statusCode === 202 ){
-                  try {
-                    var result = JSON.parse( responseData );
-                    sendJson( res, forwardRes.statusCode, result );
-                  } catch( parseErr ){
-                    sendJson( res, 200, {
-                      status: "proposed",
-                      proposalId: proposalId,
-                      message: "Change proposed to authority node.",
-                      sentTo: nodeName
-                    });
-                  }
-                } else {
-                  sendError( res, forwardRes.statusCode, "forward_error", "Failed to forward proposal to authority" );
-                }
+              sendJson( res, 202, {
+                status: "proposed",
+                proposalId: proposalId,
+                message: "Change proposed. Awaiting review by authority.",
+                sentTo: localAuthority
               });
-            });
+            } else {
+              sendError( res, 404, "page_not_found", "Page not found on this node" );
+            }
+          });
+        } else {
+          // Proposing to remote node - always forward
+          var isLocalTarget = nodeName.includes( "localhost" ) || nodeName.includes( "127.0.0.1" ) || nodeName.includes( ":" );
+          var targetUrl = (isLocalTarget ? "http://" : "https://") + nodeName;
+          var proto = isLocalTarget ? Http : Https;
 
-            forwardReq.on( "error", function(){
-              sendError( res, 503, "authority_unavailable", "Authority node unavailable" );
-            });
+          var forwardBody = JSON.stringify({
+            proposalId: proposalId,
+            pageName: pageName,
+            proposedBy: localAuthority,
+            proposedAt: now,
+            change: data.change
+          });
 
-            forwardReq.setTimeout( 10000, function(){
-              forwardReq.destroy();
+          var forwardReq = proto.request( {
+            hostname: nodeName.split( ":" )[0],
+            port: nodeName.includes( ":" ) ? nodeName.split( ":" )[1] : 443,
+            path: "/_sfc/v0/proposals/receive",
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Content-Length": Buffer.byteLength( forwardBody )
+            }
+          }, function( forwardRes ){
+            var responseData = "";
+            forwardRes.on( "data", function( chunk ){ responseData += chunk; });
+            forwardRes.on( "end", function(){
+              if( forwardRes.statusCode === 200 || forwardRes.statusCode === 202 ){
+                try {
+                  var result = JSON.parse( responseData );
+                  sendJson( res, forwardRes.statusCode, result );
+                } catch( parseErr ){
+                  sendJson( res, 200, {
+                    status: "proposed",
+                    proposalId: proposalId,
+                    message: "Change proposed to authority node.",
+                    sentTo: nodeName
+                  });
+                }
+              } else {
+                sendError( res, forwardRes.statusCode, "forward_error", "Failed to forward proposal to authority" );
+              }
             });
+          });
 
-            forwardReq.write( forwardBody );
-            forwardReq.end();
-          }
-        });
+          forwardReq.on( "error", function(){
+            sendError( res, 503, "authority_unavailable", "Authority node unavailable" );
+          });
+
+          forwardReq.setTimeout( 10000, function(){
+            forwardReq.destroy();
+          });
+
+          forwardReq.write( forwardBody );
+          forwardReq.end();
+        }
 
       } catch( err ) {
         sendError( res, 400, "invalid_json", err.message );
