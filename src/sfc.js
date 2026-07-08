@@ -141,8 +141,10 @@
     } catch( err ) {}
 
     // Need to check actual node health
-    var url = (nodeId.includes( "localhost" ) ? "http://" : "https://") + nodeId + "/_sfc/v0/health";
-    var proto = nodeId.includes( "localhost" ) ? Http : Https;
+    // Use http for localhost, 127.0.0.1, or addresses with ports
+    var isLocal = nodeId.includes( "localhost" ) || nodeId.includes( "127.0.0.1" ) || nodeId.includes( ":" );
+    var url = (isLocal ? "http://" : "https://") + nodeId + "/_sfc/v0/health";
+    var proto = isLocal ? Http : Https;
 
     var req = proto.get( url, function( res ){
       var data = "";
@@ -449,8 +451,10 @@
       }
 
       // Fetch from remote node
-      var url = (nodeName.includes( "localhost" ) ? "http://" : "https://") + nodeName + "/_sfc/v0/pages/local/" + pageName;
-      var proto = nodeName.includes( "localhost" ) ? Http : Https;
+      // Use http for localhost, 127.0.0.1, or addresses with ports
+      var isLocal = nodeName.includes( "localhost" ) || nodeName.includes( "127.0.0.1" ) || nodeName.includes( ":" );
+      var url = (isLocal ? "http://" : "https://") + nodeName + "/_sfc/v0/pages/local/" + pageName;
+      var proto = isLocal ? Http : Https;
 
       var remoteReq = proto.get( url, function( remoteRes ){
         var data = "";
