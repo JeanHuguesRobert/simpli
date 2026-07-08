@@ -2,7 +2,7 @@
 // Version 0.1
 // Enables sovereign nodes to form voluntary, treaty-based relationships
 
-var SFCP = (function(){
+(function(){
 
   var PREFIX = "/_sfc/v0";
   var VERSION = "0.1";
@@ -50,7 +50,6 @@ var SFCP = (function(){
     var authoritativePages = {};
 
     // Get list of authoritative pages with timestamps
-    // For now, return a simplified version
     pageStore.withDir( false, function( err, files ){
       if( !err && files ){
         files.forEach( function( file ){
@@ -141,17 +140,14 @@ var SFCP = (function(){
     }
   }
 
-  return {
+  // Set global SFCP object
+  SFCP = {
     handleRequest: handleRequest,
     PREFIX: PREFIX,
     VERSION: VERSION
   };
 
-})();
+  // Return for $include.result
+  $include.result = SFCP;
 
-// Export for use in main.js
-if( typeof module !== "undefined" && module.exports ){
-  module.exports = SFCP;
-}
-// When using $include(), ensure SFCP is in global scope
-$include.result = SFCP;
+})();
