@@ -531,28 +531,25 @@
   // GET /_sfc/v0/pages/local/{pageName} - Serve local page for federation
   function handleServeLocalPage( wiki, req, res, pageName ){
     wiki.lookupPage( pageName ).read( function( err, page ){
-      if( err || !page ){
+      if( err || !page || !page.body ){
         return sendError( res, 404, "page_not_found", "Page not found" );
       }
 
-      page.currentContent( function( err, content ){
-        if( err || !content ){
-          return sendError( res, 500, "read_error", "Failed to read page content" );
-        }
+      try {
+        // Get page content as string
+        var content = page.body.asString ? page.body.asString() : page.body.toString();
 
-        try {
-          sendJson( res, 200, {
-            pageName: pageName,
-            authority: SW.domain || "localhost",
-            lastModified: page.timeString || new Date().toISOString(),
-            content: content,
-            format: "markdown",
-            version: "1.0"
-          });
-        } catch( jsonErr ) {
-          sendError( res, 500, "json_error", "Failed to serialize response" );
-        }
-      });
+        sendJson( res, 200, {
+          pageName: pageName,
+          authority: SW.domain || "localhost",
+          lastModified: page.timeString || new Date().toISOString(),
+          content: content,
+          format: "markdown",
+          version: "1.0"
+        });
+      } catch( jsonErr ) {
+        sendError( res, 500, "json_error", "Failed to serialize response: " + jsonErr.message );
+      }
     });
   }
 
