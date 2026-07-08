@@ -153,3 +153,5 @@ var SFCP = (function(){
 if( typeof module !== "undefined" && module.exports ){
   module.exports = SFCP;
 }
+// When using $include(), ensure SFCP is in global scope
+$include.result = SFCP;
