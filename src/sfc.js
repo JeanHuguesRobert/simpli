@@ -10,6 +10,7 @@
   var db = null;
   var Https = require( 'https' );
   var Http = require( 'http' );
+  var Fs = require( 'fs' );
 
   // Initialize SQLite database
   function initDb(){
@@ -801,9 +802,11 @@
             return;
           }
 
-          // Update the page content
+          // Update the page content using direct file write
           var newContent = change.content || change;
-          page.store( data.commitMessage || "Accepted proposal from " + proposal.proposed_by, function( err ){
+          var pagePath = wiki.pageStore.dir + "/" + pageName;
+
+          Fs.writeFile( pagePath, newContent, function( err ){
             if( err ){
               sendError( res, 500, "save_error", "Failed to save page: " + err.message );
               return;
