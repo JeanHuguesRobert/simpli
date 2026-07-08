@@ -1381,7 +1381,7 @@ if( process.env.SIMPLIWIKI_DOMAIN ){
 }
 
 // Include SFCP - Simple Fractal Confederation Protocol
-$include( "./sfc.js" )
+$include( "src/sfc.js" )
 
 SW.debug = true;
 if( SW.name != "SimpliJs" ){
