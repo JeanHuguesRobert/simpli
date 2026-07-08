@@ -1380,6 +1380,9 @@ if( process.env.SIMPLIWIKI_DOMAIN ){
   SW.domain = process.env.SIMPLIWIKI_DOMAIN
 }
 
+// Include SFCP - Simple Fractal Confederation Protocol
+$include( "../src/sfc.js" )
+
 SW.debug = true;
 if( SW.name != "SimpliJs" ){
   trace( "Congratulations, SimpliJs is now " + SW.name)
@@ -3446,6 +3449,10 @@ WikiProto.processHttpRequest = function( req ){
     return this.processOembedRequest( pathname, query, req)
   }else if( "/rest/".starts( pathname) ){
     return this.processRestRequest(   pathname, query, req)
+  }else if( "/_sfc/".starts( pathname) ){
+    // SFCP - Simple Fractal Confederation Protocol
+    var handled = SFCP && SFCP.handleRequest( this, req, req.response )
+    if( handled ){ return true }
   }
   
   try {
