@@ -698,6 +698,10 @@
         if( req.method === "GET" && path.remaining[0] === "local" && path.remaining.length === 2 ){
           return handleServeLocalPage( wiki, req, res, path.remaining[1] );
         }
+        // GET /_sfc/v0/pages/{pageName}/proposals - List proposals (must be before remote fetch)
+        if( req.method === "GET" && path.remaining.length === 2 && path.remaining[1] === "proposals" ){
+          return handleListProposals( wiki, req, res, path.remaining[0] );
+        }
         // GET /_sfc/v0/pages/{nodeName}/{pageName} - Fetch remote page
         if( req.method === "GET" && path.remaining.length === 2 ){
           return handleFetchPage( wiki, req, res, path.remaining[0], path.remaining[1] );
@@ -705,10 +709,6 @@
         // POST /_sfc/v0/pages/{nodeName}/{pageName}/propose - Propose change
         if( req.method === "POST" && path.remaining.length === 3 && path.remaining[2] === "propose" ){
           return handleProposeChange( wiki, req, res, path.remaining[0], path.remaining[1] );
-        }
-        // GET /_sfc/v0/pages/{pageName}/proposals - List proposals
-        if( req.method === "GET" && path.remaining.length === 2 && path.remaining[1] === "proposals" ){
-          return handleListProposals( wiki, req, res, path.remaining[0] );
         }
         return sendError( res, 405, "method_not_allowed", "Invalid method" );
 
