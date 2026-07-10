@@ -6,10 +6,11 @@ After=network.target
 [Service]
 Type=simple
 User=ubuntu
-WorkingDirectory=/srv/simpli
+WorkingDirectory=/srv/SimpliWiki
 Environment="NODE_ENV=production"
-EnvironmentFile=/srv/simpli/.env
-ExecStart=/usr/bin/node src/main.js
+EnvironmentFile=/srv/SimpliWiki/.env
+ExecStartPre=/usr/local/bin/node /srv/simpli/scripts/check-node-current.js
+ExecStart=/usr/local/bin/node /srv/simpli/src/main.js
 Restart=on-failure
 RestartSec=10
 

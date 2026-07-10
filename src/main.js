@@ -1379,6 +1379,9 @@ if( process.env.SIMPLIWIKI_NAME ){
 if( process.env.SIMPLIWIKI_DOMAIN ){
   SW.domain = process.env.SIMPLIWIKI_DOMAIN
 }
+if( process.env.SIMPLIWIKI_DB ){
+  SW.sqliteDb = process.env.SIMPLIWIKI_DB
+}
 
 // Include SFCP - Simple Fractal Confederation Protocol
 $include( "./sfc.js" )
@@ -2074,7 +2077,8 @@ Sw.randomizeArray = function( a ) {
 // Class PageStore
 //
 // This is how I store pages.
-// The default implementation here is directory/file based.
+// The default implementation is SQLite based. The old directory/file store is
+// only used once, to import an empty SQLite store from existing page files.
 // Note: default implemention includes a "transient" mode, for test purposes.
 //
 // Scalability issue:
@@ -2087,25 +2091,27 @@ function PageStore( wiki, dir, is_transient ){
 // "wiki" is owner wiki, for statistics only.
 // "dir" is relative to global SW.dir
   this.wiki = wiki
-  dir || (dir = "")
-  De&&mand( !dir || "/".ends( dir) )
+  this.wikiFullname = dir || ""
+  De&&mand( !this.wikiFullname || "/".ends( this.wikiFullname) )
   // replace all / into .dir/ because a page name can collide with a dir name
-  dir = dir.replace( /\//g, ".dir/")
+  dir = this.wikiFullname.replace( /\//g, ".dir/")
   var sep = SW.dir ? (SW.dir + "/") : ""
   this.path = sep + dir
   // The directory name is like the path minus the terminating /
   this.dir  = this.path.substr( 0, this.path.length - 1)
   this.backup = sep + "Backup/"
   if( "test".starts( dir) ){ is_transient = true }
-  this.mayNeedMkdir = !is_transient
+  this.mayNeedMkdir = false
   // It's only when some access is tried that dir existence can be asserted
   this.reallyNeedsMkdir = false
   var that = this
   // If transient (memory only), then I have mock system calls
   this.isTransient = !!is_transient
-  this.fs = !is_transient
-  ? Fs
-  : { 
+  this.storeId = this.wikiFullname
+    ? ((SW.name || "wiki") + ":" + this.wikiFullname.replace( /\/$/, ""))
+    : (SW.name || "wiki")
+  this.dbPath = SW.sqliteDb || (SW.dir ? (SW.dir + ".sqlite") : ".simpli-pages.sqlite")
+  this.fs = !is_transient ? null : {
     readFile:  function( n, f, cb ){
       that.test_de&&bug( "schedule transient read:", n)
       setTimeout( function(){
@@ -2122,10 +2128,11 @@ function PageStore( wiki, dir, is_transient ){
       }, 1)
     }
   }
-  // Create directory if needed
+  // Initialize SQLite store when persistent.
   if( !is_transient ){
-    // Actual creation is postponed, until first page is written
-    // This way there is less garbadge empty wikis
+    this.db = PageStore.openSqlite( this.dbPath )
+    this.initSqlite()
+    this.bootstrapFromFiles()
   // If memory only, then init list of page, using param if appropriate
   // Note: this is not used yet, it is intended for tests
   }else{
@@ -2135,178 +2142,224 @@ function PageStore( wiki, dir, is_transient ){
 var PageStoreProto = PageStore.prototype = {};
 MakeDebuggable( PageStore, "PageStore")
 
+PageStore.sqliteDbs = {}
+
+PageStore.openSqlite = function( db_path ){
+  var db = PageStore.sqliteDbs[db_path]
+  if( db )return db
+  var DatabaseSync = require( "node:sqlite" ).DatabaseSync
+  db = new DatabaseSync( db_path )
+  db.exec( "PRAGMA journal_mode = WAL" )
+  db.exec( "PRAGMA foreign_keys = ON" )
+  PageStore.sqliteDbs[db_path] = db
+  return db
+}
+
 PageStoreProto.assertIsPageStore = function(){ return true }
 
 PageStoreProto.toString = function(){
   return "<Store " + this.wiki.fullname() + ">"
 }
 
-PageStoreProto.getPath = function( name ){
-  // Encode weird names to get a decent file name
-  if( name.includes( "[") ){
-    name = encodeURIComponent( name)
+PageStoreProto.initSqlite = function(){
+  this.db.exec(
+    "CREATE TABLE IF NOT EXISTS page_stores ("
+    + "store_id TEXT PRIMARY KEY,"
+    + "source_path TEXT NOT NULL,"
+    + "migrated_at TEXT NOT NULL,"
+    + "page_count INTEGER NOT NULL,"
+    + "byte_count INTEGER NOT NULL"
+    + ");"
+    + "CREATE TABLE IF NOT EXISTS pages ("
+    + "store_id TEXT NOT NULL,"
+    + "name TEXT NOT NULL,"
+    + "body TEXT NOT NULL,"
+    + "byte_length INTEGER NOT NULL,"
+    + "body_sha256 TEXT NOT NULL,"
+    + "source_mtime TEXT NOT NULL,"
+    + "source_path TEXT NOT NULL,"
+    + "migrated_at TEXT NOT NULL,"
+    + "PRIMARY KEY (store_id, name),"
+    + "FOREIGN KEY (store_id) REFERENCES page_stores(store_id)"
+    + ");"
+    + "CREATE TABLE IF NOT EXISTS page_revisions ("
+    + "revision_id TEXT PRIMARY KEY,"
+    + "store_id TEXT NOT NULL,"
+    + "name TEXT NOT NULL,"
+    + "body TEXT NOT NULL,"
+    + "byte_length INTEGER NOT NULL,"
+    + "body_sha256 TEXT NOT NULL,"
+    + "source_mtime TEXT NOT NULL,"
+    + "source_path TEXT NOT NULL,"
+    + "migrated_at TEXT NOT NULL,"
+    + "FOREIGN KEY (store_id) REFERENCES page_stores(store_id)"
+    + ");"
+    + "CREATE UNIQUE INDEX IF NOT EXISTS page_revisions_source_hash "
+    + "ON page_revisions(store_id, name, body_sha256)"
+  )
+  this.ensureStoreRow()
+}
+
+PageStoreProto.sha256 = function( body ){
+  return Crypto.createHash( "sha256" ).update( body, "utf8" ).digest( "hex" )
+}
+
+PageStoreProto.ensureStoreRow = function(){
+  this.db.prepare(
+    "INSERT INTO page_stores (store_id, source_path, migrated_at, page_count, byte_count) "
+    + "VALUES (?, ?, ?, 0, 0) "
+    + "ON CONFLICT(store_id) DO NOTHING"
+  ).run( this.storeId, this.dir || "", new Date().toISOString() )
+}
+
+PageStoreProto.refreshStoreRow = function(){
+  var row = this.db.prepare(
+    "SELECT COUNT(*) AS page_count, COALESCE(SUM(byte_length), 0) AS byte_count "
+    + "FROM pages WHERE store_id = ?"
+  ).get( this.storeId )
+  this.db.prepare(
+    "UPDATE page_stores SET migrated_at = ?, page_count = ?, byte_count = ? WHERE store_id = ?"
+  ).run(
+    new Date().toISOString(),
+    row.page_count || 0,
+    row.byte_count || 0,
+    this.storeId
+  )
+}
+
+PageStoreProto.upsertSqlite = function( name, body, source_path, source_mtime ){
+  var now = new Date().toISOString()
+  var byte_length = Buffer.byteLength( body, "utf8" )
+  var hash = this.sha256( body )
+  source_path || (source_path = "sqlite:" + this.storeId + "/" + name)
+  source_mtime || (source_mtime = now)
+  this.db.prepare(
+    "INSERT INTO pages "
+    + "(store_id, name, body, byte_length, body_sha256, source_mtime, source_path, migrated_at) "
+    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?) "
+    + "ON CONFLICT(store_id, name) DO UPDATE SET "
+    + "body = excluded.body,"
+    + "byte_length = excluded.byte_length,"
+    + "body_sha256 = excluded.body_sha256,"
+    + "source_mtime = excluded.source_mtime,"
+    + "source_path = excluded.source_path,"
+    + "migrated_at = excluded.migrated_at"
+  ).run( this.storeId, name, body, byte_length, hash, source_mtime, source_path, now )
+  this.db.prepare(
+    "INSERT OR IGNORE INTO page_revisions "
+    + "(revision_id, store_id, name, body, byte_length, body_sha256, source_mtime, source_path, migrated_at) "
+    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+  ).run(
+    this.sha256( this.storeId + "\0" + name + "\0" + hash ),
+    this.storeId,
+    name,
+    body,
+    byte_length,
+    hash,
+    source_mtime,
+    source_path,
+    now
+  )
+}
+
+PageStoreProto.bootstrapFromFiles = function(){
+  var count = this.db.prepare(
+    "SELECT COUNT(*) AS count FROM pages WHERE store_id = ?"
+  ).get( this.storeId ).count
+  if( count )return
+  if( !this.dir || !Fs.existsSync( this.dir ) )return
+  var stat = Fs.statSync( this.dir )
+  if( !stat.isDirectory() )return
+  var files = Fs.readdirSync( this.dir )
+  for( var ii = 0 ; ii < files.length ; ii++ ){
+    var name = files[ii]
+    var pathname = this.dir + "/" + name
+    var fstat = Fs.statSync( pathname )
+    if( !fstat.isFile() )continue
+    var body = Fs.readFileSync( pathname, "utf8" )
+    this.upsertSqlite( name, body, pathname, fstat.mtime.toISOString() )
   }
-  var pathname = this.path + name
-  return pathname
+  this.refreshStoreRow()
+}
+
+PageStoreProto.getPath = function( name ){
+  return "sqlite:" + this.dbPath + "#" + this.storeId + "/" + name
 }
 
 
 PageStoreProto.getUrl = function( name ){
-  if( SW.dir == "wiki" ){
-    // "wiki" is generic, assume it means ".", remove it, including /
-    return "file:" + this.getPath( name).substr( SW.dir.length + 1)
-  }else{
-    return "file:" + this.getPath( name)
-  }
+  return this.getPath( name )
 }
 
 
 PageStoreProto.get = function( name, cb ){
 // Get page from store, async. calls cb( err, body)
-  var pathname = this.getPath( name)
-  var that     = this
-  // true => check that dir exists only
-  return this.withDir( true, function( err ){
-    // If directory is known to be inexistent, there no use it trying further
-    if( that.reallyNeedsMkdir ){
-      return cb.call( that, 1)
+  var that = this
+  if( this.isTransient ){
+    return this.fs.readFile( name, "utf8", cb )
+  }
+  setTimeout( function(){
+    var row = that.db.prepare(
+      "SELECT body FROM pages WHERE store_id = ? AND name = ?"
+    ).get( that.storeId, name )
+    that.wiki.countPageReads++
+    if( row ){
+      that.wiki.countPageReadBytes += row.body.length
+      return cb.call( that, 0, row.body )
     }
-    if( err ){
-      return cb.call( that, err)
-    }
-    // ToDo: Lookup on external source, i.e. S3, CouchDB...
-    // S3: https://github.com/LearnBoost/knox
-    // Note: also at fs level with http://www.subcloud.com
-    // SimpleDB
-    // https://github.com/rjrodger/simpledb
-    this.store_de&&bug( "fromStore:", pathname)
-    this.fs.readFile(
-      pathname,
-      "utf8",
-      function( err, data){
-        that.isTransient || that.wiki.countPageReads++
-        if( !err ){
-          that.isTransient || (that.wiki.countPageReadBytes += data.length)
-          that.store_de&&bug( "Read:", pathname,
-            "data:", data.substr( 0, 30),
-            "length:", data.length
-          )
-          if( !data ){
-            that.bug_de&&bug( "BUG? null data in file:", pathname)
-            data = "ERROR"
-          }
-        }else{
-          that.isTransient || that.wiki.countPageMisses++
-          that.store_de&&bug( "ReadError:", pathname, "err:", err)
-          // ToDo: look in monthly snapshoots    
-        }
-        // Check if error is due to missing directory, helps avoid future attempts
-        if( err && that.mayNeedMkdir && err.toString().includes( "ENOTDIR") ){
-          that.reallyNeedsMkdir = true
-        }
-        cb.call( that, err, err ? null : data.toString())
-      }
-    )
-  }) 
+    that.wiki.countPageMisses++
+    cb.call( that, 1, null )
+  }, 0)
   return this
 }
 
 PageStoreProto.withDir = function( check_only, cb ){
-  var that = this
-  // Create parent directory first
-  // This is a ugly hack because it depends on the actual implementation
-  // of the parent wiki's page store...
-  if( this.wiki.parentWiki
-  &&  this.wiki.parentWiki.pageStore.mayNeedMkdir
-  && !check_only
-  ){
-    return this.wiki.parentWiki.pageStore.withDir( check_only, function( err ){
-      if( err ){
-        that.wiki.error( "failure with parent directory creation:", err)
-        return cb.call( that, err)
-      }
-      return that.withDir( check_only, cb)
-    })
-  }
-  // ToDo: if check_only I should not create the dir, just check that it exists
-  // however, if it does not exits, the .get() will fail anyway
-  // Check/Create directory if not done successfully already
-  if( this.mayNeedMkdir && !check_only ){
-    Fs.mkdir( this.dir, parseInt( "755", 8 ), function( err ){
-      // If creation ok
-      if( !err ){
-        that.store_de&&bug( "newWikiDirectory:", that.dir)
-        that.isTransient || that.wiki.countWikiCreates++
-        that.mayNeedMkdir     = false
-        that.reallyNeedsMkdir = false
-        return cb.call( that, 0)
-      }
-      // If already exists
-      if( err && err.errno === 47 ){
-        that.store_de&&bug( "existingWikiDirectory:", that.dir)
-        that.mayNeedMkdir     = false
-        that.reallyNeedsMkdir = false
-        return cb.call( that, 0)
-      }
-      // Can't create
-      that.wiki.error( "mkdir:", that.dir, "err: ", Sys.inspect( err))
-      // ToDo: should remember error to avoid trying again uselessly later
-      return cb.call( that, err)
-    })
-    return
-  }else{
-    return cb.call( that, 0)
-  }
+  return cb.call( this, 0)
 }
 
 PageStoreProto.put = function( name, data, cb ){
 // Put page in store, async. Calls cb( err)
-  // ToDo: Update on external source, S3, CouchDB...
   var that = this
   this.de&&mand( data || data === "" )
-  var pathname = this.getPath( name)
-  // Create dir first if needed
-  this.withDir( false, function( err ){
-    if( err ){
-      return cb.call( that, err)
+  if( this.isTransient ){
+    return this.fs.writeFile( name, data, cb )
+  }
+  setTimeout( function(){
+    try {
+      that.upsertSqlite( name, data )
+      that.refreshStoreRow()
+      that.wiki.countPageWrites++
+      that.wiki.countPageWriteBytes += data.length
+      cb.call( that, 0 )
+    } catch( err ){
+      that.wiki.error( "sqlite write:", that.storeId, name, "err:", err )
+      cb.call( that, err )
     }
-    this.store_de&&bug( "toStore:", pathname)
-    this.deep_store_de&&bug( "Write, data:", data.substr( 0, 30))
-    this.fs.writeFile(
-      pathname,
-      data,
-      once( function page_store_put_cb( err ){
-        if( that.isTransient ){ return cb.call( that, err) }
-        if( !err ){
-          that.wiki.countPageWrites++
-          that.wiki.countPageWriteBytes += data.length
-        }else{
-          that.wiki.error( "write:", pathname, "err:", err)
-        }
-        cb.call( that, err)
-        // Have a backup until out of beta, in ./Backup/ directory
-        if( that.wiki.config.backupWrites ){
-          var bak = that.backup
-          // Note: flat names, / expands into .. (used to be .)
-          + pathname.replace( /\//g, "..")
-          + "~" + Sw.timeNow
-          // However, keep less copies of context, +/- 1/day for 10 last days
-          if( bak.includes( "PrivateContext") ){
-            bak = bak.replace( /~.*(\d)\d\d\d\d\d\d\d\d$/, "~$1")
-          }
-          that.store_de&&bug( "backup:", bak)
-          that.fs.writeFile( bak, data, function( err ){
-            if( err ){
-              that.wiki.error( "backup: ", bak, "err:", err)
-            }
-          })
-        }else{
-          that.store_de&&bug( "no backup")
-        }
-      })
-    )
-  })
+  }, 0)
   return this
+}
+
+PageStoreProto.list = function( cb ){
+  var that = this
+  if( this.isTransient ){
+    return setTimeout( function(){
+      cb.call( that, 0, Object.keys( that.allPages ).map( function( name ){
+        return { name: name, mtime: new Date().toISOString() }
+      }))
+    }, 0)
+  }
+  setTimeout( function(){
+    try {
+      var rows = that.db.prepare(
+        "SELECT name, source_mtime FROM pages WHERE store_id = ? ORDER BY name"
+      ).all( that.storeId )
+      cb.call( that, 0, rows.map( function( row ){
+        return { name: row.name, mtime: row.source_mtime }
+      }))
+    } catch( err ){
+      cb.call( that, err )
+    }
+  }, 0)
 }
 
 PageStoreProto.open = function( cb ){
@@ -25955,4 +26008,3 @@ ZWiki	: "http://www.zwiki.org/",
 }
 // section: end interwiki.js
 //
-

@@ -17,9 +17,9 @@
     if( db ) return db;
 
     try {
-      var Database = require( 'better-sqlite3' );
+      var Database = require( 'node:sqlite' ).DatabaseSync;
       db = new Database( DB_PATH );
-      db.pragma( 'journal_mode = WAL' );
+      db.exec( 'PRAGMA journal_mode = WAL' );
 
       // Create tables
       db.exec(`
@@ -195,31 +195,42 @@
     var authoritativePages = {};
 
     // Get list of authoritative pages with timestamps
-    pageStore.withDir( false, function( err, files ){
-      if( !err && files ){
-        files.forEach( function( file ){
-          try {
-            var stat = Fs.statSync( pageStore.dir + "/" + file );
-            if( stat.isFile() && !file.startsWith( "." ) && !file.includes( ".dir" ) ){
-              authoritativePages[file] = stat.mtime.toISOString();
-            }
-          } catch( e ) {}
-        });
-      }
-
-      sendJson( res, 200, {
-        version: VERSION,
-        nodeId: SW.domain || "localhost",
-        nodeType: "wiki",
-        isSovereign: wiki.isRoot(),
-        authoritativePages: authoritativePages,
-        capabilities: {
-          canServePages: true,
-          canAcceptTreaties: true,
-          canInitiateTreaties: true,
-          canCachePages: true
+    if( pageStore.list ){
+      return pageStore.list( function( err, pages ){
+        if( !err && pages ){
+          pages.forEach( function( page ){
+            authoritativePages[page.name] = page.mtime || new Date().toISOString();
+          });
         }
+
+        sendJson( res, 200, {
+          version: VERSION,
+          nodeId: SW.domain || "localhost",
+          nodeType: "wiki",
+          isSovereign: wiki.isRoot(),
+          authoritativePages: authoritativePages,
+          capabilities: {
+            canServePages: true,
+            canAcceptTreaties: true,
+            canInitiateTreaties: true,
+            canCachePages: true
+          }
+        });
       });
+    }
+
+    sendJson( res, 200, {
+      version: VERSION,
+      nodeId: SW.domain || "localhost",
+      nodeType: "wiki",
+      isSovereign: wiki.isRoot(),
+      authoritativePages: authoritativePages,
+      capabilities: {
+        canServePages: true,
+        canAcceptTreaties: true,
+        canInitiateTreaties: true,
+        canCachePages: true
+      }
     });
   }
 
@@ -802,11 +813,9 @@
             return;
           }
 
-          // Update the page content using direct file write
           var newContent = change.content || change;
-          var pagePath = wiki.pageStore.dir + "/" + pageName;
 
-          Fs.writeFile( pagePath, newContent, function( err ){
+          wiki.pageStore.put( pageName, newContent, function( err ){
             if( err ){
               sendError( res, 500, "save_error", "Failed to save page: " + err.message );
               return;

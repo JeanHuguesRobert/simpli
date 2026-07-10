@@ -13,7 +13,7 @@
     "test": "test"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=26.5.0"
   },
   "dependencies": {
     "l8": ">=0.3.0",
@@ -22,7 +22,9 @@
   "devDependencies": {},
   "scripts": {
     "start": "node lib/main.js",
-    "dev": "node lib/main.js debug"
+    "dev": "node lib/main.js debug",
+    "pages:migrate": "node scripts/migrate-pages-sqlite.js",
+    "pages:normalize": "node scripts/normalize-dropbox-page-names.js"
   },
   "keywords": [
     "wiki",

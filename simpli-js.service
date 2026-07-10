@@ -9,7 +9,8 @@ User=ubuntu
 WorkingDirectory=/srv/simpli
 Environment="NODE_ENV=production"
 EnvironmentFile=/srv/simpli/.env.production
-ExecStart=/usr/bin/node src/main.js
+ExecStartPre=/usr/local/bin/node /srv/simpli/scripts/check-node-current.js
+ExecStart=/usr/local/bin/node src/main.js
 Restart=on-failure
 RestartSec=10
 
