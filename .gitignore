@@ -53,3 +53,8 @@ simplijs/wiki/*Backup
 
 # git stuff
 .gitattributes
+
+# Environment secrets
+.env
+.env.*
+!.env.example
