@@ -3459,6 +3459,15 @@ WikiProto.processHttpRequest = function( req ){
   // Fix weird encoding
   // ToDo: is this a good idea?
   pathname = decodeURIComponent( pathname)
+
+  // Provider/API routes belong to the service routed behind them, never to a
+  // SimpliWiki namespace.  Returning false here lets the HTTP server's static
+  // fallback return a plain 404 instead of creating a synthetic wiki such as
+  // `v1/models` and repeatedly materialising invalid PrivateContext pages.
+  if( "/v1/".starts( pathname) ){
+    this.http_de&&bug( "Ignoring non-Simpli API route:", pathname)
+    return false
+  }
   
   // static files are not for me (including fake with.google)
   if( /\.(html|png|svg|txt|css|js|json|google)$/.test( pathname) ){
