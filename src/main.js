@@ -25307,10 +25307,35 @@ Sw.cacheHtmlFile( "channel.html",
 
 // Here comes the HTTP handler
 Sw.nr = 0
+// Defensive guard for reconnect storms on the long-polling channel.  This is
+// intentionally modest: it limits only /on_* requests and keys on the proxy
+// forwarded address when available, while retaining a short diagnostic window.
+Sw.onPollRate = new Map()
 Sw.handler = function handler( req, res ){
 // ToDo: Factor out file management
   this.deep_http_de&&bug( "HTTP request; req:" + Sys.inspect( req))
   Sw.nr++
+  req.response = res
+  var requestPath = Url.parse( req.url).pathname || ""
+  if( /^\/on_[^/]+$/.test( requestPath) ){
+    var forwarded = req.headers["x-forwarded-for"]
+    var clientAddress = (forwarded ? String( forwarded).split(",")[0].trim() : "")
+      || (req.socket && req.socket.remoteAddress) || "unknown"
+    var now = Date.now()
+    var recent = Sw.onPollRate.get( clientAddress) || []
+    recent = recent.filter( function( stamp){ return now - stamp < 10000 } )
+    recent.push( now)
+    Sw.onPollRate.set( clientAddress, recent)
+    if( recent.length > 30 ){
+      bug( "rate-limit on-poll", clientAddress,
+        "ua:", req.headers["user-agent"] || "", "url:", req.url)
+      res.writeHead( 429, {"Content-Type":"text/plain", "Retry-After":"10"})
+      res.end( "Too Many Requests\\n")
+      return
+    }
+    bug( "on-poll", clientAddress,
+      "ua:", req.headers["user-agent"] || "", "url:", req.url)
+  }
   if( req.headers.referer
   && !req.headers.referer.includes( "simpliwiki.com")
   && !req.headers.referer.includes( "virteal.com")
@@ -25322,7 +25347,6 @@ Sw.handler = function handler( req, res ){
     )
   }
   // Attach response to request, I don't get why nodejs don't do that by dflt
-  req.response = res
   // Experimental, global context
   Contexted.scope ={req: req}
   if( TheRootWiki.processHttpRequest( req) )return
